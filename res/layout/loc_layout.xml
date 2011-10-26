@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:weightSum="1">
+    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_weight="1.29">
+        <Button android:id="@+id/activity_1but" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/activity_1" android:layout_alignParentBottom="true" android:layout_alignParentLeft="true"></Button>
+    </RelativeLayout>
+</LinearLayout>

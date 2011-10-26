@@ -2,4 +2,7 @@
 <resources>
     <string name="hello">Hello World, Meadows_CapstoneActivity!</string>
     <string name="app_name">Meadows_Capstone</string>
+    <string name="get_loc">Get Loc</string>
+    <string name="activity_2">Activity 2</string>
+    <string name="activity_1">Activity 1</string>
 </resources>
