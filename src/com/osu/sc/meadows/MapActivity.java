@@ -3,6 +3,9 @@ package com.osu.sc.meadows;
 import android.app.Activity;
 import android.os.Bundle;
 
+/*
+ * Place holder activity for eventual Map features
+ */
 public class MapActivity extends Activity {
 
 	/** Called when the activity is first created. */

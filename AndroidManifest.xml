@@ -14,9 +14,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SocialActivity"></activity>
-        <activity android:name=".UpdatesActivity"></activity>
-        <activity android:name=".MapActivity"></activity>
-        <activity android:name=".StatsActivity"></activity>
+        <activity 
+        	android:name=".SocialActivity"
+        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        </activity>
+        <activity 
+        	android:name=".UpdatesActivity"
+        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        </activity>
+        <activity 
+        	android:name=".MapActivity"
+        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        </activity>
+        <activity 
+        	android:name=".StatsActivity"
+        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        </activity>
     </application>
 </manifest>

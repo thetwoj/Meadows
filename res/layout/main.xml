@@ -1,4 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- 
+
+NOTES ABOUT MAIN.XML: 
+
+This file is the xml for the Homescreen which boots when the app is 
+opened.
+
+
+LINEARLAYOUTS:
+
+linearLayout1 and linearLayout2 must have same weight, this forces
+them to share the vertical space on the screen equally, regardless
+of size.
+
+
+IMAGEBUTTONS:
+
+Similarly, each ImageButton within each linearLayout must also have 
+the same weight. This forces them to share the horizontal space on 
+the screen equally, regardless of size.
+
+Background of each of the ImageButtons is set to @null to get rid of
+the gray button background that is there by default.
+
+Within each ImageButton, the android:src="..." line points to a selector
+xml file within drawables that determines which picture should be 
+displayed when the button is unclicked (default), clicked or focused.
+
+-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:background="@color/white"
     android:layout_width="fill_parent"
