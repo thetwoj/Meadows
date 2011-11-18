@@ -4,6 +4,14 @@
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="9" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="com.google.android.apps.mytracks.READ_TRACK_DATA" />
+    <uses-permission android:name="com.google.android.apps.mytracks.WRITE_TRACK_DATA" />
+    <uses-permission android:name="com.google.android.apps.mytracks.TRACK_NOTIFICATIONS" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".MeadowsActivity"
@@ -27,8 +35,7 @@
         	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         </activity>
         <activity 
-        	android:name=".StatsActivity"
-        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        	android:name=".StatsActivity">
         </activity>
     </application>
 </manifest>

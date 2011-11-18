@@ -5,4 +5,36 @@
     android:layout_height="fill_parent" 
     android:orientation="vertical" 
     xmlns:android1="http://schemas.android.com/apk/res/android">
+    <LinearLayout 
+	    android:id="@+id/linearLayout1" 
+	    android:layout_weight="1"
+	    android:layout_height="fill_parent" 
+	    android:layout_width="fill_parent">
+        <Button 
+        	android:text="start" 
+        	android:id="@+id/start_recording_button" 
+        	android:layout_weight="1"
+        	android:layout_width="fill_parent" 
+        	android:layout_height="fill_parent">
+        </Button>
+        <Button 
+	        android:text="stop" 
+	        android:id="@+id/stop_recording_button"
+	        android:layout_weight="1" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="fill_parent">
+        </Button>
+    </LinearLayout>
+    <LinearLayout 
+	    android:id="@+id/linearLayout2" 
+	    android:layout_weight="1"
+	    android:layout_height="fill_parent" 
+	    android:layout_width="fill_parent">
+        <TextView 
+	        android:text="@null" 
+	        android:id="@+id/output" 
+	        android:layout_width="fill_parent" 
+	        android:layout_height="fill_parent">
+        </TextView>
+    </LinearLayout>
 </LinearLayout>
