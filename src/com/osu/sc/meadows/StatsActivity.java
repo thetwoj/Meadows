@@ -1,7 +1,5 @@
 package com.osu.sc.meadows;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -30,6 +28,10 @@ public class StatsActivity extends Activity {
 
 	// display output from the MyTracks content provider
 	private TextView outputTextView;
+	private TextView averagespeed;
+	private TextView maxspeed;
+	private TextView totaltime;
+	private TextView movingtime;
 
 	// MyTracks service
 	private ITrackRecordingService myTracksService;
@@ -58,6 +60,10 @@ public class StatsActivity extends Activity {
 		// for the MyTracks content provider
 		myTracksProviderUtils = MyTracksProviderUtils.Factory.get(this);
 		outputTextView = (TextView) findViewById(R.id.output);
+		averagespeed = (TextView) findViewById(R.id.averagespeed);
+		maxspeed = (TextView) findViewById(R.id.maxspeed);
+		totaltime = (TextView) findViewById(R.id.totaltime);
+		movingtime = (TextView) findViewById(R.id.movingtime);
 
 		// for the MyTracks service
 		intent = new Intent();
@@ -90,18 +96,27 @@ public class StatsActivity extends Activity {
 						Log.e(TAG, "RemoteException", e);
 					}
 				}
-				
+
 				// use the MyTracks content provider to get all the tracks
-				List<Track> tracks = myTracksProviderUtils.getAllTracks();
-				for (Track track : tracks) {
-					outputTextView.setText(track.getStatistics() + "");
+				Track tracks = myTracksProviderUtils.getLastTrack();
+				outputTextView.setText(tracks.getStatistics() + "");
+				
+				String data = outputTextView.getText().toString();
+				String mtime = "";
+				
+				for(int mtimeloc = data.indexOf("Moving Time") + 13; data.charAt(mtimeloc) != ';'; mtimeloc++){
+					mtime += (data.charAt(mtimeloc));
 				}
 				
+				movingtime.setText(mtime);
+
 				startService(intent);
 				bindService(intent, serviceConnection, 0);
 			}
 		});
 	}
+	
+	
 
 	@Override
 	protected void onStart() {

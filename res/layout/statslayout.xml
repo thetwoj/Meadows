@@ -1,40 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="@color/white"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout2"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
-    android:orientation="vertical" 
-    xmlns:android1="http://schemas.android.com/apk/res/android">
-    <LinearLayout 
-	    android:id="@+id/linearLayout1" 
-	    android:layout_weight="1"
-	    android:layout_height="fill_parent" 
-	    android:layout_width="fill_parent">
-        <Button 
-        	android:text="start" 
-        	android:id="@+id/start_recording_button" 
-        	android:layout_weight="1"
-        	android:layout_width="fill_parent" 
-        	android:layout_height="fill_parent">
-        </Button>
-        <Button 
-	        android:text="stop" 
-	        android:id="@+id/stop_recording_button"
-	        android:layout_weight="1" 
-	        android:layout_width="fill_parent" 
-	        android:layout_height="fill_parent">
-        </Button>
-    </LinearLayout>
-    <LinearLayout 
-	    android:id="@+id/linearLayout2" 
-	    android:layout_weight="1"
-	    android:layout_height="fill_parent" 
-	    android:layout_width="fill_parent">
-        <TextView 
-	        android:text="@null" 
-	        android:id="@+id/output" 
-	        android:layout_width="fill_parent" 
-	        android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="3" >
+
+        <TextView
+            android:id="@+id/output"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="@null" >
         </TextView>
     </LinearLayout>
+
+    <LinearLayout
+        android1:id="@+id/linearLayout2"
+        android1:layout_width="fill_parent"
+        android1:layout_height="fill_parent"
+        android1:layout_weight="2" >
+
+        <LinearLayout
+            android1:id="@+id/linearLayout3"
+            android1:layout_width="fill_parent"
+            android1:layout_height="fill_parent"
+            android1:layout_weight="1"
+            android1:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/averagespeedlabel"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="3"
+                android:text="@string/averagelabel" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/averagespeed"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="2"
+                android:text="@null" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/maxspeedlabel"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="3"
+                android:text="@string/maxlabel" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/maxspeed"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="2"
+                android:text="@null" >
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android1:id="@+id/linearLayout4"
+            android1:layout_width="fill_parent"
+            android1:layout_height="fill_parent"
+            android1:layout_weight="1"
+            android1:orientation="vertical" >
+            
+            <TextView
+                android:id="@+id/totaltimelabel"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="3"
+                android:text="@string/totaltlabel" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/totaltime"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="2"
+                android:text="@null" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/movingtimelabel"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="3"
+                android:text="@string/movingtlabel" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/movingtime"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android1:layout_weight="2"
+                android:text="@null" >
+            </TextView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/statsbuttons"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="3" >
+
+        <Button
+            android:id="@+id/start_recording_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="start" >
+        </Button>
+
+        <Button
+            android:id="@+id/stop_recording_button"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="stop" >
+        </Button>
+    </LinearLayout>
+
 </LinearLayout>
