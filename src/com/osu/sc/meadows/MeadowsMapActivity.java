@@ -39,7 +39,7 @@ public class MeadowsMapActivity extends MapActivity
 			Point screenPts = new Point();
 			mapView.getProjection().toPixels(loc, screenPts);
 
-			Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.marker);
+			Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
 			//The marker's pin point is at (10, 34) on the bitmap.
 			canvas.drawBitmap(bmp, screenPts.x - 10, screenPts.y - 34, null);
 			return true;
