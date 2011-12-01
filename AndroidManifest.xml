@@ -33,7 +33,7 @@
         	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         </activity>
         <activity 
-        	android:name=".MapActivity"
+        	android:name=".MeadowsMapActivity"
         	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         </activity>
         <activity 
