@@ -105,3 +105,4 @@ public class MeadowsMapActivity extends MapActivity
 		// TODO Auto-generated method stub
 		return false;
 	}
+}
