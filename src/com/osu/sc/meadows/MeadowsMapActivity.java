@@ -24,7 +24,6 @@ public class MeadowsMapActivity extends MapActivity
 	private MapView m_view;
 	private MapController mc;
 	private GeoPoint loc;
-	/** Called when the activity is first created. */
 
 	class MapOverlay extends com.google.android.maps.Overlay
 	{
@@ -71,14 +70,14 @@ public class MeadowsMapActivity extends MapActivity
 
 	public void onCreate(Bundle savedInstanceState)
 	{
-
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.maplayout);
 		m_view = (MapView) findViewById(R.id.mapView);
 		m_view.setSatellite(true);
 		m_view.setBuiltInZoomControls(true);
 		mc = m_view.getController();
 		mc.setZoom(20);
+		
 		MapOverlay mapOverlay = new MapOverlay();
 		List<Overlay> listOfOverlays = m_view.getOverlays();
 		listOfOverlays.clear();
