@@ -4,7 +4,7 @@
     <string name="app_name">Meadows_Capstone</string>
     <color name="white">#FFFFFF</color>
     <string name="averagelabel">Avg. Speed:</string>
-    <string name="maxlabel">Max Speed:</string>
+    <string name="distancelabel">Total Distance:</string>
     <string name="totaltlabel">Total Time:</string>
     <string name="movingtlabel">Moving Time:</string>
 </resources>

@@ -51,15 +51,15 @@
             </TextView>
 
             <TextView
-                android:id="@+id/maxspeedlabel"
+                android:id="@+id/totaldistancelabel"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android1:layout_weight="3"
-                android:text="@string/maxlabel" >
+                android:text="@string/distancelabel" >
             </TextView>
 
             <TextView
-                android:id="@+id/maxspeed"
+                android:id="@+id/totaldistance"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android1:layout_weight="2"
@@ -73,7 +73,7 @@
             android1:layout_height="fill_parent"
             android1:layout_weight="1"
             android1:orientation="vertical" >
-            
+
             <TextView
                 android:id="@+id/totaltimelabel"
                 android:layout_width="fill_parent"
@@ -115,19 +115,11 @@
         android:layout_weight="3" >
 
         <Button
-            android:id="@+id/start_recording_button"
+            android:id="@+id/recording_button"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="start" >
-        </Button>
-
-        <Button
-            android:id="@+id/stop_recording_button"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="stop" >
+            android:text="Start" >
         </Button>
     </LinearLayout>
 
