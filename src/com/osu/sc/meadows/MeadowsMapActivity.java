@@ -18,18 +18,15 @@ import android.location.LocationManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ViewSwitcher;
 
 public class MeadowsMapActivity extends MapActivity
 {
-	public enum ViewType
-	{
-		GOOGLE_MAP,
-		MEADOWS_MAP
-	}
 	private MapView m_view;
 	private MapController mc;
 	private GeoPoint loc;
-	private ViewType currentView;
+	private ViewSwitcher switcher;
 
 	class MapOverlay extends com.google.android.maps.Overlay
 	{
@@ -79,8 +76,8 @@ public class MeadowsMapActivity extends MapActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		currentView = ViewType.GOOGLE_MAP;
-		resetContentView();
+		setViewByLayout(R.layout.maplayout);
+		switcher = (ViewSwitcher) findViewById(R.id.mapSwitcher);
 		m_view = (MapView) findViewById(R.id.mapView);
 		m_view.setSatellite(true);
 		m_view.setBuiltInZoomControls(true);
@@ -106,22 +103,14 @@ public class MeadowsMapActivity extends MapActivity
 		mc.animateTo(loc);
 	}
 	
-	public void resetContentView()
+	public void setViewByLayout(int layout)
 	{
-		if(currentView == ViewType.GOOGLE_MAP)
-			setContentView(R.layout.maplayout);
-		else
-			setContentView(R.layout.meadowsmaplayout);
+			setContentView(layout);
 	}
 	
-	public void toggleView()
+	public void toggleView(View currentView)
 	{
-		if(currentView == ViewType.GOOGLE_MAP)
-			currentView = ViewType.MEADOWS_MAP;
-		else
-			currentView = ViewType.GOOGLE_MAP;
-		
-		resetContentView();
+		switcher.showNext();
 	}
 
 

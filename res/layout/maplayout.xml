@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mapSwitcher"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -16,7 +20,7 @@
    		android:layout_width="wrap_content" 
    		android:text="Meadows Map" 
    		android:layout_height="wrap_content"
-   		android:id="@+id/button2" 
+   		android:id="@+id/MeadowsMap" 
    		android:layout_alignParentTop="true" 
    		android:layout_centerHorizontal="true" 
    		android:layout_marginTop="67dp"
@@ -24,3 +28,24 @@
    		android:onClick="toggleView"
    	/>
 </RelativeLayout>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/meadows"
+    >
+    
+
+   <Button 
+   		android:layout_width="wrap_content" 
+   		android:text="Google Map" 
+   		android:layout_height="wrap_content"
+   		android:id="@+id/GoogleMap" 
+   		android:layout_alignParentTop="true" 
+   		android:layout_centerHorizontal="true" 
+   		android:layout_marginTop="67dp"
+   		android:clickable="true"
+   		android:onClick="toggleView"
+   	/>
+</RelativeLayout>
+</ViewSwitcher>
