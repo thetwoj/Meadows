@@ -3,7 +3,7 @@
       package="com.osu.sc.meadows"
       android:versionCode="1"
       android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="9" />
+    <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"></uses-permission>
@@ -13,9 +13,9 @@
     <uses-permission android:name="com.google.android.apps.mytracks.READ_TRACK_DATA" />
     <uses-permission android:name="com.google.android.apps.mytracks.WRITE_TRACK_DATA" />
     <uses-permission android:name="com.google.android.apps.mytracks.TRACK_NOTIFICATIONS" />
-    <uses-library android:name="com.google.android.maps" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
+    	<uses-library android:name="com.google.android.maps" />
         <activity android:name=".MeadowsActivity"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">

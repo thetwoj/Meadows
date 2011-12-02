@@ -21,12 +21,20 @@ import android.os.Bundle;
 
 public class MeadowsMapActivity extends MapActivity
 {
+	public enum ViewType
+	{
+		GOOGLE_MAP,
+		MEADOWS_MAP
+	}
 	private MapView m_view;
 	private MapController mc;
 	private GeoPoint loc;
+	private ViewType currentView;
 
 	class MapOverlay extends com.google.android.maps.Overlay
 	{
+		private static final int MARKER_OFFSET_X = 16;
+		private static final int MARKER_OFFSET_Y = 35;
 		@Override
 		public boolean draw(Canvas canvas, MapView mapView,
 				boolean shadow, long when)
@@ -39,8 +47,8 @@ public class MeadowsMapActivity extends MapActivity
 			mapView.getProjection().toPixels(loc, screenPts);
 
 			Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
-			//The marker's pin point is at (10, 34) on the bitmap.
-			canvas.drawBitmap(bmp, screenPts.x - 10, screenPts.y - 34, null);
+			//The marker's pin point is at (MARKER_OFFSET_X, MARKER_OFFSET_Y) on the bitmap.
+			canvas.drawBitmap(bmp, screenPts.x - MARKER_OFFSET_X, screenPts.y - MARKER_OFFSET_Y, null);
 			return true;
 		}
 	}
@@ -71,7 +79,8 @@ public class MeadowsMapActivity extends MapActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.maplayout);
+		currentView = ViewType.GOOGLE_MAP;
+		resetContentView();
 		m_view = (MapView) findViewById(R.id.mapView);
 		m_view.setSatellite(true);
 		m_view.setBuiltInZoomControls(true);
@@ -96,12 +105,29 @@ public class MeadowsMapActivity extends MapActivity
 		loc = new GeoPoint(lat_int, lon_int);
 		mc.animateTo(loc);
 	}
+	
+	public void resetContentView()
+	{
+		if(currentView == ViewType.GOOGLE_MAP)
+			setContentView(R.layout.maplayout);
+		else
+			setContentView(R.layout.meadowsmaplayout);
+	}
+	
+	public void toggleView()
+	{
+		if(currentView == ViewType.GOOGLE_MAP)
+			currentView = ViewType.MEADOWS_MAP;
+		else
+			currentView = ViewType.GOOGLE_MAP;
+		
+		resetContentView();
+	}
 
 
 	@Override
 	protected boolean isRouteDisplayed() 
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
