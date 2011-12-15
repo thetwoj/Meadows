@@ -34,8 +34,8 @@
     android:layout_height="fill_parent"
     >
     
-  <it.sephiroth.android.library.imagezoom.ImageViewTouch
-  	android:id="@+id/meadowsImage"
+  <com.osu.sc.meadows.GeoImageViewTouch
+  	android:id="@+id/meadowsImageView"
   	android:src="@drawable/meadows"
   	android:layout_width="fill_parent"
   	android:layout_height="fill_parent"

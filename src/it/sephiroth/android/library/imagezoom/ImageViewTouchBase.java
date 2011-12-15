@@ -4,6 +4,7 @@ import it.sephiroth.android.library.imagezoom.easing.Cubic;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -38,6 +39,7 @@ public class ImageViewTouchBase
         protected final float[]                 mMatrixValues           = new float[9];
         protected int                                   mThisWidth                      = -1;
         protected int                                   mThisHeight                     = -1;
+        protected Point mOrigin = new Point(0, 0);
 
         protected Bitmap                                mBitmapDisplayed        = null;
         final protected float                   MAX_ZOOM                        = 2.0f;
@@ -128,6 +130,11 @@ public class ImageViewTouchBase
         public void clear()
         {
                 setImageBitmapReset( null, true );
+        }
+        
+        public Point getOrigin()
+        {
+        	return mOrigin;
         }
 
         @Override
@@ -334,7 +341,11 @@ public class ImageViewTouchBase
         protected void postTranslate(float deltaX, float deltaY)
         {
                 mSuppMatrix.postTranslate( deltaX, deltaY );
-                setImageMatrix( getImageViewMatrix() );
+                Matrix matrix = getImageViewMatrix();
+                float[] vals = new float[9];
+                matrix.getValues(vals);
+                this.mOrigin = new Point((int)vals[2], (int)vals[5]);
+                setImageMatrix( matrix );
         }
 
         protected void postScale(float scale, float centerX, float centerY)
