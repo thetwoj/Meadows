@@ -43,7 +43,6 @@ public class GeoMapActivity extends MapActivity
 	private static final int MARKER_OFFSET_Y = 35;
 	private int geoFile;
 	private double mapTheta;
-	private Point geoWidthHeight;
 	private GeoImageViewTouch geoImageView;
 	private boolean showingGoogleMap;
 	List<GeoreferencedPoint> geoReferencedPoints;
@@ -192,10 +191,7 @@ public class GeoMapActivity extends MapActivity
 	       //Read the first line to get the dimensions of the map and the theta orientation.   
 	       strLine = br.readLine();
 	       st = new StringTokenizer(strLine);
-	       int width = Integer.parseInt(st.nextToken());
-	       int height = Integer.parseInt(st.nextToken());
 	       double theta = Double.parseDouble(st.nextToken());
-	       this.geoWidthHeight = new Point(width, height);
 	       this.mapTheta = theta;
 	       
 	       while ((strLine = br.readLine()) != null)   {
@@ -265,12 +261,14 @@ public class GeoMapActivity extends MapActivity
 		int lat_int = (int) (lat * 1E6);
 		int lon_int = (int) (lon * 1E6);
 		worldLoc = new GeoPoint(lat_int, lon_int);
+		Point geoMapLoc = getGeoMapPosition(worldLoc);
+		this.geoImageView.setLoc(geoMapLoc);
 		if(this.showingGoogleMap)
+		{
 			mc.animateTo(worldLoc);
+		}
 		else
 		{
-			Point geoMapLoc = getGeoMapPosition(worldLoc);
-			this.geoImageView.setLoc(geoMapLoc);
 			this.geoImageView.invalidate();
 		}
 	}

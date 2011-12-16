@@ -12,7 +12,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 {
 	protected Point mapLoc;
 	private static final int MARKER_OFFSET_X = 16; //temp 
-	private static final int MARKER_OFFSET_Y = 35; //temp
+	private static final int MARKER_OFFSET_Y = 35;
 	
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
@@ -38,8 +38,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 		Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
 		
-		//The marker's pin point is at (MARKER_OFFSET_X, MARKER_OFFSET_Y) on the bitmap.
-		canvas.drawBitmap(bmp, screenX /*- MARKER_OFFSET_X*/, screenY /*- MARKER_OFFSET_Y*/, null);
+		canvas.drawBitmap(bmp, screenX, screenY, null);
 		
 	}
 }
