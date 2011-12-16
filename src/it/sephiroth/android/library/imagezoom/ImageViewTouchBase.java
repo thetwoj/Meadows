@@ -44,6 +44,14 @@ public class ImageViewTouchBase extends ImageView
         final protected float                   MAX_ZOOM                        = 2.0f;
 
         private OnBitmapChangedListener mListener;
+        
+        public int getThisWidth(){
+        	return mThisWidth;
+        }
+        
+        public int getThisHeight(){
+        	return mThisHeight;
+        }
 
         public ImageViewTouchBase(Context context)
         {

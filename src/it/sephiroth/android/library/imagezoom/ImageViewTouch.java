@@ -2,6 +2,7 @@ package it.sephiroth.android.library.imagezoom;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -21,9 +22,10 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected GestureListener               mGestureListener;
 	protected ScaleListener                 mScaleListener;
 	protected OnClickListener               mOnClickListener;
-
-	float currX = 0.f;
-	float currY = 0.f;
+	protected Point mOrigin;
+	
+	int screenHeight = 0;
+	int screenWidth	= 0;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -127,6 +129,10 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
+			screenWidth = getThisWidth();
+			screenHeight = getThisHeight();
+			mOrigin = getOrigin();
+			
 			if (e1 == null || e2 == null)
 				return false;
 			if (e1.getPointerCount() > 1 || e2.getPointerCount() > 1)
@@ -135,15 +141,12 @@ public class ImageViewTouch extends ImageViewTouchBase
 				return false;
 
 			// Prevent from scrolling beyond the top and left of the image
-			if ((currX + distanceX < 0.f) || (currX + distanceX > 1300.f))
+			if ((mOrigin.x - distanceX > 0.f) || (mOrigin.x - distanceX - screenWidth < -1800.f))
 				distanceX = 0.f;
-			if ((currY + distanceY < 0.f) || (currY + distanceY > 1000.f))
+			if ((mOrigin.y - distanceY > 0.f) || (mOrigin.y - distanceY - screenHeight < -1800.f))
 				distanceY = 0.f;
 
 			scrollBy( -distanceX, -distanceY );
-
-			currX += distanceX;
-			currY += distanceY;
 
 			invalidate();
 			return super.onScroll( e1, e2, distanceX, distanceY );
