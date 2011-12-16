@@ -4,6 +4,7 @@ import it.sephiroth.android.library.imagezoom.easing.Cubic;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -13,411 +14,417 @@ import android.widget.ImageView;
 
 public class ImageViewTouchBase extends ImageView
 {
-	public interface OnBitmapChangedListener
-	{
-		void onBitmapChanged(Bitmap bitmap);
-	};
+        public interface OnBitmapChangedListener
+        {
+                void onBitmapChanged(Bitmap bitmap);
+        };
 
-	protected enum Command
-	{
-		Center,
-		Move,
-		Zoom,
-		Layout,
-		Reset,
-	};
+        protected enum Command
+        {
+                Center,
+                Move,
+                Zoom,
+                Layout,
+                Reset,
+        };
 
-	protected ScrollRunnable                mScrollRunnable         		= new ScrollRunnable();
-	protected Matrix                        mBaseMatrix                     = new Matrix();
-	protected Matrix                        mSuppMatrix                     = new Matrix();
-	protected Handler                       mHandler                        = new Handler();
-	protected Runnable                      mOnLayoutRunnable       		= null;
-	protected float                         mMaxZoom;
-	protected final Matrix                  mDisplayMatrix          		= new Matrix();
-	protected final float[]                 mMatrixValues           		= new float[9];
-	protected int                           mThisWidth                      = -1;
-	protected int                           mThisHeight                     = -1;
+        protected ScrollRunnable                mScrollRunnable         = new ScrollRunnable();
+        protected Matrix                                mBaseMatrix                     = new Matrix();
+        protected Matrix                                mSuppMatrix                     = new Matrix();
+        protected Handler                               mHandler                        = new Handler();
+        protected Runnable                              mOnLayoutRunnable       = null;
+        protected float                                 mMaxZoom;
+        protected final Matrix                  mDisplayMatrix          = new Matrix();
+        protected final float[]                 mMatrixValues           = new float[9];
+        protected int                                   mThisWidth                      = -1;
+        protected int                                   mThisHeight                     = -1;
+        protected Point mOrigin = new Point(0, 0);
 
-	protected Bitmap                        mBitmapDisplayed        		= null;
-	final protected float                   MAX_ZOOM                        = 2.0f;
+        protected Bitmap                                mBitmapDisplayed        = null;
+        final protected float                   MAX_ZOOM                        = 2.0f;
 
-	private OnBitmapChangedListener mListener;
+        private OnBitmapChangedListener mListener;
 
-	public ImageViewTouchBase(Context context)
-	{
-		super( context );
-		init();
-	}
+        public ImageViewTouchBase(Context context)
+        {
+                super( context );
+                init();
+        }
 
-	public ImageViewTouchBase(Context context, AttributeSet attrs)
-	{
-		super( context, attrs );
-		init();
-	}
+        public ImageViewTouchBase(Context context, AttributeSet attrs)
+        {
+                super( context, attrs );
+                init();
+        }
 
-	public void setOnBitmapChangedListener(OnBitmapChangedListener listener)
-	{
-		mListener = listener;
-	}
+        public void setOnBitmapChangedListener(OnBitmapChangedListener listener)
+        {
+                mListener = listener;
+        }
 
-	protected void init()
-	{
-		setScaleType( ImageView.ScaleType.MATRIX );
-	}
+        protected void init()
+        {
+                setScaleType( ImageView.ScaleType.MATRIX );
+        }
 
-	private class ScrollRunnable implements Runnable
-	{
-		float   dx              = 0;
-		float   dy              = 0;
-		float   old_x           = 0;
-		float   old_y           = 0;
-		float   dms             = 0;
-		long    st              = 0;
-		boolean canceled        = false;
+        private class ScrollRunnable
+                implements Runnable
+        {
+                float   dx                      = 0;
+                float   dy                      = 0;
+                float   old_x           = 0;
+                float   old_y           = 0;
+                float   dms                     = 0;
+                long    st                      = 0;
+                boolean canceled        = false;
 
-		public void reset(float distanceX, float distanceY, float durationMs)
-		{
-			reset( distanceX, distanceY, getScale(), durationMs );
-		}
+                public void reset(float distanceX, float distanceY, float durationMs)
+                {
+                        reset( distanceX, distanceY, getScale(), durationMs );
+                }
 
-		public void reset(float distanceX, float distanceY, float targetScale, float durationMs)
-		{
-			old_x = 0;
-			old_y = 0;
-			dx = distanceX / targetScale;
-			dy = distanceY / targetScale;
-			st = System.currentTimeMillis();
-			dms = durationMs;
-			canceled = false;
-		}
+                public void reset(float distanceX, float distanceY, float targetScale, float durationMs)
+                {
+                        old_x = 0;
+                        old_y = 0;
+                        dx = distanceX / targetScale;
+                        dy = distanceY / targetScale;
+                        st = System.currentTimeMillis();
+                        dms = durationMs;
+                        canceled = false;
+                }
 
-		public void run()
-		{
-			long now = System.currentTimeMillis();
-			float scale = getScale();
-			float currentMs = Math.min( dms, now - st );
-			float ease = Cubic.easeOut( currentMs, dms );
-			float x = ease * dx;
-			float y = ease * dy;
+                public void run()
+                {
+                        long now = System.currentTimeMillis();
+                        float scale = getScale();
+                        float currentMs = Math.min( dms, now - st );
+                        float ease = Cubic.easeOut( currentMs, dms );
+                        float x = ease * dx;
+                        float y = ease * dy;
+                        postTranslate( (x - old_x) * scale, (y - old_y) * scale );
+                        old_x = x;
+                        old_y = y;
 
-			float tempX = (x - old_x) * scale;
-			float tempY = (y - old_y) * scale;
+                        if (canceled)
+                                return;
 
-			postTranslate( tempX, tempY);
+                        if (currentMs < dms)
+                                mHandler.post( this );
+                        else
+                                center( true, true, 500 );
+                }
 
-			old_x = x;
-			old_y = y;
+                public void cancel()
+                {
+                        canceled = true;
+                }
+        }
 
-			if (canceled)
-				return;
+        public void cancelScroll()
+        {
+                mScrollRunnable.cancel();
+        }
 
-			if (currentMs < dms)
-				mHandler.post( this );
-			else
-				center( true, true, 500 );
-		}
+        public void clear()
+        {
+                setImageBitmapReset( null, true );
+        }
+        
+        public Point getOrigin()
+        {
+        	return mOrigin;
+        }
 
-		public void cancel()
-		{
-			canceled = true;
-		}
-	}
+        @Override
+        protected void onLayout(boolean changed, int left, int top, int right, int bottom)
+        {
+                super.onLayout( changed, left, top, right, bottom );
+                mThisWidth = right - left;
+                mThisHeight = bottom - top;
+                Runnable r = mOnLayoutRunnable;
+                if (r != null)
+                {
+                        mOnLayoutRunnable = null;
+                        r.run();
+                }
+                if (mBitmapDisplayed != null)
+                {
+                        getProperBaseMatrix( mBitmapDisplayed, mBaseMatrix );
+                        setImageMatrix( getImageViewMatrix() );
+                }
+        }
 
-	public void cancelScroll()
-	{
-		mScrollRunnable.cancel();
-	}
+        public void setImageBitmapReset(final Bitmap bitmap, final boolean reset)
+        {
+                final int viewWidth = getWidth();
+                if (viewWidth <= 0)
+                {
+                        mOnLayoutRunnable = new Runnable()
+                        {
+                                public void run()
+                                {
+                                        setImageBitmapReset( bitmap, reset );
+                                }
+                        };
+                        return;
+                }
 
-	public void clear()
-	{
-		setImageBitmapReset( null, true );
-	}
+                if (bitmap != null)
+                {
+                        getProperBaseMatrix( bitmap, mBaseMatrix );
+                        setImageBitmap( bitmap );
+                }
+                else
+                {
+                        mBaseMatrix.reset();
+                        setImageBitmap( null );
+                }
 
-	@Override
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom)
-	{
-		super.onLayout( changed, left, top, right, bottom );
-		mThisWidth = right - left;
-		mThisHeight = bottom - top;
-		Runnable r = mOnLayoutRunnable;
-		if (r != null)
-		{
-			mOnLayoutRunnable = null;
-			r.run();
-		}
-		if (mBitmapDisplayed != null)
-		{
-			getProperBaseMatrix( mBitmapDisplayed, mBaseMatrix );
-			setImageMatrix( getImageViewMatrix() );
-		}
-	}
+                if (reset)
+                        mSuppMatrix.reset();
 
-	public void setImageBitmapReset(final Bitmap bitmap, final boolean reset)
-	{
-		final int viewWidth = getWidth();
-		if (viewWidth <= 0)
-		{
-			mOnLayoutRunnable = new Runnable()
-			{
-				public void run()
-				{
-					setImageBitmapReset( bitmap, reset );
-				}
-			};
-			return;
-		}
+                setImageMatrix( getImageViewMatrix() );
+                mMaxZoom = maxZoom();
 
-		if (bitmap != null)
-		{
-			getProperBaseMatrix( bitmap, mBaseMatrix );
-			setImageBitmap( bitmap );
-		}
-		else
-		{
-			mBaseMatrix.reset();
-			setImageBitmap( null );
-		}
+                if (mListener != null)
+                        mListener.onBitmapChanged( bitmap );
+        }
 
-		if (reset)
-			mSuppMatrix.reset();
+        protected float maxZoom()
+        {
+                if (mBitmapDisplayed == null)
+                        return 1F;
 
-		setImageMatrix( getImageViewMatrix() );
-		mMaxZoom = maxZoom();
+                float max = Math.max( (float) mBitmapDisplayed.getWidth() / mThisWidth, (float) mBitmapDisplayed.getHeight() / mThisHeight ) * 4;
+                return max;
+        }
 
-		if (mListener != null)
-			mListener.onBitmapChanged( bitmap );
-	}
+        public Bitmap getDisplayBitmap()
+        {
+                return mBitmapDisplayed;
+        }
 
-	protected float maxZoom()
-	{
-		if (mBitmapDisplayed == null)
-			return 1F;
+        public float getMaxZoom()
+        {
+                return mMaxZoom;
+        }
 
-		float max = Math.max( (float) mBitmapDisplayed.getWidth() / mThisWidth, (float) mBitmapDisplayed.getHeight() / mThisHeight ) * 4;
-		return max;
-	}
+        /**
+         * This is the ultimate method called when a new bitmap is set
+         *
+         * @param bitmap
+         * @param rotation
+         */
+        @Override
+        public void setImageBitmap(Bitmap bitmap)
+        {
+                super.setImageBitmap( bitmap );
+                Drawable d = getDrawable();
+                if (d != null)
+                        d.setDither( true );
+                mBitmapDisplayed = bitmap;
+        }
 
-	public Bitmap getDisplayBitmap()
-	{
-		return mBitmapDisplayed;
-	}
+        protected Matrix getImageViewMatrix()
+        {
+                mDisplayMatrix.set( mBaseMatrix );
+                mDisplayMatrix.postConcat( mSuppMatrix );
+                return mDisplayMatrix;
+        }
 
-	public float getMaxZoom()
-	{
-		return mMaxZoom;
-	}
+        /**
+         * Setup the base matrix so that the image is centered and scaled properly.
+         *
+         * @param bitmap
+         * @param matrix
+         */
+        protected void getProperBaseMatrix(Bitmap bitmap, Matrix matrix)
+        {
+                float viewWidth = getWidth();
+                float viewHeight = getHeight();
+                float w = bitmap.getWidth();
+                float h = bitmap.getHeight();
+                matrix.reset();
+                float widthScale = Math.min( viewWidth / w, MAX_ZOOM );
+                float heightScale = Math.min( viewHeight / h, MAX_ZOOM );
+                float scale = Math.min( widthScale, heightScale );
+                matrix.postScale( scale, scale );
+                matrix.postTranslate( (viewWidth - w * scale) / MAX_ZOOM, (viewHeight - h * scale) / MAX_ZOOM );
+        }
 
-	/**
-	 * This is the ultimate method called when a new bitmap is set
-	 *
-	 * @param bitmap
-	 * @param rotation
-	 */
-	 @Override
-	 public void setImageBitmap(Bitmap bitmap)
-	{
-		super.setImageBitmap( bitmap );
-		Drawable d = getDrawable();
-		if (d != null)
-			d.setDither( true );
-		mBitmapDisplayed = bitmap;
-	}
+        protected float getValue(Matrix matrix, int whichValue)
+        {
+                matrix.getValues( mMatrixValues );
+                return mMatrixValues[whichValue];
+        }
 
-	protected Matrix getImageViewMatrix()
-	{
-		mDisplayMatrix.set( mBaseMatrix );
-		mDisplayMatrix.postConcat( mSuppMatrix );
-		return mDisplayMatrix;
-	}
+        public RectF getBitmapRect()
+        {
+                if (mBitmapDisplayed == null)
+                        return null;
+                Matrix m = getImageViewMatrix();
+                RectF rect = new RectF( 0, 0, mBitmapDisplayed.getWidth(), mBitmapDisplayed.getHeight() );
+                m.mapRect( rect );
+                return rect;
+        }
 
-	/**
-	 * Setup the base matrix so that the image is centered and scaled properly.
-	 *
-	 * @param bitmap
-	 * @param matrix
-	 */
-	 protected void getProperBaseMatrix(Bitmap bitmap, Matrix matrix)
-	{
-		float viewWidth = getWidth();
-		float viewHeight = getHeight();
-		float w = bitmap.getWidth();
-		float h = bitmap.getHeight();
-		matrix.reset();
-		float widthScale = Math.min( viewWidth / w, MAX_ZOOM );
-		float heightScale = Math.min( viewHeight / h, MAX_ZOOM );
-		float scale = Math.min( widthScale, heightScale );
-		matrix.postScale( scale, scale );
-		matrix.postTranslate( (viewWidth - w * scale) / MAX_ZOOM, (viewHeight - h * scale) / MAX_ZOOM );
-	}
+        public float getBaseScale()
+        {
+                return getValue( mBaseMatrix, Matrix.MSCALE_X );
+        }
 
-	protected float getValue(Matrix matrix, int whichValue)
-	{
-		matrix.getValues( mMatrixValues );
-		return mMatrixValues[whichValue];
-	}
+        public float getScale()
+        {
+                return getValue( mSuppMatrix, Matrix.MSCALE_X );
+        }
 
-	public RectF getBitmapRect()
-	{
-		if (mBitmapDisplayed == null)
-			return null;
-		Matrix m = getImageViewMatrix();
-		RectF rect = new RectF( 0, 0, mBitmapDisplayed.getWidth(), mBitmapDisplayed.getHeight() );
-		m.mapRect( rect );
-		return rect;
-	}
+        public void center(boolean horizontal, boolean vertical)
+        {
+                if (mBitmapDisplayed == null)
+                        return;
 
-	public float getBaseScale()
-	{
-		return getValue( mBaseMatrix, Matrix.MSCALE_X );
-	}
+                final PointF pt = getCenter( horizontal, vertical );
+                if (pt.x != 0 || pt.y != 0)
+                        postTranslate( pt.x, pt.y );
+        }
 
-	public float getScale()
-	{
-		return getValue( mSuppMatrix, Matrix.MSCALE_X );
-	}
+        public void center(boolean horizontal, boolean vertical, final float durationMs)
+        {
+                if (mBitmapDisplayed == null)
+                        return;
 
-	public void center(boolean horizontal, boolean vertical)
-	{
-		if (mBitmapDisplayed == null)
-			return;
+                final PointF pt = getCenter( horizontal, vertical );
+                if (pt.x != 0 || pt.y != 0)
+                        scrollBy( pt.x, pt.y, durationMs );
+        }
 
-		final PointF pt = getCenter( horizontal, vertical );
-		if (pt.x != 0 || pt.y != 0)
-			postTranslate( pt.x, pt.y );
-	}
+        public PointF getViewportCenter()
+        {
+                RectF rect = getBitmapRect();
+                return new PointF( -rect.left + getWidth() / 2, -rect.top + getHeight() / 2 );
+        }
 
-	public void center(boolean horizontal, boolean vertical, final float durationMs)
-	{
-		if (mBitmapDisplayed == null)
-			return;
+        public PointF getCenter(boolean horizontal, boolean vertical)
+        {
+                if (mBitmapDisplayed == null)
+                        return new PointF( 0, 0 );
 
-		final PointF pt = getCenter( horizontal, vertical );
-		if (pt.x != 0 || pt.y != 0)
-			scrollBy( pt.x, pt.y, durationMs);
-	}
+                RectF rect = getBitmapRect();
+                float deltaX = 0, deltaY = 0;
+                if (vertical)
+                {
+                        float height = rect.height();
+                        int viewHeight = getHeight();
+                        if (height < viewHeight)
+                                deltaY = (viewHeight - height) / 2 - rect.top;
+                        else if (rect.top > 0)
+                                deltaY = -rect.top;
+                        else if (rect.bottom < viewHeight)
+                                deltaY = getHeight() - rect.bottom;
+                }
+                if (horizontal)
+                {
+                        float width = rect.width();
+                        int viewWidth = getWidth();
+                        if (width < viewWidth)
+                                deltaX = (viewWidth - width) / 2 - rect.left;
+                        else if (rect.left > 0)
+                                deltaX = -rect.left;
+                        else if (rect.right < viewWidth)
+                                deltaX = viewWidth - rect.right;
+                }
+                return new PointF( deltaX, deltaY );
+        }
 
-	public PointF getViewportCenter()
-	{
-		RectF rect = getBitmapRect();
-		return new PointF( -rect.left + getWidth() / 2, -rect.top + getHeight() / 2 );
-	}
+        protected void postTranslate(float deltaX, float deltaY)
+        {
+                mSuppMatrix.postTranslate( deltaX, deltaY );
+                Matrix matrix = getImageViewMatrix();
+                float[] vals = new float[9];
+                matrix.getValues(vals);
+                this.mOrigin = new Point((int)vals[2], (int)vals[5]);
+                setImageMatrix( matrix );
+        }
 
-	public PointF getCenter(boolean horizontal, boolean vertical)
-	{
-		if (mBitmapDisplayed == null)
-			return new PointF( 0, 0 );
+        protected void postScale(float scale, float centerX, float centerY)
+        {
+                mSuppMatrix.postScale( scale, scale, centerX, centerY );
+                setImageMatrix( getImageViewMatrix() );
+        }
 
-		RectF rect = getBitmapRect();
-		float deltaX = 0, deltaY = 0;
-		if (vertical)
-		{
-			float height = rect.height();
-			int viewHeight = getHeight();
-			if (height < viewHeight)
-				deltaY = (viewHeight - height) / 2 - rect.top;
-			else if (rect.top > 0)
-				deltaY = -rect.top;
-			else if (rect.bottom < viewHeight)
-				deltaY = getHeight() - rect.bottom;
-		}
-		if (horizontal)
-		{
-			float width = rect.width();
-			int viewWidth = getWidth();
-			if (width < viewWidth)
-				deltaX = (viewWidth - width) / 2 - rect.left;
-			else if (rect.left > 0)
-				deltaX = -rect.left;
-			else if (rect.right < viewWidth)
-				deltaX = viewWidth - rect.right;
-		}
-		return new PointF( deltaX, deltaY );
-	}
+        public void zoomTo(float scale)
+        {
+                float cx = getWidth() / 2F;
+                float cy = getHeight() / 2F;
+                zoomTo( scale, cx, cy );
+        }
 
-	protected void postTranslate(float deltaX, float deltaY)
-	{
-		mSuppMatrix.postTranslate( deltaX, deltaY );
-		setImageMatrix( getImageViewMatrix() );
-	}
+        public void zoomTo(float scale, float durationMs)
+        {
+                float cx = getWidth() / 2F;
+                float cy = getHeight() / 2F;
+                zoomTo( scale, cx, cy, durationMs );
+        }
 
-	protected void postScale(float scale, float centerX, float centerY)
-	{
-		mSuppMatrix.postScale( scale, scale, centerX, centerY );
-		setImageMatrix( getImageViewMatrix() );
-	}
+        public void zoomTo(float scale, float centerX, float centerY)
+        {
+                float oldScale = getScale();
+                float deltaScale = scale / oldScale;
+                postScale( deltaScale, centerX, centerY );
+                onZoom( getScale() );
+                center( true, true );
+        }
 
-	public void zoomTo(float scale)
-	{
-		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
-		zoomTo( scale, cx, cy );
-	}
+        protected void onZoom(float scale)
+        {
+        }
 
-	public void zoomTo(float scale, float durationMs)
-	{
-		float cx = getWidth() / 2F;
-		float cy = getHeight() / 2F;
-		zoomTo( scale, cx, cy, durationMs );
-	}
+        public void scrollBy(float x, float y)
+        {
+                mScrollRunnable.cancel();
+                postTranslate( x, y );
+        }
 
-	public void zoomTo(float scale, float centerX, float centerY)
-	{
-		float oldScale = getScale();
-		float deltaScale = scale / oldScale;
-		postScale( deltaScale, centerX, centerY );
-		onZoom( getScale() );
-		center( true, true );
-	}
+        public void scrollBy(float distanceX, float distanceY, final float durationMs)
+        {
+                if (Math.abs( distanceX ) < 1 && Math.abs( distanceY ) < 1)
+                {
+                        scrollBy( distanceX, distanceY );
+                        return;
+                }
 
-	protected void onZoom(float scale)
-	{
-	}
+                mScrollRunnable.reset( distanceX, distanceY, durationMs );
+                mHandler.post( mScrollRunnable );
+        }
 
-	public void scrollBy(float x, float y)
-	{
-		mScrollRunnable.cancel();
-		postTranslate( x, y );
-	}
+        public void zoomTo(float scale, final float centerX, final float centerY, final float durationMs)
+        {
+                final long startTime = System.currentTimeMillis();
+                final float oldScale = getScale();
+                final float diffScale = scale - oldScale;
+                mHandler.post( new Runnable()
+                {
+                        public void run()
+                        {
+                                long now = System.currentTimeMillis();
+                                float currentMs = Math.min( durationMs, now - startTime );
+                                float target = oldScale + (diffScale * Cubic.easeOut( currentMs, durationMs ));
+                                zoomTo( target, centerX, centerY );
+                                if (currentMs < durationMs)
+                                        mHandler.post( this );
+                        }
+                } );
+        }
 
-	public void scrollBy(float distanceX, float distanceY, final float durationMs)
-	{
-		if (Math.abs( distanceX ) < 1 && Math.abs( distanceY ) < 1)
-		{
-			scrollBy( distanceX, distanceY );
-			return;
-		}
-
-		mScrollRunnable.reset( distanceX, distanceY, durationMs );
-		mHandler.post( mScrollRunnable );
-	}
-
-	public void zoomTo(float scale, final float centerX, final float centerY, final float durationMs)
-	{
-		final long startTime = System.currentTimeMillis();
-		final float oldScale = getScale();
-		final float diffScale = scale - oldScale;
-		mHandler.post( new Runnable()
-		{
-			public void run()
-			{
-				long now = System.currentTimeMillis();
-				float currentMs = Math.min( durationMs, now - startTime );
-				float target = oldScale + (diffScale * Cubic.easeOut( currentMs, durationMs ));
-				zoomTo( target, centerX, centerY );
-				if (currentMs < durationMs)
-					mHandler.post( this );
-			}
-		} );
-	}
-
-	public void dispose()
-	{
-		if (mBitmapDisplayed != null)
-			if ( !mBitmapDisplayed.isRecycled())
-			{
-				mBitmapDisplayed.recycle();
-				mBitmapDisplayed = null;
-			}
-		clear();
-	}
+        public void dispose()
+        {
+                if (mBitmapDisplayed != null)
+                        if ( !mBitmapDisplayed.isRecycled())
+                        {
+                                mBitmapDisplayed.recycle();
+                                mBitmapDisplayed = null;
+                        }
+                clear();
+        }
 }

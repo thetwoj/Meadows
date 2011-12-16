@@ -20,6 +20,7 @@
     <uses-permission android:name="com.google.android.apps.mytracks.READ_TRACK_DATA" />
     <uses-permission android:name="com.google.android.apps.mytracks.WRITE_TRACK_DATA" />
     <uses-permission android:name="com.google.android.apps.mytracks.TRACK_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:icon="@drawable/icon"
@@ -44,9 +45,9 @@
             android:name=".UpdatesActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
         </activity>
-        <activity
-            android:name=".MeadowsMapActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+        <activity 
+        	android:name=".GeoMapActivity"
+        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         </activity>
         <activity android:name=".StatsActivity" >
         </activity>
