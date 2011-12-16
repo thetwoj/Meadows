@@ -131,10 +131,6 @@ public class ImageViewTouchBase extends ImageView
                 setImageBitmapReset( null, true );
         }
         
-        public Point getOrigin()
-        {
-        	return mOrigin;
-        }
 
         @Override
         protected void onLayout(boolean changed, int left, int top, int right, int bottom)

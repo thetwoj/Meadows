@@ -27,7 +27,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	protected void onDraw(Canvas canvas)
 	{
 		super.onDraw(canvas);
-		if(this.mapLoc == null)
+		if(this.mapLoc == null || this.mOrigin == null)
 			return;
 		
 		//Draw the user icon at the screen location.

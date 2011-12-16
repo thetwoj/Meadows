@@ -22,7 +22,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected GestureListener               mGestureListener;
 	protected ScaleListener                 mScaleListener;
 	protected OnClickListener               mOnClickListener;
-	protected Point mOrigin;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -126,7 +125,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
-			mOrigin = getOrigin();
 			
 			if (e1 == null || e2 == null)
 				return false;
