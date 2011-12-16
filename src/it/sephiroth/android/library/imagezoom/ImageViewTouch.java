@@ -24,9 +24,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected OnClickListener               mOnClickListener;
 	protected Point mOrigin;
 	
-	int screenHeight = 0;
-	int screenWidth	= 0;
-	
 	public OnClickListener getOnClickListener()
 	{
 		return mOnClickListener;
@@ -129,8 +126,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
-			screenWidth = getThisWidth();
-			screenHeight = getThisHeight();
 			mOrigin = getOrigin();
 			
 			if (e1 == null || e2 == null)
@@ -141,9 +136,9 @@ public class ImageViewTouch extends ImageViewTouchBase
 				return false;
 
 			// Prevent from scrolling beyond the top and left of the image
-			if ((mOrigin.x - distanceX > 0.f) || (mOrigin.x - distanceX - screenWidth < -1800.f))
+			if ((mOrigin.x - distanceX > 0.f) || (mOrigin.x - distanceX - mThisWidth < -1800.f))
 				distanceX = 0.f;
-			if ((mOrigin.y - distanceY > 0.f) || (mOrigin.y - distanceY - screenHeight < -1800.f))
+			if ((mOrigin.y - distanceY > 0.f) || (mOrigin.y - distanceY - mThisHeight < -1800.f))
 				distanceY = 0.f;
 
 			scrollBy( -distanceX, -distanceY );
