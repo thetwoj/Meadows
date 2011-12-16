@@ -6,7 +6,7 @@ import android.graphics.RectF;
 
 public class RotateBitmap {
 	
-	public static final String	TAG	= "RotateBitmap";
+	public static final String		TAG	= "RotateBitmap";
 	private Bitmap					mBitmap;
 	private int						mRotation;
 	private int						mWidth;
