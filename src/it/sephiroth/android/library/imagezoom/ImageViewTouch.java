@@ -13,6 +13,7 @@ import android.view.ViewConfiguration;
 public class ImageViewTouch extends ImageViewTouchBase
 {
 	static final float                      MIN_ZOOM        = 0.7f;
+	static final float                      MAX_ZOOM        = 2.5f;
 	protected ScaleGestureDetector  	    mScaleDetector;
 	protected GestureDetector               mGestureDetector;
 	protected int                           mTouchSlop;
@@ -107,7 +108,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 			}
 			return super.onSingleTapConfirmed( e );
 		}
-		
+/*
 		@Override
 		public boolean onDoubleTap(MotionEvent e)
 		{
@@ -120,6 +121,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 			invalidate();
 			return super.onDoubleTap( e );
 		}
+*/
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
@@ -132,10 +134,10 @@ public class ImageViewTouch extends ImageViewTouchBase
 				return false;
 
 			// Prevent from scrolling beyond the top and left of the image
-//			if ((mOrigin.x - distanceX > 0.f) || (mOrigin.x - distanceX - mThisWidth < -1800.f))
-//				distanceX = 0.f;
-//			if ((mOrigin.y - distanceY > 0.f) || (mOrigin.y - distanceY - mThisHeight < -1800.f))
-//				distanceY = 0.f;
+			if ((mOrigin.x - distanceX > 0.f) || (mOrigin.x - distanceX - mThisWidth < -1800.f))
+				distanceX = 0.f;
+			if ((mOrigin.y - distanceY > 0.f) || (mOrigin.y - distanceY - mThisHeight < -1800.f))
+				distanceY = 0.f;
 
 			scrollBy( -distanceX, -distanceY );
 
