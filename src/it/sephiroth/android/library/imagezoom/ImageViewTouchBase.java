@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.ImageView;
@@ -42,6 +43,7 @@ public class ImageViewTouchBase extends ImageView
 
         protected Bitmap                                mBitmapDisplayed        = null;
         final protected float                   MAX_ZOOM                        = 2.0f;
+        static final float                      MIN_ZOOM        = 0.5f;
 
         private OnBitmapChangedListener mListener;
 
@@ -65,6 +67,10 @@ public class ImageViewTouchBase extends ImageView
         protected void init()
         {
                 setScaleType( ImageView.ScaleType.MATRIX );
+                Drawable d = this.getDrawable();
+                Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+                //mBitmapDisplayed = bitmap;
+                //mMaxZoom = maxZoom();
         }
 
         private class ScrollRunnable
@@ -220,6 +226,9 @@ public class ImageViewTouchBase extends ImageView
                 if (d != null)
                         d.setDither( true );
                 mBitmapDisplayed = bitmap;
+                
+                //Update the maximum zoom based on the new bitmap.
+                mMaxZoom = maxZoom();
         }
 
         protected Matrix getImageViewMatrix()
@@ -369,7 +378,7 @@ public class ImageViewTouchBase extends ImageView
                 float deltaScale = scale / oldScale;
                 postScale( deltaScale, centerX, centerY );
                 onZoom( getScale() );
-                center( true, true );
+                //center( true, true );
         }
 
         protected void onZoom(float scale)
