@@ -35,16 +35,10 @@ import android.widget.ViewSwitcher;
 
 public class GeoMapActivity extends MapActivity
 {
-	private MapView m_view;
-	private MapController mc;
-	private GeoPoint worldLoc;
-	private ViewSwitcher switcher;
-	private static final int MARKER_OFFSET_X = 16;
-	private static final int MARKER_OFFSET_Y = 35;
-	private int geoFile;
 	private double mapTheta;
+	private static final int NETWORK_PERIOD = 4000;
+	private static final int GPS_PERIOD = 4000;
 	private GeoImageViewTouch geoImageView;
-	private boolean showingGoogleMap;
 	List<GeoreferencedPoint> geoReferencedPoints;
 	
 	
@@ -71,27 +65,6 @@ public class GeoMapActivity extends MapActivity
 			this.second = second;
 		}
 	}
-
-	class MapOverlay extends com.google.android.maps.Overlay
-	{
-		@Override
-		public boolean draw(Canvas canvas, MapView mapView,
-				boolean shadow, long when)
-		{
-			super.draw(canvas, mapView, shadow);
-			if(worldLoc == null)
-				return true;
-
-			Point screenPts = new Point();
-			mapView.getProjection().toPixels(worldLoc, screenPts);
-
-			Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
-			//The marker's pin point is at (MARKER_OFFSET_X, MARKER_OFFSET_Y) on the bitmap.
-			canvas.drawBitmap(bmp, screenPts.x - MARKER_OFFSET_X, screenPts.y - MARKER_OFFSET_Y, null);
-			return true;
-		}
-	}
-	
 	
 	public class GeoLocationListener implements LocationListener
 	{
@@ -173,18 +146,13 @@ public class GeoMapActivity extends MapActivity
 		return new Point(x, y);
 	}
 	
-	public void setGeoFile(int fileid)
-	{
-		this.geoFile = fileid;
-	}
-	
-	public void loadGeoreferencedPoints()
+	public void loadGeoreferencedPoints(int fileid)
 	{
 		geoReferencedPoints.clear();
 		DataInputStream din = null;
 		try
 	    {
-	       din = new DataInputStream(getApplicationContext().getResources().openRawResource(this.geoFile));
+	       din = new DataInputStream(getApplicationContext().getResources().openRawResource(fileid));
 	       BufferedReader br = new BufferedReader(new InputStreamReader(din));
 	       String strLine;
 	       StringTokenizer st;
@@ -227,55 +195,33 @@ public class GeoMapActivity extends MapActivity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setViewByLayout(R.layout.maplayout);
-		geoReferencedPoints = new ArrayList<GeoreferencedPoint>();
-		switcher = (ViewSwitcher) findViewById(R.id.mapSwitcher);
-		this.m_view = (MapView) findViewById(R.id.mapView);
-		this.geoImageView = (GeoImageViewTouch) findViewById(R.id.meadowsImageView);
-		m_view.setSatellite(true);
-		m_view.setBuiltInZoomControls(true);
-		mc = m_view.getController();
-		mc.setZoom(20);
-		this.showingGoogleMap = true;
 		
-		//Load map overlays.
-		MapOverlay mapOverlay = new MapOverlay();
-		List<Overlay> listOfOverlays = m_view.getOverlays();
-		listOfOverlays.clear();
-		listOfOverlays.add(mapOverlay);
+		//Set the content view to the map layout.
+		setContentView(R.layout.maplayout);
+		
+		//Create the list for the geo referenced points.
+		geoReferencedPoints = new ArrayList<GeoreferencedPoint>();
+		
+		//Save the image view.
+		this.geoImageView = (GeoImageViewTouch) findViewById(R.id.meadowsImageView);
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
-		//Temporarily set meadows map here.
-		setGeoFile(R.raw.meadows);
-		//Load georeferenced points from the file.
-		loadGeoreferencedPoints();
+		//Load georeferenced points from the meadows data file.
+		loadGeoreferencedPoints(R.raw.meadows);
 
+		//Start the location listener.
 		GeoLocationListener locationListener = new GeoLocationListener(this);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4000, 0, locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 4000, 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, NETWORK_PERIOD, 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_PERIOD, 0, locationListener);
 	}
 	
 
 	public void locChanged(double lat, double lon)
 	{
-		int lat_int = (int) (lat * 1E6);
-		int lon_int = (int) (lon * 1E6);
-		worldLoc = new GeoPoint(lat_int, lon_int);
+		GeoPoint worldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
 		Point geoMapLoc = getGeoMapPosition(worldLoc);
 		this.geoImageView.setLoc(geoMapLoc);
-		if(this.showingGoogleMap)
-		{
-			mc.animateTo(worldLoc);
-		}
-		else
-		{
-			this.geoImageView.invalidate();
-		}
-	}
-	
-	public void setViewByLayout(int layout)
-	{
-		setContentView(layout);
+	    this.geoImageView.invalidate();
 	}
 	
 	/*
@@ -291,13 +237,6 @@ public class GeoMapActivity extends MapActivity
 	    os.close();
 	}
 	*/
-	
-	public void toggleView(View currentView)
-	{
-		this.showingGoogleMap = !this.showingGoogleMap;
-		switcher.showNext();
-	}
-
 
 	@Override
 	protected boolean isRouteDisplayed() 

@@ -3,6 +3,8 @@ package it.sephiroth.android.library.imagezoom;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.PointF;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
@@ -75,13 +77,13 @@ public class ImageViewTouch extends ImageViewTouchBase
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
-			/*
+			
                         if (getScale() < 1f)
                                 zoomTo( 1f, 500 );
                         if (getScale() > getMaxZoom())
                                 zoomTo( getMaxZoom(), 500 );
                         center( true, true, 500 );
-			 */
+			 
 			break;
 		}
 		return true;
@@ -108,7 +110,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 			}
 			return super.onSingleTapConfirmed( e );
 		}
-/*
+
 		@Override
 		public boolean onDoubleTap(MotionEvent e)
 		{
@@ -121,7 +123,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 			invalidate();
 			return super.onDoubleTap( e );
 		}
-*/
+
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
 		{
@@ -133,18 +135,12 @@ public class ImageViewTouch extends ImageViewTouchBase
 			if (mScaleDetector.isInProgress())
 				return false;
 
-			// Prevent from scrolling beyond the top and left of the image
-			if ((mOrigin.x - distanceX > 0.f) || (mOrigin.x - distanceX - mThisWidth < -1800.f))
-				distanceX = 0.f;
-			if ((mOrigin.y - distanceY > 0.f) || (mOrigin.y - distanceY - mThisHeight < -1800.f))
-				distanceY = 0.f;
-
 			scrollBy( -distanceX, -distanceY );
 
 			invalidate();
 			return super.onScroll( e1, e2, distanceX, distanceY );
 		}
-/*
+
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
 		{
@@ -158,7 +154,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 
 			return super.onFling( e1, e2, velocityX, velocityY );
 		}
-		*/
+		
 	}
 
 	class ScaleListener

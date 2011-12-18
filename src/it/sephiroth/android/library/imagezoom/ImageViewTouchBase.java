@@ -7,6 +7,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -38,7 +39,6 @@ public class ImageViewTouchBase extends ImageView
         protected final float[]                 mMatrixValues           = new float[9];
         protected int                                   mThisWidth                      = -1;
         protected int                                   mThisHeight                     = -1;
-        protected Point mOrigin = new Point(0, 0);
 
         protected Bitmap                                mBitmapDisplayed        = null;
         final protected float                   MAX_ZOOM                        = 2.0f;
@@ -65,6 +65,9 @@ public class ImageViewTouchBase extends ImageView
         protected void init()
         {
                 setScaleType( ImageView.ScaleType.MATRIX );
+                Drawable d = getDrawable();
+                Bitmap bmp = ((BitmapDrawable)d).getBitmap();
+                setImageBitmapReset(bmp, false);
         }
 
         private class ScrollRunnable
@@ -192,7 +195,7 @@ public class ImageViewTouchBase extends ImageView
                 if (mBitmapDisplayed == null)
                         return 1F;
 
-                float max = Math.max( (float) mBitmapDisplayed.getWidth() / mThisWidth, (float) mBitmapDisplayed.getHeight() / mThisHeight ) * 4;
+                float max = Math.max( (float) mBitmapDisplayed.getWidth() / mThisWidth, (float) mBitmapDisplayed.getHeight() / mThisHeight ) * MAX_ZOOM;
                 return max;
         }
 
@@ -339,7 +342,6 @@ public class ImageViewTouchBase extends ImageView
                 Matrix matrix = getImageViewMatrix();
                 float[] vals = new float[9];
                 matrix.getValues(vals);
-                this.mOrigin = new Point((int)vals[2], (int)vals[5]);
                 setImageMatrix( matrix );
         }
 
