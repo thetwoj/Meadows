@@ -297,6 +297,38 @@ public class ImageViewTouchBase extends ImageView
                 if (pt.x != 0 || pt.y != 0)
                         scrollBy( pt.x, pt.y, durationMs );
         }
+        
+        protected Point imageToScreen(Point imageLoc)
+        {
+        	//Map the point into its world coordinates, accounting for the zoom scale.
+    		int worldX = (int)(imageLoc.x * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getWidth()));
+    		int worldY = (int)(imageLoc.y * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getHeight()));
+    		
+    		Matrix m = getImageViewMatrix();
+    		float transX = getValue(m, Matrix.MTRANS_X);
+    		float transY = getValue(m, Matrix.MTRANS_Y);
+    		
+    		//Shift by the translation matrix to convert to screen coordinates.
+    		int screenX = (int)(transX + worldX );
+    		int screenY = (int)(transY + worldY );
+    		
+    		return new Point(screenX, screenY);
+        }
+        
+        protected Point screenToImage(Point screenLoc)
+        {
+        	Matrix m = getImageViewMatrix();
+    		float transX = getValue(m, Matrix.MTRANS_X);
+    		float transY = getValue(m, Matrix.MTRANS_Y);
+    		
+    		int worldX = (int)(screenLoc.x - transX);
+    		int worldY = (int)(screenLoc.y - transY);
+    		
+    		int imageLocX = (int)(worldX * this.mBitmapDisplayed.getWidth() / (Math.min(mThisWidth,  mThisHeight) * getScale()));
+    		int imageLocY = (int)(worldY * this.mBitmapDisplayed.getHeight() / (Math.min(mThisWidth,  mThisHeight) * getScale()));
+    		
+    		return new Point(imageLocX, imageLocY);
+        }
 
         public PointF getViewportCenter()
         {

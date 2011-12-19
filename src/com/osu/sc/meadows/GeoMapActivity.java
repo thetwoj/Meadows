@@ -19,6 +19,8 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -40,6 +42,11 @@ public class GeoMapActivity extends MapActivity
 	private static final int GPS_PERIOD = 4000;
 	private GeoImageViewTouch geoImageView;
 	List<GeoreferencedPoint> geoReferencedPoints;
+	public static final String SHARED_PREFERENCES_NAME = "AppPreferences";
+	public static final String LATITUDE = "latitude";
+	public static final String LONGITUDE = "longitude";
+	private static final int LAT_MAX = (int) (90 * 1E6);
+	private static final int LON_MAX = (int) (180 * 1E6);
 	
 	
 	//Points u,v indicate an (x,y) point on the map that has been rotated by -theta degrees to make it north up.
@@ -76,7 +83,7 @@ public class GeoMapActivity extends MapActivity
 	   }
 	   public void onLocationChanged(Location location)
 	   {
-	      this.geoActivity.locChanged(location.getLatitude(), location.getLongitude());
+	      this.geoActivity.locChanged(location.getLatitude(), location.getLongitude(), true);
 	   }
 	   public void onProviderDisabled(String provider)
 	   {
@@ -137,6 +144,9 @@ public class GeoMapActivity extends MapActivity
 	public Point getGeoMapPosition(GeoPoint worldLoc)
 	{
 		ClosestPointPair pair = getClosestPointPair(worldLoc);
+		if(pair == null)
+			return null;
+		
 		double pixelsUPerLon = (pair.second.u - pair.first.u) / (pair.second.getLongitudeE6() - pair.first.getLongitudeE6());
 		double pixelsVPerLat = (pair.second.v - pair.first.v) / (pair.second.getLatitudeE6() - pair.first.getLatitudeE6());
 		double u = pair.first.u + (worldLoc.getLongitudeE6() - pair.first.getLongitudeE6()) * pixelsUPerLon;
@@ -204,24 +214,83 @@ public class GeoMapActivity extends MapActivity
 		
 		//Save the image view.
 		this.geoImageView = (GeoImageViewTouch) findViewById(R.id.meadowsImageView);
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		//Load georeferenced points from the meadows data file.
 		loadGeoreferencedPoints(R.raw.meadows);
+		
+		//Restore the most recent location.
+		restoreLocation();
 
 		//Start the location listener.
 		GeoLocationListener locationListener = new GeoLocationListener(this);
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, NETWORK_PERIOD, 0, locationListener);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_PERIOD, 0, locationListener);
 	}
 	
 
-	public void locChanged(double lat, double lon)
+	public void locChanged(double lat, double lon, boolean save)
 	{
 		GeoPoint worldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
+		locChanged(worldLoc, save);
+	}
+	
+	public void locChanged(GeoPoint worldLoc, boolean save)
+	{
+		if(worldLoc == null)
+			return;
+		
+		//Get the geo referenced map position from the world location.
 		Point geoMapLoc = getGeoMapPosition(worldLoc);
+		
+		if(geoMapLoc == null)
+			return;
+				
+		//Update the map position on the imageview and redraw.
 		this.geoImageView.setLoc(geoMapLoc);
-	    this.geoImageView.invalidate();
+		this.geoImageView.invalidate();
+		
+		if(!save)
+			return;
+		
+		//Save the location to the preferences so we can load it if necessary.
+		saveLocation(worldLoc);
+	}
+	
+	protected GeoPoint loadLocation()
+	{
+		//Load the last location from the shared preferences.
+		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+	    int lat = prefs.getInt(LATITUDE, Integer.MAX_VALUE);
+	    int lon = prefs.getInt(LONGITUDE, Integer.MAX_VALUE);
+	    
+	    //Return null if there was no valid location.
+	    if(lat > LAT_MAX || lon > LON_MAX)
+	    	return null;
+	    
+	    return new GeoPoint(lat, lon);
+	}
+	
+	protected void restoreLocation()
+	{
+		//Load the location from the preferences.
+		GeoPoint worldLoc = loadLocation();
+		
+		//Return if there's no previous location.
+		if(worldLoc == null)
+			return;
+		
+		//Update the map position.
+		locChanged(worldLoc, false);
+	}
+	
+	protected void saveLocation(GeoPoint loc)
+	{
+		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putInt(LATITUDE, loc.getLatitudeE6());
+		editor.putInt(LONGITUDE, loc.getLongitudeE6());
+		editor.commit();
 	}
 	
 	/*

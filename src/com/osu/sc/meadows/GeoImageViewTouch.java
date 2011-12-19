@@ -32,28 +32,16 @@ public class GeoImageViewTouch extends ImageViewTouch
 		if(this.mapLoc == null)
 			return;
 		
-		//Map the point into its world coordinates, accounting for the zoom scale.
-		int worldX = (int)(this.mapLoc.x * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getWidth()));
-		int worldY = (int)(this.mapLoc.y * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getHeight()));
-		
-		Matrix m = getImageViewMatrix();
-		float transX = getValue(m, Matrix.MTRANS_X);
-		float transY = getValue(m, Matrix.MTRANS_Y);
-		
-		//Shift by the translation matrix to convert to screen coordinates.
-		int screenX = (int)(transX + worldX );
-		int screenY = (int)(transY + worldY );
-		
-		//Account for the icon point offset.
-		screenX -= MARKER_OFFSET_X;
-		screenY -= MARKER_OFFSET_Y;
-		if(screenX < 0 || screenX > mThisWidth || screenY < 0 || screenY > mThisHeight)
+		Point screen = imageToScreen(this.mapLoc);
+		screen.x -= MARKER_OFFSET_X;
+		screen.y -= MARKER_OFFSET_Y;
+		if(screen.x < 0 || screen.x > mThisWidth || screen.y < 0 || screen.y > mThisHeight)
 			return;
 		
 		Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
 		
 		//Draw the user icon at the screen location.
-		canvas.drawBitmap(bmp, screenX, screenY, null);
+		canvas.drawBitmap(bmp, screen.x, screen.y, null);
 		
 	}
 }
