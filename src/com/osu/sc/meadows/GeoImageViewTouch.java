@@ -8,6 +8,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.view.View;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 public class GeoImageViewTouch extends ImageViewTouch
@@ -19,6 +20,12 @@ public class GeoImageViewTouch extends ImageViewTouch
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
+	}
+	
+	@Override
+	protected void longPressed(Point loc)
+	{
+		Point imageLoc = screenToImage(loc);
 	}
 	
 	public void setLoc(Point loc)

@@ -53,6 +53,10 @@ public class ImageViewTouch extends ImageViewTouchBase
 		mGestureDetector = new GestureDetector( getContext(), mGestureListener, null, true );
 		mCurrentScaleFactor = 1f;
 	}
+	
+	protected void longPressed(Point loc)
+	{
+	}
 
 	@Override
 	public void setImageBitmapReset(Bitmap bitmap, boolean reset)
@@ -122,6 +126,12 @@ public class ImageViewTouch extends ImageViewTouchBase
 			zoomTo( targetScale, e.getX(), e.getY(), 500 );
 			invalidate();
 			return super.onDoubleTap( e );
+		}
+		
+		@Override
+		public void onLongPress(MotionEvent e)
+		{
+			longPressed(new Point((int)e.getX(), (int)e.getY()));
 		}
 
 		@Override
