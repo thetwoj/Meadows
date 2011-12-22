@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
@@ -48,7 +49,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void drawUserLocation(Canvas canvas)
 	{
-		Point mapLoc = this.geoMapActivity.getMapLocation();
+		PointF mapLoc = this.geoMapActivity.getMapLocation();
 		if(mapLoc == null)
 			return;
 		
@@ -65,7 +66,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		if(mBitmapDisplayed == null)
 			return;
 		
-		Point imageLoc = screenToImage(loc);
+		PointF imageLoc = screenToImage(loc);
 		
 		//Return if the long press was outside the bounds of the image.
 		if(imageLoc.x < 0 || imageLoc.y < 0 || imageLoc.x > mBitmapDisplayed.getWidth() || imageLoc.y > mBitmapDisplayed.getHeight())

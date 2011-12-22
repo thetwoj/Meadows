@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     >
     
-  <com.osu.sc.meadows.GeoImageViewTouch
+  <com.osu.sc.mapframework.GeoImageViewTouch
   	android:id="@+id/meadowsImageView"
   	android:src="@drawable/meadows"
   	android:layout_width="fill_parent"

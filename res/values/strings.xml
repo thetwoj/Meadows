@@ -13,5 +13,6 @@
     <string name="distancelabel">Total Distance:</string>
     <string name="totaltlabel">Total Time:</string>
     <string name="movingtlabel">Moving Time:</string>
+    <string name="createmeeting">Create Meeting Point</string>
 
 </resources>
