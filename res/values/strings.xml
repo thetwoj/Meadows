@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, Meadows_CapstoneActivity!</string>
-    <string name="app_name">Meadows_Capstone</string>
+    <string name="app_name">OSU Meadows</string>
     <color name="white">#FFFFFF</color>
 
     <color name="yellow">#77DDDD77</color>
@@ -13,5 +13,6 @@
     <string name="distancelabel">Total Distance:</string>
     <string name="totaltlabel">Total Time:</string>
     <string name="movingtlabel">Moving Time:</string>
+    <string name="createmeeting">Create Meeting Point</string>
 
 </resources>

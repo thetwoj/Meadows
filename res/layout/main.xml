@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- 
-
+<!--
 NOTES ABOUT MAIN.XML: 
 
 This file is the xml for the Homescreen which boots when the app is 
@@ -27,63 +25,84 @@ the gray button background that is there by default.
 Within each ImageButton, the android:src="..." line points to a selector
 xml file within drawables that determines which picture should be 
 displayed when the button is unclicked (default), clicked or focused.
-
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:background="@color/white"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" 
-    android:orientation="vertical" 
-    xmlns:android1="http://schemas.android.com/apk/res/android">
-    <LinearLayout 
-    	android:id="@+id/linearLayout1" 
-    	android:layout_width="fill_parent" 
-    	android:layout_height="fill_parent"
-    	android:layout_weight="1"
-    	android:layout_alignParentTop="true">
-        <ImageButton 
-        	android:clickable="true"
-        	android:layout_width="fill_parent" 
-        	android:id="@+id/mapButton" 
-        	android:layout_height="fill_parent" 
-        	android:layout_weight="1"
-        	android:background="@null"
-        	android:src="@drawable/mapselector">
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android1:id="@+id/frameLayout1"
+        android1:layout_width="fill_parent"
+        android1:layout_height="fill_parent"
+        android1:layout_weight="1.5" >
+
+        <ImageView
+            android1:id="@+id/imageView1"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:layout_gravity="center"
+            android1:layout_weight="1"
+            android1:src="@drawable/meadowslogo" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_weight="1" >
+
+        <ImageButton
+            android:id="@+id/mapButton"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:src="@drawable/mapicon" >
         </ImageButton>
-        <ImageButton 
-        	android:clickable="true"
-        	android:layout_width="fill_parent" 
-        	android:id="@+id/socialButton" 
-        	android:layout_height="fill_parent" 
-        	android:layout_weight="1"
-        	android:background="@null"
-        	android:src="@drawable/socialselector" >
-        </ImageButton>
-    </LinearLayout>
-    <LinearLayout 
-    	android:id="@+id/linearLayout2" 
-    	android:layout_width="fill_parent" 
-    	android:layout_height="fill_parent"
-    	android:layout_weight="1"
-    	android:layout_alignParentBottom="true">
-        <ImageButton 
-        	android:clickable="true"
-        	android:layout_width="fill_parent" 
-        	android:id="@+id/updatesButton" 
-        	android:layout_height="fill_parent" 
-        	android:layout_weight="1"
-        	android:background="@null"
-        	android:src="@drawable/updatesselector">
-        </ImageButton>
-        <ImageButton 
-        	android:clickable="true"
-        	android:layout_width="fill_parent" 
-        	android:id="@+id/statsButton" 
-        	android:layout_height="fill_parent" 
-        	android:layout_weight="1"
-        	android:background="@null"
-        	android:src="@drawable/statsselector">
+
+        <ImageButton
+            android:id="@+id/socialButton"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:src="@drawable/socialicon" >
         </ImageButton>
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="1" >
+
+        <ImageButton
+            android:id="@+id/updatesButton"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:src="@drawable/updatesicon" >
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/statsButton"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:src="@drawable/statsicon" >
+        </ImageButton>
+    </LinearLayout>
+
 </LinearLayout>

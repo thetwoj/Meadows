@@ -61,7 +61,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener {
             
             // If the Map button is pressed, start map activity
             case R.id.mapButton:
-            	Intent myMapIntent = new Intent(MeadowsActivity.this, MeadowsMapActivity.class);
+            	Intent myMapIntent = new Intent(MeadowsActivity.this, GeoMapActivity.class);
             	MeadowsActivity.this.startActivity(myMapIntent);
             break;
             

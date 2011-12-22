@@ -4,15 +4,16 @@ import it.sephiroth.android.library.imagezoom.easing.Cubic;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-public class ImageViewTouchBase
-        extends ImageView
+public class ImageViewTouchBase extends ImageView
 {
         public interface OnBitmapChangedListener
         {
@@ -64,6 +65,9 @@ public class ImageViewTouchBase
         protected void init()
         {
                 setScaleType( ImageView.ScaleType.MATRIX );
+                Drawable d = getDrawable();
+                Bitmap bmp = ((BitmapDrawable)d).getBitmap();
+                setImageBitmapReset(bmp, false);
         }
 
         private class ScrollRunnable
@@ -129,6 +133,7 @@ public class ImageViewTouchBase
         {
                 setImageBitmapReset( null, true );
         }
+        
 
         @Override
         protected void onLayout(boolean changed, int left, int top, int right, int bottom)
@@ -190,7 +195,7 @@ public class ImageViewTouchBase
                 if (mBitmapDisplayed == null)
                         return 1F;
 
-                float max = Math.max( (float) mBitmapDisplayed.getWidth() / mThisWidth, (float) mBitmapDisplayed.getHeight() / mThisHeight ) * 4;
+                float max = Math.max( (float) mBitmapDisplayed.getWidth() / mThisWidth, (float) mBitmapDisplayed.getHeight() / mThisHeight ) * MAX_ZOOM;
                 return max;
         }
 
@@ -292,6 +297,38 @@ public class ImageViewTouchBase
                 if (pt.x != 0 || pt.y != 0)
                         scrollBy( pt.x, pt.y, durationMs );
         }
+        
+        protected Point imageToScreen(PointF imageLoc)
+        {
+        	//Map the point into its world coordinates, accounting for the zoom scale.
+    		float worldX = (int)(imageLoc.x * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getWidth()));
+    		float worldY = (int)(imageLoc.y * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getHeight()));
+    		
+    		Matrix m = getImageViewMatrix();
+    		float transX = getValue(m, Matrix.MTRANS_X);
+    		float transY = getValue(m, Matrix.MTRANS_Y);
+    		
+    		//Shift by the translation matrix to convert to screen coordinates.
+    		float screenX = transX + worldX;
+    		float screenY = transY + worldY;
+    		
+    		return new Point((int)Math.round(screenX), (int)Math.round(screenY));
+        }
+        
+        protected PointF screenToImage(Point screenLoc)
+        {
+        	Matrix m = getImageViewMatrix();
+    		float transX = getValue(m, Matrix.MTRANS_X);
+    		float transY = getValue(m, Matrix.MTRANS_Y);
+    		
+    		float worldX = screenLoc.x - transX;
+    		float worldY = screenLoc.y - transY;
+    		
+    		float imageLocX = worldX * this.mBitmapDisplayed.getWidth() / (Math.min(mThisWidth,  mThisHeight) * getScale());
+    		float imageLocY = worldY * this.mBitmapDisplayed.getHeight() / (Math.min(mThisWidth,  mThisHeight) * getScale());
+    		
+    		return new PointF(imageLocX, imageLocY);
+        }
 
         public PointF getViewportCenter()
         {
@@ -334,7 +371,10 @@ public class ImageViewTouchBase
         protected void postTranslate(float deltaX, float deltaY)
         {
                 mSuppMatrix.postTranslate( deltaX, deltaY );
-                setImageMatrix( getImageViewMatrix() );
+                Matrix matrix = getImageViewMatrix();
+                float[] vals = new float[9];
+                matrix.getValues(vals);
+                setImageMatrix( matrix );
         }
 
         protected void postScale(float scale, float centerX, float centerY)
