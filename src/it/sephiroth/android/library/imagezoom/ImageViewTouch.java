@@ -3,10 +3,12 @@ package it.sephiroth.android.library.imagezoom;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.view.ViewConfiguration;
 
 public class ImageViewTouch extends ImageViewTouchBase
@@ -21,6 +23,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected GestureListener               mGestureListener;
 	protected ScaleListener                 mScaleListener;
 	protected OnClickListener               mOnClickListener;
+	protected PointF                        mClickLoc;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -54,6 +57,10 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected void longPressed(Point loc)
 	{
 	}
+	
+	protected void singleTapped(Point loc)
+	{
+	}
 
 	@Override
 	public void setImageBitmapReset(Bitmap bitmap, boolean reset)
@@ -68,6 +75,9 @@ public class ImageViewTouch extends ImageViewTouchBase
 		mScaleDetector.onTouchEvent( event );
 		if ( !mScaleDetector.isInProgress())
 			mGestureDetector.onTouchEvent( event );
+		
+		//Enable long presses.
+		mGestureDetector.setIsLongpressEnabled(true);
 
 		int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK)
@@ -78,6 +88,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
+			mClickLoc = new PointF(event.getX(), event.getY());
 			
                         if (getScale() < 1f)
                                 zoomTo( 1f, 500 );
@@ -109,12 +120,16 @@ public class ImageViewTouch extends ImageViewTouchBase
 				mOnClickListener.onClick( ImageViewTouch.this );
 				return true;
 			}
+			
+			singleTapped(new Point((int)e.getX(), (int)e.getY()));
+			
 			return super.onSingleTapConfirmed( e );
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e)
 		{
+			mGestureDetector.setIsLongpressEnabled(false);
 			float scale = getScale();
 			float targetScale = scale;
 			targetScale = (scale >= mScaleFactor) ? 1f : scale + mScaleFactor;
@@ -161,7 +176,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 
 			return super.onFling( e1, e2, velocityX, velocityY );
 		}
-		
 	}
 
 	class ScaleListener

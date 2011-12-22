@@ -23,6 +23,53 @@ public class GeoImageViewTouch extends ImageViewTouch
 		super(context, attrs);
 	}
 	
+	protected boolean checkIfTappedFriend(PointF imageLoc)
+	{
+		return false;
+	}
+	
+	protected boolean checkIfTappedMeeting(PointF imageLoc)
+	{
+		Bitmap meetingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.meeting_icon);
+		int wd = meetingBmp.getWidth();
+		int ht = meetingBmp.getHeight();
+		//Convert the screen location to image coordinates.
+		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
+		{
+			//Shift the meeting point back by the bitmap size.
+			float origX = mPoint.mapLoc.x - MARKER_OFFSET_X;
+			float origY = mPoint.mapLoc.y - MARKER_OFFSET_Y;
+			
+			if(imageLoc.x < origX || imageLoc.x > (origX + wd) || imageLoc.y < origY || imageLoc.y > (origY + ht))
+				continue;
+			
+			//Found a meeting point, notify the Activity and return true.
+			this.geoMapActivity.meetingSelected(mPoint);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	protected boolean checkIfTappedUser(PointF imageLoc)
+	{
+		Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
+		int wd = userBmp.getWidth();
+		int ht = userBmp.getHeight();
+		
+		//Shift the meeting point back by the bitmap size.
+		float origX = this.geoMapActivity.getMapLocation().x - MARKER_OFFSET_X;
+		float origY = this.geoMapActivity.getMapLocation().y - MARKER_OFFSET_Y;
+		
+		if(imageLoc.x < origX || imageLoc.x > (origX + wd) || imageLoc.y < origY || imageLoc.y > (origY + ht))
+			return false;
+		
+		//Found the user, notify the activity and return true
+		this.geoMapActivity.userSelected();
+		return true;
+		
+	}
+	
 	protected void drawAt(Canvas canvas, Point screenLoc, int drawable_id)
 	{
 		if(screenLoc.x < 0 || screenLoc.x > mThisWidth || screenLoc.y < 0 || screenLoc.y > mThisHeight)
@@ -77,6 +124,18 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 		//Notify the activity that the long press has occurred.
 		this.geoMapActivity.startCreateMeeting(imageLoc);
+	}
+	
+	@Override
+	protected void singleTapped(Point loc)
+	{
+		PointF imageLoc = screenToImage(loc);
+		if(checkIfTappedUser(imageLoc))
+			return;
+		if(checkIfTappedMeeting(imageLoc))
+			return;
+		if(checkIfTappedFriend(imageLoc))
+			return;
 	}
 	
 	protected void onDraw(Canvas canvas)

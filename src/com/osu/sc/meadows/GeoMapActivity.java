@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
+
 import com.osu.sc.mapframework.ClosestPointPair;
 import com.osu.sc.mapframework.GeoImageViewTouch;
 import com.osu.sc.mapframework.GeoreferencedPoint;
 import com.osu.sc.mapframework.MeetingPoint;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.graphics.PointF;
 
 import android.location.LocationManager;
@@ -27,7 +27,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
-public class GeoMapActivity extends MapActivity
+public class GeoMapActivity extends Activity
 {
 	//Amount in counter clockwise degrees that the map has been rotated from true north.
 	private double mapTheta;
@@ -138,12 +138,22 @@ public class GeoMapActivity extends MapActivity
 		return this.meetingPoints;
 	}
 	
+	public void meetingSelected(MeetingPoint mPoint)
+	{
+		//TODO
+	}
+	
 	//Initiate the create meeting activity.
 	public void startCreateMeeting(PointF imageLoc)
 	{
 		this.longPressLoc = imageLoc;
 		Intent meetingIntent = new Intent(this, CreateMeetingActivity.class);
 		startActivityForResult(meetingIntent, MEETING_REQUEST_CODE);
+	}
+	
+	public void userSelected()
+	{
+		//TODO
 	}
 	
 	
@@ -353,12 +363,6 @@ public class GeoMapActivity extends MapActivity
 		editor.putInt(LATITUDE, loc.getLatitudeE6());
 		editor.putInt(LONGITUDE, loc.getLongitudeE6());
 		editor.commit();
-	}
-
-	@Override
-	protected boolean isRouteDisplayed() 
-	{
-		return false;
 	}
 	
 	/*
