@@ -1,5 +1,7 @@
 package it.sephiroth.android.library.imagezoom;
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -15,6 +17,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 {
 	static final float                      MIN_ZOOM        = 0.7f;
 	static final float                      MAX_ZOOM        = 2.5f;
+	static final long                       SINGLE_TAP_THRESHOLD = 306;
 	protected ScaleGestureDetector  	    mScaleDetector;
 	protected GestureDetector               mGestureDetector;
 	protected int                           mTouchSlop;
@@ -23,7 +26,8 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected GestureListener               mGestureListener;
 	protected ScaleListener                 mScaleListener;
 	protected OnClickListener               mOnClickListener;
-	protected PointF                        mClickLoc;
+	protected long                          mDownTime = 0;
+	protected boolean                       mLongPressed = false;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -84,17 +88,32 @@ public class ImageViewTouch extends ImageViewTouchBase
 		{
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:
+			mDownTime = Calendar.getInstance().getTimeInMillis();
 			cancelScroll();
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
-			mClickLoc = new PointF(event.getX(), event.getY());
-			
-                        if (getScale() < 1f)
-                                zoomTo( 1f, 500 );
-                        if (getScale() > getMaxZoom())
-                                zoomTo( getMaxZoom(), 500 );
-                        center( true, true, 500 );
+            if (getScale() < 1f)
+            	zoomTo( 1f, 500 );
+            if (getScale() > getMaxZoom())
+               zoomTo( getMaxZoom(), 500 );
+               center( true, true, 500 );
+               
+            //Massive hack to send a singleTapped event since there's a time
+            //between onSingleTapConfirmed and onLongPress that the GestureDetector
+            //doesn't pick up.
+            if(mDownTime > 0)
+            {
+            	long elapsedTime = Calendar.getInstance().getTimeInMillis() - mDownTime;
+            	if(elapsedTime > SINGLE_TAP_THRESHOLD && !mLongPressed )
+            	{
+            		singleTapped(new Point((int)event.getX(), (int)event.getY()));
+            	}
+            }
+            
+            //Reset the longpressed downtime.
+            mDownTime = 0;
+            mLongPressed = false;
 			 
 			break;
 		}
@@ -143,6 +162,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public void onLongPress(MotionEvent e)
 		{
+			mLongPressed = true;
 			longPressed(new Point((int)e.getX(), (int)e.getY()));
 		}
 
