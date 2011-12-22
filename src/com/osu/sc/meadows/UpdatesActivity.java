@@ -1,10 +1,7 @@
 package com.osu.sc.meadows;
 
 import android.app.Activity;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.LinearLayout;
 
 /*
  * Place holder activity for eventual Updates features

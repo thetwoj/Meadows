@@ -13,6 +13,7 @@
     <uses-permission android:name="com.google.android.apps.mytracks.READ_TRACK_DATA" />
     <uses-permission android:name="com.google.android.apps.mytracks.WRITE_TRACK_DATA" />
     <uses-permission android:name="com.google.android.apps.mytracks.TRACK_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
     	<uses-library android:name="com.google.android.maps" />
