@@ -14,6 +14,8 @@ import com.google.android.maps.GeoPoint;
 import com.osu.sc.mapframework.ClosestPointPair;
 import com.osu.sc.mapframework.GeoImageViewTouch;
 import com.osu.sc.mapframework.GeoreferencedPoint;
+import com.osu.sc.mapframework.KdTree;
+import com.osu.sc.mapframework.KdTree.Entry;
 import com.osu.sc.mapframework.MeetingPoint;
 
 import android.app.Activity;
@@ -35,12 +37,13 @@ public class GeoMapActivity extends Activity
 	//Network and GPS update frequency in milliseconds.
 	private static final int NETWORK_PERIOD = 4000;
 	private static final int GPS_PERIOD = 4000;
+	private static final int MAX_GEOREFERENCE_POINTS = 100;
 	
 	//The GeoImageView that this activity holds.
 	private GeoImageViewTouch geoImageView;
 	
 	//A list of the geo referenced points for this map.
-	List<GeoreferencedPoint> geoReferencedPoints;
+	KdTree<GeoreferencedPoint> geoReferencedPoints;
 	
 	//A list for the meeting points for this map.
 	List<MeetingPoint> meetingPoints;
@@ -73,10 +76,7 @@ public class GeoMapActivity extends Activity
 		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
-		
-		//Create the list for the geo referenced points.
-		this.geoReferencedPoints = new ArrayList<GeoreferencedPoint>();
-		
+	
 		//Create a list for the meeting points.
 		this.meetingPoints = new ArrayList<MeetingPoint>();
 		
@@ -88,6 +88,8 @@ public class GeoMapActivity extends Activity
 		
 		//Load georeferenced points from the meadows data file.
 		this.currentMapFileId = R.raw.meadows;
+		
+		//Create a new 2d tree to hold the geo points.
 		loadGeoreferencedPoints(this.currentMapFileId);
 		
 		//Restore the most recent location.
@@ -158,78 +160,37 @@ public class GeoMapActivity extends Activity
 	
 	
 	//Utility functions
-		
 	protected void createMeetingPoint(PointF imageLoc)
 	{
 		this.meetingPoints.add(new MeetingPoint(this.currentMapFileId, imageLoc));
 		this.geoImageView.invalidate();
 	}
 	
-	protected long distanceBetween(GeoPoint first, GeoPoint second)
-	{
-		long dlat = first.getLatitudeE6() - second.getLatitudeE6();
-		long dlon = first.getLongitudeE6() - second.getLongitudeE6();
-		long square_distance = dlat * dlat + dlon * dlon;
-		return (long) Math.sqrt(square_distance);
-	}
-	
-	protected ClosestPointPair getClosestPointPair(GeoPoint worldLoc)
-	{
-		//Ensure there's at least 2 geo referenced points, otherwise return null.
-		if(this.geoReferencedPoints.size() < 2)
-			return null;
-		
-		long firstDist = Integer.MAX_VALUE;
-		long secondDist = Integer.MAX_VALUE;
-		GeoreferencedPoint firstPoint = null;
-		GeoreferencedPoint secondPoint = null;
-		for(GeoreferencedPoint newPoint : this.geoReferencedPoints)
-		{
-			//Keep going if the point is farther away than the 2 mins.
-			long newDist = distanceBetween(worldLoc, newPoint);
-			if(newDist >= secondDist)
-				continue;
-			
-			//If it's closer than the first point, move the first point to the second point
-			//and update the first point.
-			if(newDist < firstDist)
-			{
-				secondPoint = firstPoint;
-				secondDist = firstDist;
-				firstPoint = newPoint;
-				firstDist = newDist;
-			}
-			//Otherwise, just update the second point to the new point.
-			else
-			{
-				secondDist = newDist;
-				secondPoint = newPoint;
-			}
-		}
-		
-		return new ClosestPointPair(firstPoint, secondPoint);
-	}
-	
 	protected PointF getGeoMapPosition(GeoPoint worldLoc)
 	{
-		ClosestPointPair pair = getClosestPointPair(worldLoc);
-		if(pair == null)
+		//ClosestPointPair pair = getClosestPointPair(worldLoc);
+		double[] location = {worldLoc.getLatitudeE6(), worldLoc.getLongitudeE6()};
+		List<KdTree.Entry<GeoreferencedPoint>> points = this.geoReferencedPoints.nearestNeighbor(location, 2, true);
+		if(points.size() < 2)
 			return null;
 		
+		GeoreferencedPoint first = points.get(0).value;
+		GeoreferencedPoint second = points.get(1).value;
+		
 		//Take each of the two closest points and rotate their coordinates by -theta to make them north up.
-		double u1 =  pair.first.x * Math.cos(Math.toRadians(this.mapTheta)) + pair.first.y * Math.sin(Math.toRadians(this.mapTheta));
-		double v1 = -pair.first.x * Math.sin(Math.toRadians(this.mapTheta)) + pair.first.y * Math.cos(Math.toRadians(this.mapTheta));
-		double u2 =  pair.second.x * Math.cos(Math.toRadians(this.mapTheta)) + pair.second.y * Math.sin(Math.toRadians(this.mapTheta));
-		double v2 = -pair.second.x * Math.sin(Math.toRadians(this.mapTheta)) + pair.second.y * Math.cos(Math.toRadians(this.mapTheta));
+		double u1 =   first.x * Math.cos(Math.toRadians(this.mapTheta)) + first.y * Math.sin(Math.toRadians(this.mapTheta));
+		double v1 =  -first.x * Math.sin(Math.toRadians(this.mapTheta)) + first.y * Math.cos(Math.toRadians(this.mapTheta));
+		double u2 =   second.x * Math.cos(Math.toRadians(this.mapTheta)) + second.y * Math.sin(Math.toRadians(this.mapTheta));
+		double v2 =  -second.x * Math.sin(Math.toRadians(this.mapTheta)) + second.y * Math.cos(Math.toRadians(this.mapTheta));
 		
 		//Get the number of pixels U and V that are gained/lost per unit of longitude and latitude, respectively.
-		double pixelsUPerLon = (u2 - u1) / (pair.second.getLongitudeE6() - pair.first.getLongitudeE6());
-		double pixelsVPerLat = (v2 - v1) / (pair.second.getLatitudeE6() - pair.first.getLatitudeE6());
+		double pixelsUPerLon = (u2 - u1) / (second.getLongitudeE6() - first.getLongitudeE6());
+		double pixelsVPerLat = (v2 - v1) / (second.getLatitudeE6() - first.getLatitudeE6());
 		
 		//Starting at the closest point, shift the current location depending on the pixels/lon and pixels/lat 
 		//and the difference of lat and lon between our current location and the closest point.
-		double u = u1 + (worldLoc.getLongitudeE6() - pair.first.getLongitudeE6()) * pixelsUPerLon;
-		double v = v1 + (worldLoc.getLatitudeE6() - pair.first.getLatitudeE6()) * pixelsVPerLat;
+		double u = u1 + (worldLoc.getLongitudeE6() - first.getLongitudeE6()) * pixelsUPerLon;
+		double v = v1 + (worldLoc.getLatitudeE6() - first.getLatitudeE6()) * pixelsVPerLat;
 		
 		//Rotate the points back by theta to return the coordinates to their original orientation.
 		double x = u * Math.cos(Math.toRadians(this.mapTheta)) - v * Math.sin(Math.toRadians(this.mapTheta));
@@ -239,7 +200,7 @@ public class GeoMapActivity extends Activity
 	
 	protected void loadGeoreferencedPoints(int fileid)
 	{
-		geoReferencedPoints.clear();
+		this.geoReferencedPoints = new KdTree.SqrEuclid<GeoreferencedPoint>(2, MAX_GEOREFERENCE_POINTS);
 		DataInputStream din = null;
 		try
 	    {
@@ -261,8 +222,9 @@ public class GeoMapActivity extends Activity
 	    	   double lon = Double.parseDouble(st.nextToken());
 	    	   int lat_int = (int) (lat * 1E6);
 	   		   int lon_int = (int) (lon * 1E6);
+	   		   double[] location = {lat_int, lon_int};
 	    	   
-	    	   geoReferencedPoints.add(new GeoreferencedPoint(lat_int, lon_int, x, y));
+	    	   this.geoReferencedPoints.addPoint(location, new GeoreferencedPoint(lat_int, lon_int, x, y));
 	       }
 	       
 	    }
