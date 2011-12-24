@@ -54,6 +54,8 @@ public class GeoMapActivity extends Activity
 	//The current map position of the user.
 	private PointF mapLoc;
 	
+	private GeoPoint userWorldLoc;
+	
 	//The currently displayed map id.
 	private int currentMapFileId;
 	
@@ -266,8 +268,8 @@ public class GeoMapActivity extends Activity
 
 	protected void locChanged(double lat, double lon, boolean save)
 	{
-		GeoPoint worldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
-		locChanged(worldLoc, save);
+		userWorldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
+		locChanged(userWorldLoc, save);
 	}
 	
 	protected void locChanged(GeoPoint worldLoc, boolean save)
@@ -308,14 +310,14 @@ public class GeoMapActivity extends Activity
 	protected void restoreLocation()
 	{
 		//Load the location from the preferences.
-		GeoPoint worldLoc = loadLocation();
+		userWorldLoc = loadLocation();
 		
 		//Return if there's no previous location.
-		if(worldLoc == null)
+		if(userWorldLoc == null)
 			return;
 		
 		//Update the map position.
-		locChanged(worldLoc, false);
+		locChanged(userWorldLoc, false);
 	}
 	
 	protected void saveLocation(GeoPoint loc)
@@ -326,18 +328,4 @@ public class GeoMapActivity extends Activity
 		editor.putInt(LONGITUDE, loc.getLongitudeE6());
 		editor.commit();
 	}
-	
-	/*
-	public void logData() throws IOException
-	{
-		File path = Environment.getExternalStorageDirectory();
-	    File file = new File(path, "LatLong.txt");
-	    byte[] data;
-	    String lat_long = "Latitude: " + Double.toString(current_lat) + " Longitude: " + Double.toString(current_lon) + '\n';
-	    data = lat_long.getBytes();
-	    OutputStream os = new FileOutputStream(file, true);
-	    os.write(data);
-	    os.close();
-	}
-	*/
 }

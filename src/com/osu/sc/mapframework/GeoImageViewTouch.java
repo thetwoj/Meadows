@@ -53,13 +53,18 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected boolean checkIfTappedUser(PointF imageLoc)
 	{
+	    //Ensure that there is a valid map location point.
+		PointF userMapLoc = this.geoMapActivity.getMapLocation();
+		if(userMapLoc == null)
+			return false;
+		
 		Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
 		int wd = userBmp.getWidth();
 		int ht = userBmp.getHeight();
 		
 		//Shift the meeting point back by the bitmap size.
-		float origX = this.geoMapActivity.getMapLocation().x - MARKER_OFFSET_X;
-		float origY = this.geoMapActivity.getMapLocation().y - MARKER_OFFSET_Y;
+		float origX = userMapLoc.x - MARKER_OFFSET_X;
+		float origY = userMapLoc.y - MARKER_OFFSET_Y;
 		
 		if(imageLoc.x < origX || imageLoc.x > (origX + wd) || imageLoc.y < origY || imageLoc.y > (origY + ht))
 			return false;
@@ -140,6 +145,10 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void onDraw(Canvas canvas)
 	{
+		//Ensure a valid bitmap.
+		if(mBitmapDisplayed == null || mBitmapDisplayed.isRecycled())
+			return;
+		
 		super.onDraw(canvas);
 		drawUserLocation(canvas);
 		drawMeetingPoints(canvas);

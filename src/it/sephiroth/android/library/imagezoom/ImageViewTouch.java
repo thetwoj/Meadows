@@ -28,6 +28,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected OnClickListener               mOnClickListener;
 	protected long                          mDownTime = 0;
 	protected boolean                       mLongPressed = false;
+	protected boolean						mScrolled = false;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -105,7 +106,7 @@ public class ImageViewTouch extends ImageViewTouchBase
             if(mDownTime > 0)
             {
             	long elapsedTime = Calendar.getInstance().getTimeInMillis() - mDownTime;
-            	if(elapsedTime > SINGLE_TAP_THRESHOLD && !mLongPressed )
+            	if(elapsedTime > SINGLE_TAP_THRESHOLD && !mLongPressed && !mScrolled)
             	{
             		singleTapped(new Point((int)event.getX(), (int)event.getY()));
             	}
@@ -114,6 +115,7 @@ public class ImageViewTouch extends ImageViewTouchBase
             //Reset the longpressed downtime.
             mDownTime = 0;
             mLongPressed = false;
+            mScrolled = false;
 			 
 			break;
 		}
@@ -176,6 +178,8 @@ public class ImageViewTouch extends ImageViewTouchBase
 				return false;
 			if (mScaleDetector.isInProgress())
 				return false;
+			
+			mScrolled = true;
 
 			scrollBy( -distanceX, -distanceY );
 
