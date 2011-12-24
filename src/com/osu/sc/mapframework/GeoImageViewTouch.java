@@ -17,7 +17,9 @@ public class GeoImageViewTouch extends ImageViewTouch
 	protected GeoMapActivity geoMapActivity;
 	private static final int MARKER_OFFSET_X = 14;
 	private static final int MARKER_OFFSET_Y = 33;
-	
+	private final Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
+    private final Bitmap meetingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.meeting_icon);
+
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
@@ -30,7 +32,6 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected boolean checkIfTappedMeeting(PointF imageLoc)
 	{
-		Bitmap meetingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.meeting_icon);
 		int wd = meetingBmp.getWidth();
 		int ht = meetingBmp.getHeight();
 		//Convert the screen location to image coordinates.
@@ -58,7 +59,6 @@ public class GeoImageViewTouch extends ImageViewTouch
 		if(userMapLoc == null)
 			return false;
 		
-		Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
 		int wd = userBmp.getWidth();
 		int ht = userBmp.getHeight();
 		
@@ -75,12 +75,10 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 	}
 	
-	protected void drawAt(Canvas canvas, Point screenLoc, int drawable_id)
+	protected void drawAt(Canvas canvas, Point screenLoc, Bitmap bmp)
 	{
 		if(screenLoc.x < 0 || screenLoc.x > mThisWidth || screenLoc.y < 0 || screenLoc.y > mThisHeight)
 			return;
-		
-		Bitmap bmp = BitmapFactory.decodeResource(getResources(), drawable_id);
 		
 		//Draw the user icon at the screen location.
 		canvas.drawBitmap(bmp, screenLoc.x, screenLoc.y, null);
@@ -94,7 +92,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 			screen.x -= MARKER_OFFSET_X;
 			screen.y -= MARKER_OFFSET_Y;
 			
-			drawAt(canvas, screen, R.drawable.meeting_icon);
+			drawAt(canvas, screen, meetingBmp);
 			
 		}
 	}
@@ -109,7 +107,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		screen.x -= MARKER_OFFSET_X;
 	    screen.y -= MARKER_OFFSET_Y;
 		
-		drawAt(canvas, screen, R.drawable.user_icon);
+		drawAt(canvas, screen, userBmp);
 	}
 	
 	@Override
