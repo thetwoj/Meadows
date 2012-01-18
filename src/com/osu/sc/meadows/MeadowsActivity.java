@@ -1,5 +1,6 @@
 package com.osu.sc.meadows;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
     
+        /*
         // Declare the ImageButtons on the homescreen by finding their ID's declared in 
         // the main.xml file
         final ImageButton socialB = (ImageButton) findViewById(R.id.socialButton);
@@ -30,6 +32,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener {
         mapB.setOnClickListener(this);
         updatesB.setOnClickListener(this);
         statsB.setOnClickListener(this);
+        */
     }
     
     // Called when the soft "menu" key is pressed

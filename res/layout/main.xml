@@ -35,13 +35,11 @@ displayed when the button is unclicked (default), clicked or focused.
     android:orientation="vertical" >
 
     <FrameLayout
-        android1:id="@+id/frameLayout1"
         android1:layout_width="fill_parent"
         android1:layout_height="fill_parent"
         android1:layout_weight="1.5" >
 
         <ImageView
-            android1:id="@+id/imageView1"
             android1:layout_width="wrap_content"
             android1:layout_height="wrap_content"
             android1:layout_gravity="center"
@@ -50,7 +48,6 @@ displayed when the button is unclicked (default), clicked or focused.
     </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
@@ -63,7 +60,8 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/mapicon" >
+            android:src="@drawable/mapicon"
+            android:onClick="onClick" >
         </ImageButton>
 
         <ImageButton
@@ -73,12 +71,12 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/socialicon" >
+            android:src="@drawable/socialicon" 
+            android:onClick="onClick">
         </ImageButton>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
@@ -91,7 +89,8 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/updatesicon" >
+            android:src="@drawable/updatesicon" 
+            android:onClick="onClick">
         </ImageButton>
 
         <ImageButton
@@ -101,7 +100,8 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/statsicon" >
+            android:src="@drawable/statsicon"
+            android:onClick="onClick" >
         </ImageButton>
     </LinearLayout>
 

@@ -365,4 +365,20 @@ public class GeoMapActivity extends Activity
 		editor.putInt(LONGITUDE, loc.getLongitudeE6());
 		editor.commit();
 	}
+
+	
+	/*
+	public void logData() throws IOException
+	{
+		File path = Environment.getExternalStorageDirectory();
+	    File file = new File(path, "LatLong.txt");
+	    byte[] data;
+	    String lat_long = "Latitude: " + Double.toString(current_lat) + " Longitude: " + Double.toString(current_lon) + '\n';
+	    data = lat_long.getBytes();
+	    OutputStream os = new FileOutputStream(file, true);
+	    os.write(data);
+	    os.close();
+	}
+	*/
+
 }
