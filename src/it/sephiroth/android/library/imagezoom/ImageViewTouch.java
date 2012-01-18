@@ -1,18 +1,23 @@
 package it.sephiroth.android.library.imagezoom;
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.view.View;
 import android.view.ViewConfiguration;
 
 public class ImageViewTouch extends ImageViewTouchBase
 {
 	static final float                      MIN_ZOOM        = 0.7f;
 	static final float                      MAX_ZOOM        = 2.5f;
+	static final long                       SINGLE_TAP_THRESHOLD = 306;
 	protected ScaleGestureDetector  	    mScaleDetector;
 	protected GestureDetector               mGestureDetector;
 	protected int                           mTouchSlop;
@@ -21,6 +26,9 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected GestureListener               mGestureListener;
 	protected ScaleListener                 mScaleListener;
 	protected OnClickListener               mOnClickListener;
+	protected long                          mDownTime = 0;
+	protected boolean                       mLongPressed = false;
+	protected boolean						mScrolled = false;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -54,6 +62,10 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected void longPressed(Point loc)
 	{
 	}
+	
+	protected void singleTapped(Point loc)
+	{
+	}
 
 	@Override
 	public void setImageBitmapReset(Bitmap bitmap, boolean reset)
@@ -68,22 +80,42 @@ public class ImageViewTouch extends ImageViewTouchBase
 		mScaleDetector.onTouchEvent( event );
 		if ( !mScaleDetector.isInProgress())
 			mGestureDetector.onTouchEvent( event );
+		
+		//Enable long presses.
+		mGestureDetector.setIsLongpressEnabled(true);
 
 		int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK)
 		{
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:
+			mDownTime = Calendar.getInstance().getTimeInMillis();
 			cancelScroll();
 			break;
 		case MotionEvent.ACTION_UP:
 		case MotionEvent.ACTION_POINTER_UP:
-			
-                        if (getScale() < 1f)
-                                zoomTo( 1f, 500 );
-                        if (getScale() > getMaxZoom())
-                                zoomTo( getMaxZoom(), 500 );
-                        center( true, true, 500 );
+            if (getScale() < 1f)
+            	zoomTo( 1f, 500 );
+            if (getScale() > getMaxZoom())
+               zoomTo( getMaxZoom(), 500 );
+               center( true, true, 500 );
+               
+            //Massive hack to send a singleTapped event since there's a time
+            //between onSingleTapConfirmed and onLongPress that the GestureDetector
+            //doesn't pick up.
+            if(mDownTime > 0)
+            {
+            	long elapsedTime = Calendar.getInstance().getTimeInMillis() - mDownTime;
+            	if(elapsedTime > SINGLE_TAP_THRESHOLD && !mLongPressed && !mScrolled)
+            	{
+            		singleTapped(new Point((int)event.getX(), (int)event.getY()));
+            	}
+            }
+            
+            //Reset the longpressed downtime.
+            mDownTime = 0;
+            mLongPressed = false;
+            mScrolled = false;
 			 
 			break;
 		}
@@ -109,12 +141,16 @@ public class ImageViewTouch extends ImageViewTouchBase
 				mOnClickListener.onClick( ImageViewTouch.this );
 				return true;
 			}
+			
+			singleTapped(new Point((int)e.getX(), (int)e.getY()));
+			
 			return super.onSingleTapConfirmed( e );
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e)
 		{
+			mGestureDetector.setIsLongpressEnabled(false);
 			float scale = getScale();
 			float targetScale = scale;
 			targetScale = (scale >= mScaleFactor) ? 1f : scale + mScaleFactor;
@@ -128,6 +164,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public void onLongPress(MotionEvent e)
 		{
+			mLongPressed = true;
 			longPressed(new Point((int)e.getX(), (int)e.getY()));
 		}
 
@@ -141,6 +178,8 @@ public class ImageViewTouch extends ImageViewTouchBase
 				return false;
 			if (mScaleDetector.isInProgress())
 				return false;
+			
+			mScrolled = true;
 
 			scrollBy( -distanceX, -distanceY );
 
@@ -161,7 +200,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 
 			return super.onFling( e1, e2, velocityX, velocityY );
 		}
-		
 	}
 
 	class ScaleListener

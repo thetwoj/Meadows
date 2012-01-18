@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import com.google.android.maps.GeoPoint;
+
 import com.osu.sc.mapframework.ClosestPointPair;
 import com.osu.sc.mapframework.GeoImageViewTouch;
 import com.osu.sc.mapframework.GeoreferencedPoint;
@@ -19,7 +20,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.graphics.PointF;
 
 import android.location.LocationManager;
@@ -35,6 +35,7 @@ public class GeoMapActivity extends Activity
 	//Network and GPS update frequency in milliseconds.
 	private static final int NETWORK_PERIOD = 4000;
 	private static final int GPS_PERIOD = 4000;
+	private static final int MAX_GEOREFERENCE_POINTS = 100;
 	
 	//The GeoImageView that this activity holds.
 	private GeoImageViewTouch geoImageView;
@@ -50,6 +51,8 @@ public class GeoMapActivity extends Activity
 	
 	//The current map position of the user.
 	private PointF mapLoc;
+	
+	private GeoPoint userWorldLoc;
 	
 	//The currently displayed map id.
 	private int currentMapFileId;
@@ -73,10 +76,7 @@ public class GeoMapActivity extends Activity
 		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
-		
-		//Create the list for the geo referenced points.
-		this.geoReferencedPoints = new ArrayList<GeoreferencedPoint>();
-		
+	
 		//Create a list for the meeting points.
 		this.meetingPoints = new ArrayList<MeetingPoint>();
 		
@@ -88,6 +88,8 @@ public class GeoMapActivity extends Activity
 		
 		//Load georeferenced points from the meadows data file.
 		this.currentMapFileId = R.raw.meadows;
+		
+		//Create a new 2d tree to hold the geo points.
 		loadGeoreferencedPoints(this.currentMapFileId);
 		
 		//Restore the most recent location.
@@ -138,6 +140,11 @@ public class GeoMapActivity extends Activity
 		return this.meetingPoints;
 	}
 	
+	public void meetingSelected(MeetingPoint mPoint)
+	{
+		//TODO
+	}
+	
 	//Initiate the create meeting activity.
 	public void startCreateMeeting(PointF imageLoc)
 	{
@@ -146,9 +153,13 @@ public class GeoMapActivity extends Activity
 		startActivityForResult(meetingIntent, MEETING_REQUEST_CODE);
 	}
 	
+	public void userSelected()
+	{
+		//TODO
+	}
+	
 	
 	//Utility functions
-		
 	protected void createMeetingPoint(PointF imageLoc)
 	{
 		this.meetingPoints.add(new MeetingPoint(this.currentMapFileId, imageLoc));
@@ -162,13 +173,13 @@ public class GeoMapActivity extends Activity
 		long square_distance = dlat * dlat + dlon * dlon;
 		return (long) Math.sqrt(square_distance);
 	}
-	
+
 	protected ClosestPointPair getClosestPointPair(GeoPoint worldLoc)
 	{
 		//Ensure there's at least 2 geo referenced points, otherwise return null.
 		if(this.geoReferencedPoints.size() < 2)
 			return null;
-		
+
 		long firstDist = Integer.MAX_VALUE;
 		long secondDist = Integer.MAX_VALUE;
 		GeoreferencedPoint firstPoint = null;
@@ -179,7 +190,7 @@ public class GeoMapActivity extends Activity
 			long newDist = distanceBetween(worldLoc, newPoint);
 			if(newDist >= secondDist)
 				continue;
-			
+
 			//If it's closer than the first point, move the first point to the second point
 			//and update the first point.
 			if(newDist < firstDist)
@@ -196,31 +207,31 @@ public class GeoMapActivity extends Activity
 				secondPoint = newPoint;
 			}
 		}
-		
+
 		return new ClosestPointPair(firstPoint, secondPoint);
 	}
-	
+
 	protected PointF getGeoMapPosition(GeoPoint worldLoc)
 	{
 		ClosestPointPair pair = getClosestPointPair(worldLoc);
 		if(pair == null)
 			return null;
-		
+
 		//Take each of the two closest points and rotate their coordinates by -theta to make them north up.
 		double u1 =  pair.first.x * Math.cos(Math.toRadians(this.mapTheta)) + pair.first.y * Math.sin(Math.toRadians(this.mapTheta));
 		double v1 = -pair.first.x * Math.sin(Math.toRadians(this.mapTheta)) + pair.first.y * Math.cos(Math.toRadians(this.mapTheta));
 		double u2 =  pair.second.x * Math.cos(Math.toRadians(this.mapTheta)) + pair.second.y * Math.sin(Math.toRadians(this.mapTheta));
 		double v2 = -pair.second.x * Math.sin(Math.toRadians(this.mapTheta)) + pair.second.y * Math.cos(Math.toRadians(this.mapTheta));
-		
+
 		//Get the number of pixels U and V that are gained/lost per unit of longitude and latitude, respectively.
 		double pixelsUPerLon = (u2 - u1) / (pair.second.getLongitudeE6() - pair.first.getLongitudeE6());
 		double pixelsVPerLat = (v2 - v1) / (pair.second.getLatitudeE6() - pair.first.getLatitudeE6());
-		
+
 		//Starting at the closest point, shift the current location depending on the pixels/lon and pixels/lat 
 		//and the difference of lat and lon between our current location and the closest point.
 		double u = u1 + (worldLoc.getLongitudeE6() - pair.first.getLongitudeE6()) * pixelsUPerLon;
 		double v = v1 + (worldLoc.getLatitudeE6() - pair.first.getLatitudeE6()) * pixelsVPerLat;
-		
+
 		//Rotate the points back by theta to return the coordinates to their original orientation.
 		double x = u * Math.cos(Math.toRadians(this.mapTheta)) - v * Math.sin(Math.toRadians(this.mapTheta));
 	    double y = u * Math.sin(Math.toRadians(this.mapTheta)) + v * Math.cos(Math.toRadians(this.mapTheta));
@@ -229,7 +240,7 @@ public class GeoMapActivity extends Activity
 	
 	protected void loadGeoreferencedPoints(int fileid)
 	{
-		geoReferencedPoints.clear();
+		this.geoReferencedPoints = new ArrayList<GeoreferencedPoint>();
 		DataInputStream din = null;
 		try
 	    {
@@ -252,7 +263,7 @@ public class GeoMapActivity extends Activity
 	    	   int lat_int = (int) (lat * 1E6);
 	   		   int lon_int = (int) (lon * 1E6);
 	    	   
-	    	   geoReferencedPoints.add(new GeoreferencedPoint(lat_int, lon_int, x, y));
+	    	   this.geoReferencedPoints.add(new GeoreferencedPoint(lat_int, lon_int, x, y));
 	       }
 	       
 	    }
@@ -294,8 +305,8 @@ public class GeoMapActivity extends Activity
 
 	protected void locChanged(double lat, double lon, boolean save)
 	{
-		GeoPoint worldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
-		locChanged(worldLoc, save);
+		userWorldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
+		locChanged(userWorldLoc, save);
 	}
 	
 	protected void locChanged(GeoPoint worldLoc, boolean save)
@@ -336,14 +347,14 @@ public class GeoMapActivity extends Activity
 	protected void restoreLocation()
 	{
 		//Load the location from the preferences.
-		GeoPoint worldLoc = loadLocation();
+		userWorldLoc = loadLocation();
 		
 		//Return if there's no previous location.
-		if(worldLoc == null)
+		if(userWorldLoc == null)
 			return;
 		
 		//Update the map position.
-		locChanged(worldLoc, false);
+		locChanged(userWorldLoc, false);
 	}
 	
 	protected void saveLocation(GeoPoint loc)
@@ -369,4 +380,5 @@ public class GeoMapActivity extends Activity
 	    os.close();
 	}
 	*/
+
 }
