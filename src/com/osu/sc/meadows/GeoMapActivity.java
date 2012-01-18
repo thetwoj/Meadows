@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import server.Client;
 import server.ServerEvents;
 import server.User;
 import server.UsersUpdatedEvent;
@@ -16,27 +17,19 @@ import server.UsersUpdatedListener;
 
 import com.google.android.maps.GeoPoint;
 
-import com.osu.sc.mapframework.ClosestPointPair;
+import com.osu.sc.mapframework.ClosestPointTrio;
 import com.osu.sc.mapframework.GeoImageViewTouch;
 import com.osu.sc.mapframework.GeoreferencedPoint;
 import com.osu.sc.mapframework.MeetingPoint;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.PointF;
 
-import android.location.LocationManager;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 
 public class GeoMapActivity extends Activity
 {
-	//Amount in counter clockwise degrees that the map has been rotated from true north.
-	private double mapTheta;
-	
 	//The GeoImageView that this activity holds.
 	private GeoImageViewTouch geoImageView;
 	
@@ -55,8 +48,6 @@ public class GeoMapActivity extends Activity
 	//The current map position of the user's friends.
 	private ArrayList<PointF> friendsMapLoc;
 	
-	private GeoPoint userWorldLoc;
-	
 	//The currently displayed map id.
 	private int currentMapFileId;
 
@@ -64,6 +55,7 @@ public class GeoMapActivity extends Activity
 	private static final int MEETING_REQUEST_CODE = 0;
 	
 	private UsersUpdatedListener clientLocationListener;
+	private UsersUpdatedListener friendsLocationListener;
 	
 	//On activity creation.
 	public void onCreate(Bundle savedInstanceState)
@@ -86,7 +78,7 @@ public class GeoMapActivity extends Activity
 				if(user == null)
 					return;
 				
-				locChanged(new GeoPoint(user.GetLatitude(), user.GetLongitude()));
+				userLocChanged(user);
 			}
 			
 		};
@@ -94,11 +86,32 @@ public class GeoMapActivity extends Activity
 		//Register the listener with the event system.
 		ServerEvents.GetInstance().AddClientLocationUpdatedListener(clientLocationListener);
 		
+		//Set up the friends location listener.
+		friendsLocationListener = new UsersUpdatedListener()
+		{
+
+			@Override
+			public void EventFired(UsersUpdatedEvent event) 
+			{
+				if(event == null)
+					return;
+				
+				ArrayList<User> users = event.GetUsers();
+				friendsLocChanged(users);
+			}
+		};
+		
+		//Register the listener with the event system.
+		ServerEvents.GetInstance().AddClientLocationUpdatedListener(friendsLocationListener);
+		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
 	
 		//Create a list for the meeting points.
 		this.meetingPoints = new ArrayList<MeetingPoint>();
+		
+		//Create a list for the friends.
+		this.friendsMapLoc = new ArrayList<PointF>();
 		
 		//Save the image view.
 		this.geoImageView = (GeoImageViewTouch) findViewById(R.id.meadowsImageView);
@@ -112,8 +125,13 @@ public class GeoMapActivity extends Activity
 		//Create a new 2d tree to hold the geo points.
 		loadGeoreferencedPoints(this.currentMapFileId);
 		
-		//Create the friends' map locations list.
-		friendsMapLoc = new ArrayList<PointF>();
+		//Get the initial friend positions from the client.
+		Client client = Client.GetInstance();
+		ArrayList<User> users = client.GetFriends();
+		friendsLocChanged(users);
+		
+		//Get the initial user position from the client.
+		userLocChanged(new GeoPoint(client.GetLatitude(), client.GetLongitude()));
 	}
 	
 	@Override
@@ -129,7 +147,12 @@ public class GeoMapActivity extends Activity
 	
 	//Interface
 	
-	public PointF getUserMapLocation()
+	public ArrayList<PointF> getFriendsMapLoc()
+	{
+		return this.friendsMapLoc;
+	}
+	
+	public PointF getUserMapLoc()
 	{
 		return this.userMapLoc;
 	}
@@ -165,76 +188,96 @@ public class GeoMapActivity extends Activity
 		this.geoImageView.invalidate();
 	}
 	
-	protected long distanceBetween(GeoPoint first, GeoPoint second)
+	protected long squareDistanceBetween(GeoPoint first, GeoPoint second)
 	{
 		long dlat = first.getLatitudeE6() - second.getLatitudeE6();
 		long dlon = first.getLongitudeE6() - second.getLongitudeE6();
 		long square_distance = dlat * dlat + dlon * dlon;
-		return (long) Math.sqrt(square_distance);
+		return square_distance;
 	}
 
-	protected ClosestPointPair getClosestPointPair(GeoPoint worldLoc)
+	protected ClosestPointTrio getClosestPointTrio(GeoPoint worldLoc)
 	{
-		//Ensure there's at least 2 geo referenced points, otherwise return null.
-		if(this.geoReferencedPoints.size() < 2)
+		//Ensure there's at least 3 geo referenced points, otherwise return null.
+		if(this.geoReferencedPoints.size() < 3)
 			return null;
 
-		long firstDist = Integer.MAX_VALUE;
-		long secondDist = Integer.MAX_VALUE;
+		long firstDist = Long.MAX_VALUE;
+		long secondDist = Long.MAX_VALUE;
+		long thirdDist = Long.MAX_VALUE;
 		GeoreferencedPoint firstPoint = null;
 		GeoreferencedPoint secondPoint = null;
+		GeoreferencedPoint thirdPoint = null;
 		for(GeoreferencedPoint newPoint : this.geoReferencedPoints)
 		{
 			//Keep going if the point is farther away than the 2 mins.
-			long newDist = distanceBetween(worldLoc, newPoint);
-			if(newDist >= secondDist)
+			long newDist = squareDistanceBetween(worldLoc, newPoint);
+			if(newDist >= thirdDist)
 				continue;
 
 			//If it's closer than the first point, move the first point to the second point
 			//and update the first point.
 			if(newDist < firstDist)
 			{
+				thirdDist = secondDist;
+				thirdPoint = secondPoint;
 				secondPoint = firstPoint;
 				secondDist = firstDist;
 				firstPoint = newPoint;
 				firstDist = newDist;
 			}
 			//Otherwise, just update the second point to the new point.
-			else
+			else if(newDist < secondDist)
 			{
+				thirdDist = secondDist;
+				thirdPoint = secondPoint;
 				secondDist = newDist;
 				secondPoint = newPoint;
 			}
+			else
+			{
+				thirdDist = newDist;
+				thirdPoint = newPoint;
+			}
 		}
 
-		return new ClosestPointPair(firstPoint, secondPoint);
+		return new ClosestPointTrio(firstPoint, secondPoint, thirdPoint);
 	}
 
 	protected PointF getGeoMapPosition(GeoPoint worldLoc)
 	{
-		ClosestPointPair pair = getClosestPointPair(worldLoc);
-		if(pair == null)
+		ClosestPointTrio trio = getClosestPointTrio(worldLoc);
+		if(trio == null || trio.first == null || trio.second == null || trio.third == null)
 			return null;
-
-		//Take each of the two closest points and rotate their coordinates by -theta to make them north up.
-		double u1 =  pair.first.x * Math.cos(Math.toRadians(this.mapTheta)) + pair.first.y * Math.sin(Math.toRadians(this.mapTheta));
-		double v1 = -pair.first.x * Math.sin(Math.toRadians(this.mapTheta)) + pair.first.y * Math.cos(Math.toRadians(this.mapTheta));
-		double u2 =  pair.second.x * Math.cos(Math.toRadians(this.mapTheta)) + pair.second.y * Math.sin(Math.toRadians(this.mapTheta));
-		double v2 = -pair.second.x * Math.sin(Math.toRadians(this.mapTheta)) + pair.second.y * Math.cos(Math.toRadians(this.mapTheta));
-
-		//Get the number of pixels U and V that are gained/lost per unit of longitude and latitude, respectively.
-		double pixelsUPerLon = (u2 - u1) / (pair.second.getLongitudeE6() - pair.first.getLongitudeE6());
-		double pixelsVPerLat = (v2 - v1) / (pair.second.getLatitudeE6() - pair.first.getLatitudeE6());
-
-		//Starting at the closest point, shift the current location depending on the pixels/lon and pixels/lat 
-		//and the difference of lat and lon between our current location and the closest point.
-		double u = u1 + (worldLoc.getLongitudeE6() - pair.first.getLongitudeE6()) * pixelsUPerLon;
-		double v = v1 + (worldLoc.getLatitudeE6() - pair.first.getLatitudeE6()) * pixelsVPerLat;
-
-		//Rotate the points back by theta to return the coordinates to their original orientation.
-		double x = u * Math.cos(Math.toRadians(this.mapTheta)) - v * Math.sin(Math.toRadians(this.mapTheta));
-	    double y = u * Math.sin(Math.toRadians(this.mapTheta)) + v * Math.cos(Math.toRadians(this.mapTheta));
-		return new PointF((float)x, (float)y);
+		
+		double x1 = trio.first.getLongitudeE6();
+		double y1 = trio.first.getLatitudeE6();
+		double x2 = trio.second.getLongitudeE6();
+		double y2 = trio.second.getLatitudeE6();
+		double x3 = trio.third.getLongitudeE6();
+		double y3 = trio.third.getLatitudeE6();
+		double x4 = worldLoc.getLongitudeE6();
+		double y4 = worldLoc.getLatitudeE6();
+		
+		double u1 = trio.first.x;
+		double v1 = trio.first.y;
+		double u2 = trio.second.x;
+		double v2 = trio.second.y;
+		double u3 = trio.third.x;
+		double v3 = trio.third.y;
+		
+		
+		double numeratorA = (x4 - x3) * (y2 - y3) - (y4 - y3) * (x2 - x3);
+		double numeratorB = (x4 - x3) * (y4 - y3) - (y1 - y3) * (x4 - x3);
+		double denominatorAB = (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
+		
+		double a = numeratorA / denominatorAB;
+		double b = numeratorB / denominatorAB;
+		
+		double u4 = u3 + a * (u1 - u3) + b * (u2 - u3);
+		double v4 = v3 + a * (v1 - v3) + b * (v2 - v3);
+		
+		return new PointF((float)u4, (float)v4);
 	}
 	
 	protected void loadGeoreferencedPoints(int fileid)
@@ -247,12 +290,6 @@ public class GeoMapActivity extends Activity
 	       BufferedReader br = new BufferedReader(new InputStreamReader(din));
 	       String strLine;
 	       StringTokenizer st;
-	       //Read the first line to get the dimensions of the map and the theta orientation.   
-	       strLine = br.readLine();
-	       st = new StringTokenizer(strLine);
-	       double theta = Double.parseDouble(st.nextToken());
-	       this.mapTheta = theta;
-	       
 	       while ((strLine = br.readLine()) != null)   {
 	    	   st = new StringTokenizer(strLine);
 	    	   float x = Float.parseFloat(st.nextToken());
@@ -301,24 +338,43 @@ public class GeoMapActivity extends Activity
 		createMeetingPoint(this.longPressLoc);
 		
     }
-
-	protected void locChanged(double lat, double lon)
+	
+	protected void friendsLocChanged(ArrayList<User> users)
 	{
-		userWorldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
-		locChanged(userWorldLoc);
+		if(users == null || users.size() <= 0)
+			return;
+		
+		ArrayList<PointF> mapLocs = new ArrayList<PointF>();
+		for(User user : users)
+		{
+			PointF mapLoc = getGeoMapPosition(new GeoPoint(user.GetLatitude(), user.GetLongitude()));
+			if(mapLoc == null)
+				continue;
+			
+			mapLocs.add(mapLoc);
+		}
+		
+		friendsMapLoc = mapLocs;
+		
+		this.geoImageView.invalidate();
+	}
+
+	protected void userLocChanged(User user)
+	{
+		if(user == null)
+			return;
+		
+		userLocChanged(new GeoPoint(user.GetLatitude(), user.GetLongitude()));
 	}
 	
-	protected void locChanged(GeoPoint worldLoc)
+	protected void userLocChanged(GeoPoint loc)
 	{
-		if(worldLoc == null)
-			return;
-		
 		//Get the geo referenced map position from the world location.
-		userMapLoc = getGeoMapPosition(worldLoc);
-		
+		userMapLoc = getGeoMapPosition(loc);
+				
 		if(userMapLoc == null)
 			return;
-				
+						
 		//Update the map position on the imageview and redraw.
 		this.geoImageView.invalidate();
 	}

@@ -1,7 +1,5 @@
 package com.osu.sc.meadows;
 
-import com.google.android.maps.GeoPoint;
-
 import server.Client;
 
 import android.app.Service;

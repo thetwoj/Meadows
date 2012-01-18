@@ -19,6 +19,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	private static final int MARKER_OFFSET_Y = 33;
 	private final Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
     private final Bitmap meetingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.meeting_icon);
+    private final Bitmap friendBmp = BitmapFactory.decodeResource(getResources(), R.drawable.friend_icon);
 
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
@@ -55,7 +56,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	protected boolean checkIfTappedUser(PointF imageLoc)
 	{
 	    //Ensure that there is a valid map location point.
-		PointF userMapLoc = this.geoMapActivity.getUserMapLocation();
+		PointF userMapLoc = this.geoMapActivity.getUserMapLoc();
 		if(userMapLoc == null)
 			return false;
 		
@@ -84,6 +85,18 @@ public class GeoImageViewTouch extends ImageViewTouch
 		canvas.drawBitmap(bmp, screenLoc.x, screenLoc.y, null);
 	}
 	
+	protected void drawFriendLocations(Canvas canvas)
+	{
+		for(PointF friendMapLoc : this.geoMapActivity.getFriendsMapLoc())
+		{
+			Point screen = imageToScreen(friendMapLoc);
+			screen.x -= MARKER_OFFSET_X;
+			screen.y -= MARKER_OFFSET_Y;
+			
+			drawAt(canvas, screen, friendBmp);
+		}
+	}
+	
 	protected void drawMeetingPoints(Canvas canvas)
 	{
 		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
@@ -99,7 +112,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void drawUserLocation(Canvas canvas)
 	{
-		PointF mapLoc = this.geoMapActivity.getUserMapLocation();
+		PointF mapLoc = this.geoMapActivity.getUserMapLoc();
 		if(mapLoc == null)
 			return;
 		
@@ -149,6 +162,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 		super.onDraw(canvas);
 		drawUserLocation(canvas);
+		drawFriendLocations(canvas);
 		drawMeetingPoints(canvas);
 	}
 	
