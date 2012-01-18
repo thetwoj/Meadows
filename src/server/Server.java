@@ -12,6 +12,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
@@ -70,7 +73,9 @@ public class Server
 			String result = "";
 			
 			//create HTTP connection
-			HttpClient client = new DefaultHttpClient();
+			final HttpParams httpParams = new BasicHttpParams();
+		    HttpConnectionParams.setConnectionTimeout(httpParams, 15000);
+			HttpClient client = new DefaultHttpClient(httpParams);
 			HttpPost post = new HttpPost(_url);
 
 			try

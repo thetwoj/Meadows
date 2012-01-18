@@ -22,16 +22,22 @@ public class Client
 	private int 	_clientUid;
 	private boolean _globalVisibility;
 	
+	private static final int NETWORK_PERIOD = 4000;
+    private static final int GPS_PERIOD = 4000;
+	
 	private Server _server = Server.GetInstance();
 	
 	
 	//public getters
-	public String 	GetFirstName() 			{ return _firstName; }
-	public String 	GetLastName()  			{ return _lastName;  }
-	public String 	GetPhoneNumber()  		{ return _phoneNumber;  }
-	public int   	GetLatitude()  		    { return _latitude;  }
-	public int  	GetLongitude() 		    { return _longitude; }
-	public boolean 	GetGlobalVisibility()	{ return _globalVisibility; }
+	public String 	       GetFirstName() 			{ return _firstName; }
+	public ArrayList<User> GetFriends()             { return _friends;   }
+	public String 		   GetLastName()  			{ return _lastName;  }
+	public String 		   GetPhoneNumber()  		{ return _phoneNumber;  }
+	public int   		   GetLatitude()  		    { return _latitude;  }
+	public int  	       GetLongitude() 		    { return _longitude; }
+	public boolean 	       GetGlobalVisibility()	{ return _globalVisibility; }
+	public int             GetNetworkPeriod()       { return NETWORK_PERIOD; }
+	public int             GetGPSPeriod()           { return GPS_PERIOD; }
 	
 	protected Client()
 	{
@@ -227,16 +233,20 @@ public class Client
 	
 	public void SetLocation(int latitude, int longitude)
 	{
-		if(!LoggedIn() || !(_latitude != latitude || _longitude != longitude))
+		if(!(_latitude != latitude || _longitude != longitude))
 			return;
 		
-		//send request to update location to server
 		_latitude = latitude;
 		_longitude = longitude;
-		_server.UpdateLocation(
+		
+		//send request to update location to server if logged in
+		if(LoggedIn())
+		{
+			_server.UpdateLocation(
 				_clientUid, 
 				_latitude,
 				_longitude);	
+		}
 		
 		//create a ClientLocationUpdated event
 		ServerEvents events = ServerEvents.GetInstance();
@@ -260,7 +270,7 @@ public class Client
 	
 	public void SetGlobalVisibility(boolean value)
 	{
-		if(!LoggedIn() && _globalVisibility != value)
+		if(LoggedIn() && _globalVisibility != value)
 		{
 			_globalVisibility = value;
 			_server.UpdateClientData(

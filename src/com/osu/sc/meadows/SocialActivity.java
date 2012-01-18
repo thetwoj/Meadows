@@ -23,6 +23,10 @@ public class SocialActivity extends Activity
 	String text = "";
 	Client client = Client.GetInstance();
 	ServerEvents events = ServerEvents.GetInstance();
+	private UsersUpdatedListener friendsListener;
+	private UsersUpdatedListener blockedUsersListener;
+	private UsersUpdatedListener friendRequestsListener;
+	private UsersUpdatedListener loginSuccessListener;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -32,36 +36,44 @@ public class SocialActivity extends Activity
         
         setContentView(R.layout.sociallayout);
         
-        events.AddFriendsUpdatedListener(new UsersUpdatedListener(){
-    		public void EventFired(UsersUpdatedEvent event)
+        //Create the listeners.
+        friendsListener = new UsersUpdatedListener()
+        {
+        	public void EventFired(UsersUpdatedEvent event)
     		{
     			ArrayList<User> users = event.GetUsers();
     			OnFriendsUpdated(users);
     		}
-    	});
-    	
-    	events.AddBlockedUsersUpdatedListener(new UsersUpdatedListener(){
+        };
+        blockedUsersListener = new UsersUpdatedListener()
+        {
     		public void EventFired(UsersUpdatedEvent event)
     		{
     			ArrayList<User> users = event.GetUsers();
     			OnBlockedUsersUpdated(users);
     		}
-    	});
-    	
-    	events.AddFriendRequestsUpdatedListener(new UsersUpdatedListener(){
+    	};
+    	friendRequestsListener = new UsersUpdatedListener()
+    	{
     		public void EventFired(UsersUpdatedEvent event)
     		{
     			ArrayList<User> users = event.GetUsers();
     			OnFriendRequestsUpdated(users);
     		}
-    	});
-    	
-    	events.AddLoginSuccessListener(new UsersUpdatedListener(){
+    	};
+    	loginSuccessListener = new UsersUpdatedListener()
+    	{
     		public void EventFired(UsersUpdatedEvent event)
     		{
     			OnLogin();
     		}
-    	});        
+    	};
+    	
+    	//Register the listeners.
+        events.AddFriendsUpdatedListener(friendsListener);
+    	events.AddBlockedUsersUpdatedListener(blockedUsersListener);
+    	events.AddFriendRequestsUpdatedListener(friendRequestsListener);
+    	events.AddLoginSuccessListener(loginSuccessListener);
     }
     
     /**
@@ -85,7 +97,7 @@ public class SocialActivity extends Activity
     public void OnLogin()
     {
     	EditText textBox = (EditText)findViewById(R.id.testText);
-    	text += "Logged in as " + Boolean.toString(client.GetInstance().GetGlobalVisibility()) + '\n';
+    	text += "Logged in as " + Boolean.toString(client.GetGlobalVisibility()) + '\n';
     	textBox.setText(text);
     }
     
@@ -101,6 +113,19 @@ public class SocialActivity extends Activity
     	EditText textBox = (EditText)findViewById(R.id.testText);
     	text += "OnFriendRequestsUpdated: "+Integer.toString(users.size()) + '\n';
     	textBox.setText(text);
+    }
+    
+    @Override
+    public void onDestroy()
+    {
+    	//Unregister the listeners.
+        events.RemoveFriendsUpdatedListener(friendsListener);
+    	events.RemoveBlockedUsersUpdatedListener(blockedUsersListener);
+    	events.RemoveFriendRequestsUpdatedListener(friendRequestsListener);
+    	events.RemoveLoginSuccessListener(loginSuccessListener);
+    	
+    	//Call the base class destroy.
+    	super.onDestroy();
     }
     
 }

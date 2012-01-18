@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import server.ServerEvents;
+import server.User;
+import server.UsersUpdatedEvent;
+import server.UsersUpdatedListener;
+
 import com.google.android.maps.GeoPoint;
 
 import com.osu.sc.mapframework.ClosestPointPair;
@@ -32,11 +37,6 @@ public class GeoMapActivity extends Activity
 	//Amount in counter clockwise degrees that the map has been rotated from true north.
 	private double mapTheta;
 	
-	//Network and GPS update frequency in milliseconds.
-	private static final int NETWORK_PERIOD = 4000;
-	private static final int GPS_PERIOD = 4000;
-	private static final int MAX_GEOREFERENCE_POINTS = 100;
-	
 	//The GeoImageView that this activity holds.
 	private GeoImageViewTouch geoImageView;
 	
@@ -50,29 +50,49 @@ public class GeoMapActivity extends Activity
 	private PointF longPressLoc;
 	
 	//The current map position of the user.
-	private PointF mapLoc;
+	private PointF userMapLoc;
+	
+	//The current map position of the user's friends.
+	private ArrayList<PointF> friendsMapLoc;
 	
 	private GeoPoint userWorldLoc;
 	
 	//The currently displayed map id.
 	private int currentMapFileId;
-	
-	//Information for saving last known location.
-	public static final String SHARED_PREFERENCES_NAME = "AppPreferences";
-	public static final String LATITUDE = "latitude";
-	public static final String LONGITUDE = "longitude";
-	
-	//Maximum possible latitude and longitude.
-	private static final int LAT_MAX = (int) (90 * 1E6);
-	private static final int LON_MAX = (int) (180 * 1E6);
 
 	//Meeting request code.
 	private static final int MEETING_REQUEST_CODE = 0;
+	
+	private UsersUpdatedListener clientLocationListener;
 	
 	//On activity creation.
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
+		//Set up the client location listener.
+		clientLocationListener = new UsersUpdatedListener()
+		{
+			public void EventFired(UsersUpdatedEvent event) 
+			{
+				if(event == null)
+					return;
+				
+				ArrayList<User> users = event.GetUsers();
+				if(users == null || users.size() <= 0)
+					return;
+				
+				User user = users.get(0);
+				if(user == null)
+					return;
+				
+				locChanged(new GeoPoint(user.GetLatitude(), user.GetLongitude()));
+			}
+			
+		};
+		
+		//Register the listener with the event system.
+		ServerEvents.GetInstance().AddClientLocationUpdatedListener(clientLocationListener);
 		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
@@ -92,47 +112,26 @@ public class GeoMapActivity extends Activity
 		//Create a new 2d tree to hold the geo points.
 		loadGeoreferencedPoints(this.currentMapFileId);
 		
-		//Restore the most recent location.
-		restoreLocation();
-
-		//Start the location listener.
-		GeoLocationListener locationListener = new GeoLocationListener(this);
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, NETWORK_PERIOD, 0, locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_PERIOD, 0, locationListener);
+		//Create the friends' map locations list.
+		friendsMapLoc = new ArrayList<PointF>();
 	}
 	
-	
-	//Inner classes
-	
-	public class GeoLocationListener implements LocationListener
+	@Override
+	protected void onDestroy()
 	{
-	   private GeoMapActivity geoActivity;
-	   public GeoLocationListener(GeoMapActivity mc_act)
-	   {
-	      super();
-	      this.geoActivity = mc_act;
-	   }
-	   public void onLocationChanged(Location location)
-	   {
-	      this.geoActivity.locChanged(location.getLatitude(), location.getLongitude(), true);
-	   }
-	   public void onProviderDisabled(String provider)
-	   {
-	   }
-	   public void onProviderEnabled(String provider)
-	   {
-	   }
-	   public void onStatusChanged(String provider, int status, Bundle extras)
-	   {
-	   }
+		//Unregister the client location listener.
+		ServerEvents.GetInstance().RemoveClientLocationUpdatedListener(clientLocationListener);
+		
+		//Call the base class.
+		super.onDestroy();
+		
 	}
 	
 	//Interface
 	
-	public PointF getMapLocation()
+	public PointF getUserMapLocation()
 	{
-		return this.mapLoc;
+		return this.userMapLoc;
 	}
 	
 	public List<MeetingPoint> getMeetingPoints()
@@ -303,82 +302,25 @@ public class GeoMapActivity extends Activity
 		
     }
 
-	protected void locChanged(double lat, double lon, boolean save)
+	protected void locChanged(double lat, double lon)
 	{
 		userWorldLoc = new GeoPoint((int)(lat * 1E6), (int)(lon * 1E6));
-		locChanged(userWorldLoc, save);
+		locChanged(userWorldLoc);
 	}
 	
-	protected void locChanged(GeoPoint worldLoc, boolean save)
+	protected void locChanged(GeoPoint worldLoc)
 	{
 		if(worldLoc == null)
 			return;
 		
 		//Get the geo referenced map position from the world location.
-		mapLoc = getGeoMapPosition(worldLoc);
+		userMapLoc = getGeoMapPosition(worldLoc);
 		
-		if(mapLoc == null)
+		if(userMapLoc == null)
 			return;
 				
 		//Update the map position on the imageview and redraw.
 		this.geoImageView.invalidate();
-		
-		if(!save)
-			return;
-		
-		//Save the location to the preferences so we can load it if necessary.
-		saveLocation(worldLoc);
 	}
 	
-	protected GeoPoint loadLocation()
-	{
-		//Load the last location from the shared preferences.
-		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-	    int lat = prefs.getInt(LATITUDE, Integer.MAX_VALUE);
-	    int lon = prefs.getInt(LONGITUDE, Integer.MAX_VALUE);
-	    
-	    //Return null if there was no valid location.
-	    if(lat > LAT_MAX || lon > LON_MAX)
-	    	return null;
-	    
-	    return new GeoPoint(lat, lon);
-	}
-	
-	protected void restoreLocation()
-	{
-		//Load the location from the preferences.
-		userWorldLoc = loadLocation();
-		
-		//Return if there's no previous location.
-		if(userWorldLoc == null)
-			return;
-		
-		//Update the map position.
-		locChanged(userWorldLoc, false);
-	}
-	
-	protected void saveLocation(GeoPoint loc)
-	{
-		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putInt(LATITUDE, loc.getLatitudeE6());
-		editor.putInt(LONGITUDE, loc.getLongitudeE6());
-		editor.commit();
-	}
-
-	
-	/*
-	public void logData() throws IOException
-	{
-		File path = Environment.getExternalStorageDirectory();
-	    File file = new File(path, "LatLong.txt");
-	    byte[] data;
-	    String lat_long = "Latitude: " + Double.toString(current_lat) + " Longitude: " + Double.toString(current_lon) + '\n';
-	    data = lat_long.getBytes();
-	    OutputStream os = new FileOutputStream(file, true);
-	    os.write(data);
-	    os.close();
-	}
-	*/
-
 }

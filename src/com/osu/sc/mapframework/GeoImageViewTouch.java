@@ -55,7 +55,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	protected boolean checkIfTappedUser(PointF imageLoc)
 	{
 	    //Ensure that there is a valid map location point.
-		PointF userMapLoc = this.geoMapActivity.getMapLocation();
+		PointF userMapLoc = this.geoMapActivity.getUserMapLocation();
 		if(userMapLoc == null)
 			return false;
 		
@@ -99,7 +99,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void drawUserLocation(Canvas canvas)
 	{
-		PointF mapLoc = this.geoMapActivity.getMapLocation();
+		PointF mapLoc = this.geoMapActivity.getUserMapLocation();
 		if(mapLoc == null)
 			return;
 		

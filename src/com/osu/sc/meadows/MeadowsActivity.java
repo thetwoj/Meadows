@@ -12,12 +12,19 @@ import android.widget.ImageButton;
 /*
  * The Homescreen activity class - contains links to all other main activities
  */
-public class MeadowsActivity extends Activity implements View.OnClickListener {
+public class MeadowsActivity extends Activity implements View.OnClickListener 
+{
+	private Intent locationServiceIntent;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        //Start up the location service.
+        locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
+        startService(locationServiceIntent);
     
         /*
         // Declare the ImageButtons on the homescreen by finding their ID's declared in 
@@ -83,5 +90,12 @@ public class MeadowsActivity extends Activity implements View.OnClickListener {
             default:
             	break;
         }
+    }
+    
+    public void onDestroy()
+    {
+    	//Make sure that the location service has been stopped.
+		stopService(locationServiceIntent);
+    	super.onDestroy();
     }
 }
