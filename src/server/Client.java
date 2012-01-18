@@ -225,17 +225,37 @@ public class Client
 		}
 	}
 	
-	public void SetLocation(int d, int e)
+	public void SetLocation(int latitude, int longitude)
 	{
-		if(LoggedIn() && (_latitude != d || _longitude != e))
-		{
-			_latitude = d;
-			_longitude = e;
-			_server.UpdateLocation(
-					_clientUid, 
-					_latitude,
-					_longitude);		
-		}
+		if(!LoggedIn() || !(_latitude != latitude || _longitude != longitude))
+			return;
+		
+		//send request to update location to server
+		_latitude = latitude;
+		_longitude = longitude;
+		_server.UpdateLocation(
+				_clientUid, 
+				_latitude,
+				_longitude);	
+		
+		//create a ClientLocationUpdated event
+		ServerEvents events = ServerEvents.GetInstance();
+		
+		//create user to be sent in event
+		ArrayList<User> users = new ArrayList<User>();
+		users.add(new User(_clientUid,
+				_firstName,
+				_lastName,
+				_phoneNumber,
+				_longitude,
+				_latitude,
+				-1,
+				false,
+				false,
+				false));
+		
+		//invoke event
+		events._InvokeClientLocationUpdated(users);
 	}
 	
 	public void SetGlobalVisibility(boolean value)

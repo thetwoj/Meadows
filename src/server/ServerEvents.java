@@ -15,11 +15,13 @@ public class ServerEvents
 	ArrayList<UsersUpdatedListener> _friendRequestsUpdatedListeners = new ArrayList<UsersUpdatedListener>();
 	ArrayList<UsersUpdatedListener> _loginFailureListeners 			= new ArrayList<UsersUpdatedListener>();
 	ArrayList<UsersUpdatedListener> _loginSuccessListeners 			= new ArrayList<UsersUpdatedListener>();
+	ArrayList<UsersUpdatedListener> _clientLocationUpdatedListeners = new ArrayList<UsersUpdatedListener>();
 	
 	
 	public void AddFriendsUpdatedListener(UsersUpdatedListener listener)
 	{
-		_friendsUpdatedListeners.add(listener);
+		if( !_friendsUpdatedListeners.contains(listener))
+			_friendsUpdatedListeners.add(listener);
 	}
 	
 	public void RemoveFriendsUpdatedListener(UsersUpdatedListener listener)
@@ -40,7 +42,8 @@ public class ServerEvents
 	
 	public void AddBlockedUsersUpdatedListener(UsersUpdatedListener listener)
 	{
-		_blockedUsersUpdatedListeners.add(listener);
+		if( !_blockedUsersUpdatedListeners.contains(listener))
+			_blockedUsersUpdatedListeners.add(listener);
 	}
 	
 	public void RemoveBlockedUsersUpdatedListener(UsersUpdatedListener listener)
@@ -61,12 +64,14 @@ public class ServerEvents
 
 	public void AddFriendRequestsUpdatedListener(UsersUpdatedListener listener)
 	{
-		_friendRequestsUpdatedListeners.add(listener);
+		if( !_friendRequestsUpdatedListeners.contains(listener))
+			_friendRequestsUpdatedListeners.add(listener);
 	}
 	
 	public void RemoveFriendRequestsUpdatedListener(UsersUpdatedListener listener)
 	{
-		_friendRequestsUpdatedListeners.remove(listener);
+		if( !_friendsUpdatedListeners.contains(listener))
+			_friendRequestsUpdatedListeners.remove(listener);
 	}
 	
 	protected void _InvokeFriendRequestsUpdated(ArrayList<User> users)
@@ -82,7 +87,8 @@ public class ServerEvents
 
 	public void AddLoginSuccessListener(UsersUpdatedListener listener)
 	{
-		_loginSuccessListeners.add(listener);
+		if( !_loginSuccessListeners.contains(listener))
+			_loginSuccessListeners.add(listener);
 	}
 	
 	public void RemoveLoginSuccessListener(UsersUpdatedListener listener)
@@ -110,7 +116,8 @@ public class ServerEvents
 
 	public void AddLoginFailureListener(UsersUpdatedListener listener)
 	{
-		_loginFailureListeners.add(listener);
+		if( !_loginFailureListeners.contains(listener))
+			_loginFailureListeners.add(listener);
 	}
 	
 	public void RemoveLoginFailureListener(UsersUpdatedListener listener)
@@ -127,6 +134,26 @@ public class ServerEvents
 			listener.EventFired(event);
 	}
 	
+	
+	public void AddClientLocationUpdatedListener(UsersUpdatedListener listener)
+	{
+		if( !_clientLocationUpdatedListeners.contains(listener))
+			_clientLocationUpdatedListeners.add(listener);
+	}
+	
+	public void RemoveClientLocationUpdatedListener(UsersUpdatedListener listener)
+	{
+		_clientLocationUpdatedListeners.remove(listener);
+	}
+	
+	protected void _InvokeClientLocationUpdated(ArrayList<User> users)
+	{
+		//create the event
+		UsersUpdatedEvent event = new UsersUpdatedEvent(this, users);
+		//execute each listener passing the new event
+		for(UsersUpdatedListener listener : _clientLocationUpdatedListeners)
+			listener.EventFired(event);
+	}
 	
 	
 	public static ServerEvents GetInstance()
