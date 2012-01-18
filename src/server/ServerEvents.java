@@ -7,7 +7,7 @@ public class ServerEvents
 	//Private singleton instance of ServerEvents
 	private static final ServerEvents _serverEvents = new ServerEvents();
 	//overloaded constructor to prevent object missuse
-	ServerEvents(){}
+	protected ServerEvents(){}
 	
 	//collections of event listeners
 	ArrayList<UsersUpdatedListener> _friendsUpdatedListeners 		= new ArrayList<UsersUpdatedListener>();

@@ -17,8 +17,8 @@ public class Client
 	private String 	_firstName;
 	private String	_lastName;
 	private String	_phoneNumber;
-	private String	_longitude;
-	private String 	_latitude;
+	private int	    _longitude;
+	private int     _latitude;
 	private int 	_clientUid;
 	private boolean _globalVisibility;
 	
@@ -29,8 +29,8 @@ public class Client
 	public String 	GetFirstName() 			{ return _firstName; }
 	public String 	GetLastName()  			{ return _lastName;  }
 	public String 	GetPhoneNumber()  		{ return _phoneNumber;  }
-	public String 	GetLatitude()  			{ return _latitude;  }
-	public String 	GetLongitude() 			{ return _longitude; }
+	public int   	GetLatitude()  		    { return _latitude;  }
+	public int  	GetLongitude() 		    { return _longitude; }
 	public boolean 	GetGlobalVisibility()	{ return _globalVisibility; }
 	
 	protected Client()
@@ -225,12 +225,12 @@ public class Client
 		}
 	}
 	
-	public void SetLocation(String latitude, String longitude)
+	public void SetLocation(int d, int e)
 	{
-		if(LoggedIn() && (_latitude != latitude || _longitude != longitude))
+		if(LoggedIn() && (_latitude != d || _longitude != e))
 		{
-			_latitude = latitude;
-			_longitude = longitude;
+			_latitude = d;
+			_longitude = e;
 			_server.UpdateLocation(
 					_clientUid, 
 					_latitude,

@@ -63,6 +63,9 @@
             android:name=".CreateMeetingActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
         </activity>
+        <service
+            android:name=".ClientLocationService">
+        </service>
     </application>
 
 </manifest>

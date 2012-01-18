@@ -300,15 +300,15 @@ public class Server
 	}
 	
 	/* Updates the location of the client with the given lat/long and the current time */
-	protected void UpdateLocation(int clientUid, String latitude, String longitude)
+	protected void UpdateLocation(int clientUid, int latitude, int longitude)
 	{
 		//Calendar object used to get current time
 		Calendar now = Calendar.getInstance();
 		
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
-		parameters.add(new BasicNameValuePair("latitude", latitude));
-		parameters.add(new BasicNameValuePair("longitude", longitude));
+		parameters.add(new BasicNameValuePair("latitude", Integer.toString(latitude)));
+		parameters.add(new BasicNameValuePair("longitude", Integer.toString(longitude)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(now.getTimeInMillis())));
 		new HttpPostTask("UpdateLocation.php", parameters).execute();
 	}
@@ -334,8 +334,8 @@ public class Server
 				String firstName 		= (String)json.get("firstName");
 				String lastName 		= (String)json.get("lastName");
 				String phoneNumber		= (String)json.get("phoneNumber");
-				String latitude 		= (String)json.get("latitude");
-				String longitude 		= (String)json.get("longitude");
+				int latitude 	    	= Integer.parseInt((String)json.get("latitude"));
+				int longitude 		    = Integer.parseInt((String)json.get("longitude"));
 				long timestamp 			= Long.parseLong((String)json.get("time"));
 				int uid 				= Integer.parseInt((String)json.get("uid"));
 				boolean isBlocked   	= Integer.parseInt((String)json.get("isBlocked")) == 1;
