@@ -140,6 +140,11 @@ public class GeoMapActivity extends Activity
 		//Unregister the client location listener.
 		ServerEvents.GetInstance().RemoveClientLocationUpdatedListener(clientLocationListener);
 		
+		//Force destroy the bitmap.
+		this.geoImageView.dispose();
+		
+		System.gc();
+		
 		//Call the base class.
 		super.onDestroy();
 		
@@ -292,8 +297,8 @@ public class GeoMapActivity extends Activity
 	       StringTokenizer st;
 	       while ((strLine = br.readLine()) != null)   {
 	    	   st = new StringTokenizer(strLine);
-	    	   float x = Float.parseFloat(st.nextToken()) * 1200f / 1800f; //temp
-	    	   float y = Float.parseFloat(st.nextToken()) * 1200f / 1800f; //temp
+	    	   float x = Float.parseFloat(st.nextToken());
+	    	   float y = Float.parseFloat(st.nextToken());
 	    	   double lat = Double.parseDouble(st.nextToken());
 	    	   double lon = Double.parseDouble(st.nextToken());
 	    	   int lat_int = (int) (lat * 1E6);
@@ -378,5 +383,4 @@ public class GeoMapActivity extends Activity
 		//Update the map position on the imageview and redraw.
 		this.geoImageView.invalidate();
 	}
-	
 }
