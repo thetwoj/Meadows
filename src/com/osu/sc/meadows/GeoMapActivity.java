@@ -102,7 +102,7 @@ public class GeoMapActivity extends Activity
 		};
 		
 		//Register the listener with the event system.
-		ServerEvents.GetInstance().AddClientLocationUpdatedListener(friendsLocationListener);
+		ServerEvents.GetInstance().AddFriendsUpdatedListener(friendsLocationListener);
 		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
@@ -292,8 +292,8 @@ public class GeoMapActivity extends Activity
 	       StringTokenizer st;
 	       while ((strLine = br.readLine()) != null)   {
 	    	   st = new StringTokenizer(strLine);
-	    	   float x = Float.parseFloat(st.nextToken());
-	    	   float y = Float.parseFloat(st.nextToken());
+	    	   float x = Float.parseFloat(st.nextToken()) * 1200f / 1800f; //temp
+	    	   float y = Float.parseFloat(st.nextToken()) * 1200f / 1800f; //temp
 	    	   double lat = Double.parseDouble(st.nextToken());
 	    	   double lon = Double.parseDouble(st.nextToken());
 	    	   int lat_int = (int) (lat * 1E6);

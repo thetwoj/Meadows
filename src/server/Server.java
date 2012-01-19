@@ -73,9 +73,7 @@ public class Server
 			String result = "";
 			
 			//create HTTP connection
-			final HttpParams httpParams = new BasicHttpParams();
-		    HttpConnectionParams.setConnectionTimeout(httpParams, 15000);
-			HttpClient client = new DefaultHttpClient(httpParams);
+			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(_url);
 
 			try
@@ -336,19 +334,19 @@ public class Server
 			{ 
 				json = new JSONObject(userJson);
 				
-				String firstName 		= (String)json.get("firstName");
-				String lastName 		= (String)json.get("lastName");
-				String phoneNumber		= (String)json.get("phoneNumber");
-				int latitude 	    	= Integer.parseInt((String)json.get("latitude"));
-				int longitude 		    = Integer.parseInt((String)json.get("longitude"));
-				long timestamp 			= Long.parseLong((String)json.get("time"));
-				int uid 				= Integer.parseInt((String)json.get("uid"));
-				boolean isBlocked   	= Integer.parseInt((String)json.get("isBlocked")) == 1;
-				boolean shareLocation	= Integer.parseInt((String)json.get("shareLocation")) == 1;
+				String firstName 		= json.getString("firstName");
+				String lastName 		= json.getString("lastName");
+				String phoneNumber		= json.getString("phoneNumber");
+				int latitude 	    	= json.getInt("latitude");
+				int longitude 		    = json.getInt("longitude");
+				long timestamp 			= json.getLong("time");
+				int uid 				= json.getInt("uid");
+				boolean isBlocked   	= json.getInt("isBlocked") == 1;
+				boolean shareLocation	= json.getInt("shareLocation") == 1;
 				
 				//determine whether or not this user will be visible
-				boolean locationShared 		 = Integer.parseInt((String)json.get("locationShared")) == 1;
-				boolean globalLocationShared = Integer.parseInt((String)json.get("visible")) == 1;
+				boolean locationShared 		 = json.getInt("locationShared") == 1;
+				boolean globalLocationShared = json.getInt("visible") == 1;
 				locationShared = locationShared && globalLocationShared;
 				
 				//create user
