@@ -11,9 +11,9 @@ public class Client
 	private static Client _client;
 	
 	//private variables
-	private ArrayList<User> _blockedUsers;
-	private ArrayList<User> _friends;
-	private ArrayList<User> _friendRequests;
+	private ArrayList<User> _blockedUsers = new ArrayList<User>();
+	private ArrayList<User> _friends  = new ArrayList<User>();
+	private ArrayList<User> _friendRequests  = new ArrayList<User>();
 	private String 	_firstName;
 	private String	_lastName;
 	private String	_phoneNumber;
@@ -30,7 +30,6 @@ public class Client
 	
 	//public getters
 	public String 	       GetFirstName() 			{ return _firstName; }
-	public ArrayList<User> GetFriends()             { return _friends;   }
 	public String 		   GetLastName()  			{ return _lastName;  }
 	public String 		   GetPhoneNumber()  		{ return _phoneNumber;  }
 	public int   		   GetLatitude()  		    { return _latitude;  }
@@ -38,6 +37,22 @@ public class Client
 	public boolean 	       GetGlobalVisibility()	{ return _globalVisibility; }
 	public int             GetNetworkPeriod()       { return NETWORK_PERIOD; }
 	public int             GetGPSPeriod()           { return GPS_PERIOD; }
+
+	public ArrayList<User> GetFriends()             { return _friends;   }
+	public ArrayList<User> GetBlockedUsers()        { return _blockedUsers;   }
+	public ArrayList<User> GetFriendRequests()		{ return _friendRequests; }
+	public ArrayList<User> GetVisibleFriends() 
+	{ 
+		//create list to be returned
+		ArrayList<User> retList = new ArrayList<User>();
+		
+		//loop through all friends
+		for(User user : _friends)
+			if(user.GetVisible())
+				retList.add(user); 
+		
+		return retList;
+	}
 	
 	protected Client()
 	{
