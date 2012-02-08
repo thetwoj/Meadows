@@ -29,7 +29,7 @@ public class User
 	public boolean 	GetLocationShared() { return _locationShared; }
 	public boolean 	GetIsBlocked()  	{ return _isBlocked; }
 	public boolean 	GetShareLocation()  { return _shareLocation; }
-	public boolean  GetUserVisible()	{ return _locationShared && _shareLocation && !_isBlocked; }
+	public boolean  GetVisible()		{ return _locationShared && _shareLocation && !_isBlocked; }
 	
 	//protected getters
 	protected int GetUid() { return _uid; }
@@ -69,6 +69,7 @@ public class User
 		_shareLocation 	= shareLocation;
 		_timestamp 		= timestamp;
 	}
+
 	
 	//toString override so that User.ToString() returns user's name
 	public String toString(){ return GetFirstName() + " " + GetLastName(); }

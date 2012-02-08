@@ -85,13 +85,19 @@ public class SocialActivity extends Activity
      */
     public void ButtonClicked(View view)
     {
-    	client.Login("12345");
+    	client.Login("123475");
     }
     
     public void OnFriendsUpdated(ArrayList<User> users)
     {
     	EditText textBox = (EditText)findViewById(R.id.testText);
     	text += "FriendsUpdated: "+Integer.toString(users.size()) + '\n';
+    	
+    	Client client = Client.GetInstance();
+    	ArrayList<User> visibleUsers = client.GetVisibleFriends();
+    	text += "VisibleFriendsUpdated: "+Integer.toString(visibleUsers.size()) + '\n';
+    	
+
     	textBox.setText(text);
     }
     
