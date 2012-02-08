@@ -41,7 +41,7 @@ public class ImageViewTouchBase extends ImageView
         protected int                                   mThisHeight                     = -1;
 
         protected Bitmap                                mBitmapDisplayed        = null;
-        final protected float                   MAX_ZOOM                        = 2.0f;
+        final protected float                   MAX_ZOOM                        = 4.0f;
 
         private OnBitmapChangedListener mListener;
 
@@ -67,7 +67,7 @@ public class ImageViewTouchBase extends ImageView
                 setScaleType( ImageView.ScaleType.MATRIX );
                 Drawable d = getDrawable();
                 Bitmap bmp = ((BitmapDrawable)d).getBitmap();
-                setImageBitmapReset(bmp, false);
+                setImageBitmapReset(bmp, true);
         }
 
         private class ScrollRunnable
@@ -157,7 +157,7 @@ public class ImageViewTouchBase extends ImageView
         public void setImageBitmapReset(final Bitmap bitmap, final boolean reset)
         {
                 final int viewWidth = getWidth();
-                if (viewWidth <= 0)
+                if (viewWidth <= 0 )
                 {
                         mOnLayoutRunnable = new Runnable()
                         {
@@ -256,6 +256,16 @@ public class ImageViewTouchBase extends ImageView
         {
                 matrix.getValues( mMatrixValues );
                 return mMatrixValues[whichValue];
+        }
+        
+        public int getBitmapHeight()
+        {
+        	return mBitmapDisplayed.getHeight();
+        }
+        
+        public int getBitmapWidth()
+        {
+        	return mBitmapDisplayed.getWidth();
         }
 
         public RectF getBitmapRect()

@@ -74,6 +74,7 @@ public class SocialActivity extends Activity
     	events.AddBlockedUsersUpdatedListener(blockedUsersListener);
     	events.AddFriendRequestsUpdatedListener(friendRequestsListener);
     	events.AddLoginSuccessListener(loginSuccessListener);
+
     }
     
     /**

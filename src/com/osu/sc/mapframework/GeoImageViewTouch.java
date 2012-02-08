@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.AttributeSet;
@@ -165,6 +166,32 @@ public class GeoImageViewTouch extends ImageViewTouch
 		drawFriendLocations(canvas);
 		drawMeetingPoints(canvas);
 	}
+	
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom)
+    {
+		super.onLayout( changed, left, top, right, bottom );
+		
+		if(mBitmapDisplayed == null)
+			return;
+		
+		//Zoom to the user location on the map, or the center if there's no valid user location within the map bounds.
+		PointF userMapLoc = this.geoMapActivity.getUserMapLoc();
+		Point toPoint;
+		float currentMidX = mThisWidth / 2;
+		float currentMidY = mThisHeight / 2;
+		if(userMapLoc == null || userMapLoc.x < 0 || userMapLoc.y < 0 || userMapLoc.x > getBitmapWidth() || userMapLoc.y > getBitmapHeight() )
+			toPoint = imageToScreen(this.geoMapActivity.getHomePointLoc());
+		else
+			toPoint = imageToScreen(new PointF(userMapLoc.x, userMapLoc.y));
+		
+		//Center the starting point.
+		scrollBy(-(toPoint.x - currentMidX), -(toPoint.y - currentMidY));
+		
+		//Zoom in on the starting point.
+		zoomTo(4.0f);
+		
+    }
 	
 	public void setGeoMapActivity(GeoMapActivity act)
 	{

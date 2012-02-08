@@ -15,8 +15,8 @@ import android.view.ViewConfiguration;
 
 public class ImageViewTouch extends ImageViewTouchBase
 {
-	static final float                      MIN_ZOOM        = 0.7f;
-	static final float                      MAX_ZOOM        = 2.5f;
+	protected static final float            MIN_ZOOM        = 0.7f;
+	protected static final float            MAX_ZOOM        = 4.0f;
 	static final long                       SINGLE_TAP_THRESHOLD = 306;
 	protected ScaleGestureDetector  	    mScaleDetector;
 	protected GestureDetector               mGestureDetector;
@@ -29,6 +29,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 	protected long                          mDownTime = 0;
 	protected boolean                       mLongPressed = false;
 	protected boolean						mScrolled = false;
+	protected boolean                       mZoomed = false;
 	
 	public OnClickListener getOnClickListener()
 	{
@@ -80,9 +81,6 @@ public class ImageViewTouch extends ImageViewTouchBase
 		mScaleDetector.onTouchEvent( event );
 		if ( !mScaleDetector.isInProgress())
 			mGestureDetector.onTouchEvent( event );
-		
-		//Enable long presses.
-		mGestureDetector.setIsLongpressEnabled(true);
 
 		int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK)
@@ -106,16 +104,18 @@ public class ImageViewTouch extends ImageViewTouchBase
             if(mDownTime > 0)
             {
             	long elapsedTime = Calendar.getInstance().getTimeInMillis() - mDownTime;
-            	if(elapsedTime > SINGLE_TAP_THRESHOLD && !mLongPressed && !mScrolled)
+            	if(elapsedTime > SINGLE_TAP_THRESHOLD && !mLongPressed && !mScrolled && !mZoomed)
             	{
             		singleTapped(new Point((int)event.getX(), (int)event.getY()));
             	}
             }
             
-            //Reset the longpressed downtime.
+            //Reset the longpressed state and downtime.
+    		mGestureDetector.setIsLongpressEnabled(true);
             mDownTime = 0;
             mLongPressed = false;
             mScrolled = false;
+            mZoomed = false;
 			 
 			break;
 		}
@@ -125,6 +125,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 	@Override
 	protected void onZoom(float scale)
 	{
+		mZoomed = true;
 		super.onZoom( scale );
 		if ( !mScaleDetector.isInProgress())
 			mCurrentScaleFactor = scale;
@@ -164,6 +165,8 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public void onLongPress(MotionEvent e)
 		{
+			if(mScaleDetector.isInProgress())
+				return;
 			mLongPressed = true;
 			longPressed(new Point((int)e.getX(), (int)e.getY()));
 		}
@@ -208,6 +211,7 @@ public class ImageViewTouch extends ImageViewTouchBase
 		@Override
 		public boolean onScale(ScaleGestureDetector detector)
 		{
+			mZoomed = true;
 			mCurrentScaleFactor = Math.min( getMaxZoom() * MAX_ZOOM, Math.max( mCurrentScaleFactor * detector.getScaleFactor(), MIN_ZOOM ) );
 			zoomTo( mCurrentScaleFactor, detector.getFocusX(), detector.getFocusY() );
 			invalidate();

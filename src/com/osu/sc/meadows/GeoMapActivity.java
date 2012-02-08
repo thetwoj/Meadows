@@ -45,6 +45,9 @@ public class GeoMapActivity extends Activity
 	//The current map position of the user.
 	private PointF userMapLoc;
 	
+	//The default center point when the map page is opened when there is no valid map user location.
+	private PointF homePointLoc;
+	
 	//The current map position of the user's friends.
 	private ArrayList<PointF> friendsMapLoc;
 	
@@ -140,8 +143,13 @@ public class GeoMapActivity extends Activity
 		//Unregister the client location listener.
 		ServerEvents.GetInstance().RemoveClientLocationUpdatedListener(clientLocationListener);
 		
+		//Unregister the friends location listener.
+		ServerEvents.GetInstance().RemoveFriendsUpdatedListener(friendsLocationListener);
+		
 		//Force destroy the bitmap.
 		this.geoImageView.dispose();
+		
+		this.geoImageView = null;
 		
 		System.gc();
 		
@@ -155,6 +163,11 @@ public class GeoMapActivity extends Activity
 	public ArrayList<PointF> getFriendsMapLoc()
 	{
 		return this.friendsMapLoc;
+	}
+	
+	public PointF getHomePointLoc()
+	{
+		return this.homePointLoc;
 	}
 	
 	public PointF getUserMapLoc()
@@ -295,6 +308,15 @@ public class GeoMapActivity extends Activity
 	       BufferedReader br = new BufferedReader(new InputStreamReader(din));
 	       String strLine;
 	       StringTokenizer st;
+	       
+	       //Load in the default home point.
+	       strLine = br.readLine();
+	       st = new StringTokenizer(strLine);
+	       float homeX = Float.parseFloat(st.nextToken());
+	       float homeY = Float.parseFloat(st.nextToken());
+	       this.homePointLoc = new PointF(homeX, homeY);
+	       
+	       //Load in all of the georeferenced points.
 	       while ((strLine = br.readLine()) != null)   {
 	    	   st = new StringTokenizer(strLine);
 	    	   float x = Float.parseFloat(st.nextToken());
