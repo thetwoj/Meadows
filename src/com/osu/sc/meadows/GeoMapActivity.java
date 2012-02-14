@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -15,17 +17,18 @@ import server.User;
 import server.UsersUpdatedEvent;
 import server.UsersUpdatedListener;
 
-import com.google.android.maps.GeoPoint;
-
 import com.osu.sc.mapframework.ClosestPointTrio;
 import com.osu.sc.mapframework.GeoImageViewTouch;
 import com.osu.sc.mapframework.GeoreferencedPoint;
+import com.osu.sc.mapframework.GeoPoint;
 import com.osu.sc.mapframework.MeetingPoint;
+import com.osu.sc.mapframework.MapUtils;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PointF;
 
+import android.location.Location;
 import android.os.Bundle;
 
 public class GeoMapActivity extends Activity
@@ -206,76 +209,103 @@ public class GeoMapActivity extends Activity
 		this.geoImageView.invalidate();
 	}
 	
-	protected long squareDistanceBetween(GeoPoint first, GeoPoint second)
+	protected ClosestPointTrio getClosestPointTrioSmart(GeoPoint worldLoc)
 	{
-		long dlat = first.getLatitudeE6() - second.getLatitudeE6();
-		long dlon = first.getLongitudeE6() - second.getLongitudeE6();
-		long square_distance = dlat * dlat + dlon * dlon;
-		return square_distance;
-	}
-
-	protected ClosestPointTrio getClosestPointTrio(GeoPoint worldLoc)
-	{
-		//Ensure there's at least 3 geo referenced points, otherwise return null.
 		if(this.geoReferencedPoints.size() < 3)
 			return null;
-
-		long firstDist = Long.MAX_VALUE;
-		long secondDist = Long.MAX_VALUE;
-		long thirdDist = Long.MAX_VALUE;
-		GeoreferencedPoint firstPoint = null;
-		GeoreferencedPoint secondPoint = null;
-		GeoreferencedPoint thirdPoint = null;
-		for(GeoreferencedPoint newPoint : this.geoReferencedPoints)
+		
+		//Compute distances from current location to geo point.
+		for (GeoreferencedPoint point : this.geoReferencedPoints)
 		{
-			//Keep going if the point is farther away than the 2 mins.
-			long newDist = squareDistanceBetween(worldLoc, newPoint);
-			if(newDist >= thirdDist)
-				continue;
-
-			//If it's closer than the first point, move the first point to the second point
-			//and update the first point.
-			if(newDist < firstDist)
+			float[] results = new float[1];
+			Location.distanceBetween(worldLoc.lat, worldLoc.lon, point.lat, point.lon, results);
+			point.distanceToLocation = results[0];
+		}
+		
+		//Sort the list.
+		Collections.sort(this.geoReferencedPoints, new Comparator<GeoreferencedPoint>() 
+		{
+			public int compare(GeoreferencedPoint p1, GeoreferencedPoint p2)
 			{
-				thirdDist = secondDist;
-				thirdPoint = secondPoint;
-				secondPoint = firstPoint;
-				secondDist = firstDist;
-				firstPoint = newPoint;
-				firstDist = newDist;
+				return Float.compare(p1.distanceToLocation, p2.distanceToLocation);
 			}
-			//Otherwise, just update the second point to the new point.
-			else if(newDist < secondDist)
+		});
+		
+		//Next index to increment, starts at third index.
+		double highestSuitability = Double.NEGATIVE_INFINITY;
+		GeoreferencedPoint bestFirst = this.geoReferencedPoints.get(0);
+		GeoreferencedPoint bestSecond = null;
+		GeoreferencedPoint bestThird = null;
+		
+		//Move outward in the permutation of points, keeping the first one and changing second and third to find a good match.
+		for(int i = 2; i < this.geoReferencedPoints.size(); i++)
+		{
+			for(int j = 1; j < i; j++)
 			{
-				thirdDist = secondDist;
-				thirdPoint = secondPoint;
-				secondDist = newDist;
-				secondPoint = newPoint;
-			}
-			else
-			{
-				thirdDist = newDist;
-				thirdPoint = newPoint;
+			
+				GeoreferencedPoint secondPoint = this.geoReferencedPoints.get(j);
+				GeoreferencedPoint thirdPoint = this.geoReferencedPoints.get(i);
+				double suitability = getSuitability(worldLoc, bestFirst, secondPoint, thirdPoint);
+				if(suitability > highestSuitability)
+				{
+					highestSuitability = suitability;
+					bestSecond = secondPoint;
+					bestThird = thirdPoint;
+				
+					//Return the set early if it's good enough.
+					if(suitability > 0.05)
+						return new ClosestPointTrio(bestFirst, bestSecond, bestThird);
+				
+				}
 			}
 		}
-
-		return new ClosestPointTrio(firstPoint, secondPoint, thirdPoint);
+		
+		if(bestSecond == null)
+			return null;
+		
+		return new ClosestPointTrio(bestFirst, bestSecond, bestThird);
+	}
+	
+	protected double getSuitability(GeoPoint worldLoc, GeoPoint first, GeoPoint second, GeoPoint third)
+	{
+		//Compute the perimeter of the triangle.
+		double side1 = MapUtils.pyth(first, second);
+		double side2 = MapUtils.pyth(first, third);
+		double side3 = MapUtils.pyth(second, third);
+		double perimeter = side1 + side2 + side3;
+		
+		//Compute the average latitude and longitude of the triangle.
+		GeoPoint averagePoint = new GeoPoint((first.lat + second.lat + third.lat) / 3, (first.lon + second.lon + third.lon) / 3);
+		
+		//Compute the distance between the current location and the average latitude and longitude.
+		double distance_from_average = MapUtils.pyth(worldLoc, averagePoint);
+		
+		//Compute the area of the triangle.
+		double half_perim = perimeter / 2;
+		double area = Math.sqrt(half_perim * (half_perim - side1) * (half_perim - side2) * (half_perim - side3));
+		
+		//Return the weighted ratio of area to perimeter and average distance.
+	    double area_perim_ratio = 5.5 * area / (perimeter * perimeter);
+	    double dist_perim_ratio = -1.0 * distance_from_average / perimeter;
+	    double perim_ratio = -5.0 * perimeter;
+		return area_perim_ratio + dist_perim_ratio + perim_ratio;
+		
 	}
 
 	protected PointF getGeoMapPosition(GeoPoint worldLoc)
 	{
-		ClosestPointTrio trio = getClosestPointTrio(worldLoc);
-		if(trio == null || trio.first == null || trio.second == null || trio.third == null)
+		ClosestPointTrio trio = getClosestPointTrioSmart(worldLoc);
+		if(trio == null)
 			return null;
 		
-		double x1 = trio.first.getLongitudeE6();
-		double y1 = trio.first.getLatitudeE6();
-		double x2 = trio.second.getLongitudeE6();
-		double y2 = trio.second.getLatitudeE6();
-		double x3 = trio.third.getLongitudeE6();
-		double y3 = trio.third.getLatitudeE6();
-		double x4 = worldLoc.getLongitudeE6();
-		double y4 = worldLoc.getLatitudeE6();
+		double x1 = trio.first.lon;
+		double y1 = trio.first.lat;
+		double x2 = trio.second.lon;
+		double y2 = trio.second.lat;
+		double x3 = trio.third.lon;
+		double y3 = trio.third.lat;
+		double x4 = worldLoc.lon;
+		double y4 = worldLoc.lat;
 		
 		double u1 = trio.first.x;
 		double v1 = trio.first.y;
@@ -323,10 +353,8 @@ public class GeoMapActivity extends Activity
 	    	   float y = Float.parseFloat(st.nextToken());
 	    	   double lat = Double.parseDouble(st.nextToken());
 	    	   double lon = Double.parseDouble(st.nextToken());
-	    	   int lat_int = (int) (lat * 1E6);
-	   		   int lon_int = (int) (lon * 1E6);
 	    	   
-	    	   this.geoReferencedPoints.add(new GeoreferencedPoint(lat_int, lon_int, x, y));
+	    	   this.geoReferencedPoints.add(new GeoreferencedPoint(lat, lon, x, y));
 	       }
 	       
 	    }

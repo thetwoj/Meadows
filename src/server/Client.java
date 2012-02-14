@@ -1,9 +1,6 @@
 package server;
 
 import java.util.ArrayList;
-import java.awt.*;
-
-import android.os.Handler;
 
 public class Client
 {
@@ -17,8 +14,8 @@ public class Client
 	private String 	_firstName;
 	private String	_lastName;
 	private String	_phoneNumber;
-	private int	    _longitude;
-	private int     _latitude;
+	private double  _longitude;
+	private double  _latitude;
 	private int 	_clientUid;
 	private boolean _globalVisibility;
 	
@@ -32,8 +29,8 @@ public class Client
 	public String 	       GetFirstName() 			{ return _firstName; }
 	public String 		   GetLastName()  			{ return _lastName;  }
 	public String 		   GetPhoneNumber()  		{ return _phoneNumber;  }
-	public int   		   GetLatitude()  		    { return _latitude;  }
-	public int  	       GetLongitude() 		    { return _longitude; }
+	public double   	   GetLatitude()  		    { return _latitude;  }
+	public double  	       GetLongitude() 		    { return _longitude; }
 	public boolean 	       GetGlobalVisibility()	{ return _globalVisibility; }
 	public int             GetNetworkPeriod()       { return NETWORK_PERIOD; }
 	public int             GetGPSPeriod()           { return GPS_PERIOD; }
@@ -246,7 +243,7 @@ public class Client
 		}
 	}
 	
-	public void SetLocation(int latitude, int longitude)
+	public void SetLocation(double latitude, double longitude)
 	{
 		if(!(_latitude != latitude || _longitude != longitude))
 			return;

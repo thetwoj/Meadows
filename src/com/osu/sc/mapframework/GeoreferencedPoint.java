@@ -1,15 +1,17 @@
 package com.osu.sc.mapframework;
 
-import com.google.android.maps.GeoPoint;
-
 public class GeoreferencedPoint extends GeoPoint
 {
 	public double x;
 	public double y;
-	public GeoreferencedPoint(int latitudeE6, int longitudeE6, double x, double y)
+	public boolean isChosen;
+	public float distanceToLocation;
+	public GeoreferencedPoint(double lat, double lon, double x, double y)
 	{
-		super(latitudeE6, longitudeE6);
+		super(lat, lon);
 		this.x = x;
-		this.y = y;	
+		this.y = y;
+		this.isChosen = false;
+		this.distanceToLocation = Float.MAX_VALUE;
 	}
 }

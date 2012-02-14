@@ -12,9 +12,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
@@ -303,15 +300,15 @@ public class Server
 	}
 	
 	/* Updates the location of the client with the given lat/long and the current time */
-	protected void UpdateLocation(int clientUid, int latitude, int longitude)
+	protected void UpdateLocation(int clientUid, double latitude, double longitude)
 	{
 		//Calendar object used to get current time
 		Calendar now = Calendar.getInstance();
 		
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
-		parameters.add(new BasicNameValuePair("latitude", Integer.toString(latitude)));
-		parameters.add(new BasicNameValuePair("longitude", Integer.toString(longitude)));
+		parameters.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
+		parameters.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(now.getTimeInMillis())));
 		new HttpPostTask("UpdateLocation.php", parameters).execute();
 	}
@@ -337,8 +334,8 @@ public class Server
 				String firstName 		= json.getString("firstName");
 				String lastName 		= json.getString("lastName");
 				String phoneNumber		= json.getString("phoneNumber");
-				int latitude 	    	= json.getInt("latitude");
-				int longitude 		    = json.getInt("longitude");
+				double latitude 	    = json.getDouble("latitude");
+			    double longitude 	    = json.getDouble("longitude");
 				long timestamp 			= json.getLong("time");
 				int uid 				= json.getInt("uid");
 				boolean isBlocked   	= json.getInt("isBlocked") == 1;

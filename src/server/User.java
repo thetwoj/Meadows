@@ -7,8 +7,8 @@ public class User
 	private String _firstName;
 	private String _lastName;
 	private String _phoneNumber;
-	private int _longitude;
-	private int _latitude;
+	private double _longitude;
+	private double _latitude;
 	private int    _uid;
 	private long _timestamp;
 	private boolean _isBlocked;
@@ -23,8 +23,8 @@ public class User
 	public String 	GetFirstName() 		{ return _firstName; }
 	public String 	GetLastName()  		{ return _lastName;  }
 	public String 	GetPhoneNumber()  	{ return _phoneNumber;  }
-	public int  	GetLatitude()  		{ return _latitude;  }
-	public int  	GetLongitude() 		{ return _longitude; }
+	public double  	GetLatitude()  		{ return _latitude;  }
+	public double  	GetLongitude() 		{ return _longitude; }
 	public long		GetTimestamp()		{ return _timestamp; }
 	public boolean 	GetLocationShared() { return _locationShared; }
 	public boolean 	GetIsBlocked()  	{ return _isBlocked; }
@@ -39,8 +39,8 @@ public class User
 	protected void SetFirstName		(String firstName) 			{ _firstName = firstName; }
 	protected void SetLastName		(String lastName) 			{ _lastName = lastName; }
 	protected void SetPhoneNumber	(String phoneNumber) 		{ _phoneNumber = phoneNumber; }
-	protected void SetLongitude		(int longitude) 			{ _longitude = longitude; }
-	protected void SetLatitude		(int latitude) 			    { _latitude = latitude; }
+	protected void SetLongitude		(double longitude) 			{ _longitude = longitude; }
+	protected void SetLatitude		(double latitude) 		    { _latitude = latitude; }
 	protected void SetIsBlocked		(boolean value)				{ _isBlocked = value; }
 	protected void SetLocationShared(boolean locationShared)	{ _locationShared = locationShared; }
 	protected void setShareLocation	(boolean value) 			{ _shareLocation = value; }
@@ -51,8 +51,8 @@ public class User
 				 String firstName,
 				 String lastName, 
 				 String phoneNumber, 
-				 int longitude, 
-				 int latitude,
+				 double longitude, 
+				 double latitude,
 				 long timestamp,
 				 boolean isBlocked,
 				 boolean locationShared,

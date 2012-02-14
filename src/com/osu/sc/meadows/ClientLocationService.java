@@ -21,8 +21,9 @@ public class ClientLocationService extends Service
 	public static final String USER_LONGITUDE = "user_longitude";
 	
 	//Maximum possible latitude and longitude.
-	private static final int LAT_MAX = (int) (90 * 1E6);
-	private static final int LON_MAX = (int) (180 * 1E6);
+	private static final double LAT_MAX = 90.0;
+	private static final double LON_MAX = 180.0;
+	private static final String INVALID_LAT_LON = "360.0";
 
 	@Override
 	public void onCreate()
@@ -37,7 +38,7 @@ public class ClientLocationService extends Service
 			@Override
 			public void onLocationChanged(Location location) 
 			{
-				Client.GetInstance().SetLocation((int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6));
+				Client.GetInstance().SetLocation(location.getLatitude(), location.getLongitude());
 			}
 
 			@Override
@@ -92,11 +93,11 @@ public class ClientLocationService extends Service
 	{
 		//Load the last location from the shared preferences.
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-		int lat = prefs.getInt(USER_LATITUDE, Integer.MAX_VALUE);
-		int lon = prefs.getInt(USER_LONGITUDE, Integer.MAX_VALUE);
+		double lat = Double.parseDouble(prefs.getString(USER_LATITUDE, INVALID_LAT_LON));
+		double lon = Double.parseDouble(prefs.getString(USER_LONGITUDE, INVALID_LAT_LON));
 		
 		//Return if there's no previous location.
-		if(lat > LAT_MAX || lon > LON_MAX)
+		if(Math.abs(lat) > LAT_MAX || Math.abs(lon) > LON_MAX)
 			return;
 		
 		//Update the map position.
@@ -115,8 +116,8 @@ public class ClientLocationService extends Service
 	{
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putInt(USER_LATITUDE, Client.GetInstance().GetLatitude());
-		editor.putInt(USER_LONGITUDE, Client.GetInstance().GetLongitude());
+		editor.putString(USER_LATITUDE, Double.toString(Client.GetInstance().GetLatitude()));
+		editor.putString(USER_LONGITUDE, Double.toString(Client.GetInstance().GetLongitude()));
 		editor.commit();
 	}
 
