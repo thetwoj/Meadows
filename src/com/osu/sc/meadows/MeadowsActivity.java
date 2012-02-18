@@ -64,7 +64,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
         
         	// If the Social button is pressed, start social activity
             case R.id.socialButton:
-            	Intent mySocialIntent = new Intent(MeadowsActivity.this, SocialActivity.class);
+            	Intent mySocialIntent = new Intent(MeadowsActivity.this, FriendActivity.class);
             	MeadowsActivity.this.startActivity(mySocialIntent);
             break;
             

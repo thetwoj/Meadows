@@ -18,7 +18,7 @@ import android.os.Bundle;
 /*
  * Place holder activity for eventual Social features
  */
-public class SocialActivity extends Activity 
+public class FriendActivity extends Activity 
 {
 	String text = "";
 	Client client = Client.GetInstance();
@@ -34,7 +34,7 @@ public class SocialActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.sociallayout);
+        setContentView(R.layout.friendlayout);
         
         //Create the listeners.
         friendsListener = new UsersUpdatedListener()
