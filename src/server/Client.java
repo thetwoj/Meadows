@@ -2,6 +2,8 @@ package server;
 
 import java.util.ArrayList;
 
+import android.graphics.PointF;
+
 public class Client
 {
 	//singleton instance of client
@@ -18,6 +20,8 @@ public class Client
 	private double  _latitude;
 	private int 	_clientUid;
 	private boolean _globalVisibility;
+	private PointF  _mapLocation;
+	private long    _timestamp;
 	
 	private static final int NETWORK_PERIOD = 4000;
     private static final int GPS_PERIOD = 4000;
@@ -34,6 +38,8 @@ public class Client
 	public boolean 	       GetGlobalVisibility()	{ return _globalVisibility; }
 	public int             GetNetworkPeriod()       { return NETWORK_PERIOD; }
 	public int             GetGPSPeriod()           { return GPS_PERIOD; }
+	public PointF          GetMapLocation()         { return _mapLocation; }
+	public long            GetTimestamp()           { return _timestamp; }
 
 	public ArrayList<User> GetFriends()             { return _friends;   }
 	public ArrayList<User> GetBlockedUsers()        { return _blockedUsers;   }
@@ -280,6 +286,11 @@ public class Client
 		events._InvokeClientLocationUpdated(users);
 	}
 	
+	public void SetMapLocation(PointF location)
+	{
+		_mapLocation = location;
+	}
+	
 	public void SetGlobalVisibility(boolean value)
 	{
 		if(LoggedIn() && _globalVisibility != value)
@@ -292,6 +303,11 @@ public class Client
 					_phoneNumber,  
 					_globalVisibility);	
 		}
+	}
+	
+	public void SetTimestamp(long timestamp)
+	{
+		_timestamp = timestamp;
 	}
 	
 	/* Returns whether or not the client has logged in */

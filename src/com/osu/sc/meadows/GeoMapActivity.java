@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -50,9 +51,6 @@ public class GeoMapActivity extends Activity
 	
 	//The default center point when the map page is opened when there is no valid map user location.
 	private PointF homePointLoc;
-	
-	//The current map position of the user's friends.
-	private ArrayList<PointF> friendsMapLoc;
 	
 	//The currently displayed map id.
 	private int currentMapFileId;
@@ -116,9 +114,6 @@ public class GeoMapActivity extends Activity
 		//Create a list for the meeting points.
 		this.meetingPoints = new ArrayList<MeetingPoint>();
 		
-		//Create a list for the friends.
-		this.friendsMapLoc = new ArrayList<PointF>();
-		
 		//Save the image view.
 		this.geoImageView = (GeoImageViewTouch) findViewById(R.id.meadowsImageView);
 		
@@ -162,12 +157,6 @@ public class GeoMapActivity extends Activity
 	}
 	
 	//Interface
-	
-	public ArrayList<PointF> getFriendsMapLoc()
-	{
-		return this.friendsMapLoc;
-	}
-	
 	public PointF getHomePointLoc()
 	{
 		return this.homePointLoc;
@@ -398,18 +387,12 @@ public class GeoMapActivity extends Activity
 	{
 		if(users == null || users.size() <= 0)
 			return;
-		
-		ArrayList<PointF> mapLocs = new ArrayList<PointF>();
+
 		for(User user : users)
 		{
 			PointF mapLoc = getGeoMapPosition(new GeoPoint(user.GetLatitude(), user.GetLongitude()));
-			if(mapLoc == null)
-				continue;
-			
-			mapLocs.add(mapLoc);
+			user.SetMapLocation(mapLoc);
 		}
-		
-		friendsMapLoc = mapLocs;
 		
 		this.geoImageView.invalidate();
 	}
@@ -427,9 +410,13 @@ public class GeoMapActivity extends Activity
 		//Get the geo referenced map position from the world location.
 		userMapLoc = getGeoMapPosition(loc);
 				
-		if(userMapLoc == null)
-			return;
-						
+		//Set the client location.
+		Client client = Client.GetInstance();
+		client.SetMapLocation(userMapLoc);
+		
+		//Set the timestamp.
+		client.SetTimestamp(Calendar.getInstance().getTimeInMillis());
+		
 		//Update the map position on the imageview and redraw.
 		this.geoImageView.invalidate();
 	}

@@ -1,5 +1,7 @@
 package server;
 
+import android.graphics.PointF;
+
 
 public class User 
 {
@@ -16,6 +18,7 @@ public class User
 	private boolean _locationShared;
 	//whether or not the client is sharing his location with this user
 	private boolean _shareLocation;
+	private PointF  _mapLocation;
 	
 	
 	
@@ -30,10 +33,13 @@ public class User
 	public boolean 	GetIsBlocked()  	{ return _isBlocked; }
 	public boolean 	GetShareLocation()  { return _shareLocation; }
 	public boolean  GetVisible()		{ return _locationShared && _shareLocation && !_isBlocked; }
+	public PointF   GetMapLocation()    { return _mapLocation; }
 	
 	//protected getters
 	protected int GetUid() { return _uid; }
 	
+	//public setters
+	public void SetMapLocation      (PointF mapLocation)        { _mapLocation = mapLocation; }
 	
 	//protected setters
 	protected void SetFirstName		(String firstName) 			{ _firstName = firstName; }
@@ -43,7 +49,7 @@ public class User
 	protected void SetLatitude		(double latitude) 		    { _latitude = latitude; }
 	protected void SetIsBlocked		(boolean value)				{ _isBlocked = value; }
 	protected void SetLocationShared(boolean locationShared)	{ _locationShared = locationShared; }
-	protected void setShareLocation	(boolean value) 			{ _shareLocation = value; }
+	protected void SetShareLocation	(boolean value) 			{ _shareLocation = value; }
 	
 	
 	//Constructor for User class which fills local variables with passed values
@@ -68,6 +74,7 @@ public class User
 		_locationShared = locationShared;
 		_shareLocation 	= shareLocation;
 		_timestamp 		= timestamp;
+		_mapLocation    = null;
 	}
 
 	

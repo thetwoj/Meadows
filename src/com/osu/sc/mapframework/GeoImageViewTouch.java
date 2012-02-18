@@ -1,5 +1,10 @@
 package com.osu.sc.mapframework;
 
+import java.util.Calendar;
+
+import server.Client;
+import server.User;
+
 import com.osu.sc.meadows.GeoMapActivity;
 import com.osu.sc.meadows.R;
 
@@ -7,17 +12,18 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
 public class GeoImageViewTouch extends ImageViewTouch
 {
 	protected GeoMapActivity geoMapActivity;
-	private static final int MARKER_OFFSET_X = 14;
-	private static final int MARKER_OFFSET_Y = 33;
 	private final Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
     private final Bitmap meetingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.meeting_icon);
     private final Bitmap friendBmp = BitmapFactory.decodeResource(getResources(), R.drawable.friend_icon);
@@ -39,9 +45,8 @@ public class GeoImageViewTouch extends ImageViewTouch
 		//Convert the screen location to image coordinates.
 		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
 		{
-			//Shift the meeting point back by the bitmap size.
-			float origX = mPoint.mapLoc.x - MARKER_OFFSET_X;
-			float origY = mPoint.mapLoc.y - MARKER_OFFSET_Y;
+			float origX = mPoint.mapLoc.x;
+			float origY = mPoint.mapLoc.y;
 			
 			if(imageLoc.x < origX || imageLoc.x > (origX + wd) || imageLoc.y < origY || imageLoc.y > (origY + ht))
 				continue;
@@ -64,9 +69,8 @@ public class GeoImageViewTouch extends ImageViewTouch
 		int wd = userBmp.getWidth();
 		int ht = userBmp.getHeight();
 		
-		//Shift the meeting point back by the bitmap size.
-		float origX = userMapLoc.x - MARKER_OFFSET_X;
-		float origY = userMapLoc.y - MARKER_OFFSET_Y;
+		float origX = userMapLoc.x;
+		float origY = userMapLoc.y;
 		
 		if(imageLoc.x < origX || imageLoc.x > (origX + wd) || imageLoc.y < origY || imageLoc.y > (origY + ht))
 			return false;
@@ -77,51 +81,83 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 	}
 	
-	protected void drawAt(Canvas canvas, Point screenLoc, Bitmap bmp)
+	protected void drawNameplateAt(Canvas canvas, Paint paint, Point screenLoc, String name, int color)
 	{
-		if(screenLoc.x < 0 || screenLoc.x > mThisWidth || screenLoc.y < 0 || screenLoc.y > mThisHeight)
+		if(name.length() <= 0 )//|| screenLoc.x < 0 || screenLoc.x > mThisWidth || screenLoc.y < 0 || screenLoc.y > mThisHeight)
 			return;
 		
 		//Draw the user icon at the screen location.
-		canvas.drawBitmap(bmp, screenLoc.x, screenLoc.y, null);
+		int rectStartX = screenLoc.x + 15;
+		int rectStartY = screenLoc.y + 15;
+		Rect rect = new Rect();
+		paint.getTextBounds(name, 0, name.length(), rect);
+		rect.offset(rectStartX, rectStartY);
+		paint.setColor(color);
+		canvas.drawRect(rect, paint);
+		paint.setColor(Color.BLACK);
+		canvas.drawLine(screenLoc.x, screenLoc.y, rectStartX, rectStartY, paint);
+		canvas.drawText(name, rectStartX, rectStartY, paint);
 	}
 	
-	protected void drawFriendLocations(Canvas canvas)
+	protected void drawFriendLocations(Canvas canvas, Paint paint)
 	{
-		for(PointF friendMapLoc : this.geoMapActivity.getFriendsMapLoc())
+		Calendar now = Calendar.getInstance();
+		long time = now.getTimeInMillis();
+		
+		for(User friend : Client.GetInstance().GetFriends())
 		{
-			Point screen = imageToScreen(friendMapLoc);
-			screen.x -= MARKER_OFFSET_X;
-			screen.y -= MARKER_OFFSET_Y;
+			PointF mapLoc = friend.GetMapLocation();
+			if(mapLoc == null)
+				continue;
 			
-			drawAt(canvas, screen, friendBmp);
+			int color = getNameplateColor(time, friend.GetTimestamp());
+			Point screen = imageToScreen(mapLoc);
+			
+			drawNameplateAt(canvas, paint, screen, friend.GetFirstName(), color);
 		}
 	}
 	
-	protected void drawMeetingPoints(Canvas canvas)
+	protected void drawMeetingPoints(Canvas canvas, Paint paint)
 	{
 		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
 		{
 			Point screen = imageToScreen(mPoint.mapLoc);
-			screen.x -= MARKER_OFFSET_X;
-			screen.y -= MARKER_OFFSET_Y;
 			
-			drawAt(canvas, screen, meetingBmp);
+			drawNameplateAt(canvas, paint, screen, "12:05 P.M", Color.WHITE);
 			
 		}
 	}
 	
-	protected void drawUserLocation(Canvas canvas)
+	protected void drawUserLocation(Canvas canvas, Paint paint)
 	{
-		PointF mapLoc = this.geoMapActivity.getUserMapLoc();
+		Client client = Client.GetInstance();
+		PointF mapLoc = client.GetMapLocation();
 		if(mapLoc == null)
 			return;
 		
-		Point screen = imageToScreen(mapLoc);
-		screen.x -= MARKER_OFFSET_X;
-	    screen.y -= MARKER_OFFSET_Y;
+		int color = getNameplateColor(Calendar.getInstance().getTimeInMillis(), client.GetTimestamp());
 		
-		drawAt(canvas, screen, userBmp);
+		Point screen = imageToScreen(mapLoc);
+		
+		String name = client.GetFirstName();
+		if(name == null || name.length() <= 0)
+			name = "You";
+		
+		drawNameplateAt(canvas, paint, screen, name, color);
+	}
+	
+	protected int getNameplateColor(long now, long timestamp)
+	{
+		long diff = now - timestamp;
+		//Return green if the user was updated within a minute.
+		if(diff < 60000)
+			return Color.GREEN;
+		//Return yellow if the user was updated within 10 minutes.
+		if(diff < 600000)
+			return Color.YELLOW;
+		
+		//Return red if the user was updated over 10 minutes ago.
+		return Color.RED;
 	}
 	
 	@Override
@@ -162,9 +198,12 @@ public class GeoImageViewTouch extends ImageViewTouch
 			return;
 		
 		super.onDraw(canvas);
-		drawUserLocation(canvas);
-		drawFriendLocations(canvas);
-		drawMeetingPoints(canvas);
+		
+		Paint paint = new Paint();
+		paint.setStrokeWidth(2);
+		drawUserLocation(canvas, paint);
+		drawFriendLocations(canvas, paint);
+		drawMeetingPoints(canvas, paint);
 	}
 	
 	@Override
