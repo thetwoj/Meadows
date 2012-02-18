@@ -15,9 +15,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 
@@ -83,7 +85,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void drawNameplateAt(Canvas canvas, Paint paint, Point screenLoc, String name, int color)
 	{
-		if(name.length() <= 0 )//|| screenLoc.x < 0 || screenLoc.x > mThisWidth || screenLoc.y < 0 || screenLoc.y > mThisHeight)
+		if(name.length() <= 0 )
 			return;
 		
 		//Draw the user icon at the screen location.
@@ -91,12 +93,22 @@ public class GeoImageViewTouch extends ImageViewTouch
 		int rectStartY = screenLoc.y + 15;
 		Rect rect = new Rect();
 		paint.getTextBounds(name, 0, name.length(), rect);
-		rect.offset(rectStartX, rectStartY);
+		rect.offsetTo(rectStartX, rectStartY);
+		
+		//Increase the size of the rectangle by the padding so the text is not right at the edges.
+		rect.inset(-6, -6);
 		paint.setColor(color);
+		paint.setStrokeWidth(2);
 		canvas.drawRect(rect, paint);
 		paint.setColor(Color.BLACK);
-		canvas.drawLine(screenLoc.x, screenLoc.y, rectStartX, rectStartY, paint);
-		canvas.drawText(name, rectStartX, rectStartY, paint);
+		paint.setStyle(Paint.Style.STROKE);
+		canvas.drawRect(rect, paint);
+		paint.setStyle(Paint.Style.FILL);
+		paint.setTextAlign(Paint.Align.CENTER);
+		FontMetrics fm = new FontMetrics();
+		paint.getFontMetrics(fm);
+		canvas.drawLine(screenLoc.x, screenLoc.y, rect.left, rect.top, paint);
+		canvas.drawText(name, rect.exactCenterX(), rect.exactCenterY() + -(fm.ascent + fm.descent) / 2, paint);
 	}
 	
 	protected void drawFriendLocations(Canvas canvas, Paint paint)
@@ -200,7 +212,8 @@ public class GeoImageViewTouch extends ImageViewTouch
 		super.onDraw(canvas);
 		
 		Paint paint = new Paint();
-		paint.setStrokeWidth(2);
+		paint.setTextSize(16);
+		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		drawUserLocation(canvas, paint);
 		drawFriendLocations(canvas, paint);
 		drawMeetingPoints(canvas, paint);
