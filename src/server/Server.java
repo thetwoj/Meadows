@@ -12,6 +12,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
@@ -108,7 +109,6 @@ public class Server
 	}
 	
 	
-	
 	//private singleton instance of Server
 	private static Server _server;
 	/* Returns the singleton instance of the server */
@@ -121,7 +121,7 @@ public class Server
 	
 	
 	//Creates a new user in the server with the given data
-	protected void AddUser(final String phoneNumber, String firstName, String lastName)
+	protected void AddUser(final String email, final String password, String secretQuestion, String secretAnswer, String firstName, String lastName)
 	{
 		//parse firstName to remove invalid input and provide proper formatting
 		firstName = firstName.toLowerCase();
@@ -148,11 +148,14 @@ public class Server
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("firstName", firstName));
 		parameters.add(new BasicNameValuePair("lastName", lastName));
-		parameters.add(new BasicNameValuePair("phoneNumber", phoneNumber));
+		parameters.add(new BasicNameValuePair("email", email));
+		parameters.add(new BasicNameValuePair("password", password));
+		parameters.add(new BasicNameValuePair("secretQuestion", secretQuestion));
+		parameters.add(new BasicNameValuePair("secretAnswer", secretAnswer));
 		new HttpPostTask("CreateUser.php", parameters, new HttpCallBack(){
 			public void Invoke(String result)
 			{
-				Client.GetInstance().Login(phoneNumber);
+				Client.GetInstance().Login(email, password);
 			}
 		}).execute();
 	}
@@ -260,10 +263,13 @@ public class Server
 		}).execute();
 	}
 	
-	protected void Login(String clientPhoneNumber)
+	protected void Login(String email, String password)
 	{
+		//TODO: Hash password here
+		
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("clientPhoneNumber", clientPhoneNumber));
+		parameters.add(new BasicNameValuePair("email", email));
+		parameters.add(new BasicNameValuePair("password", password));
 		new HttpPostTask("Login.php", parameters, new HttpCallBack(){
 			public void Invoke(String result)
 			{
@@ -273,10 +279,25 @@ public class Server
 				if(result == "")
 					serverEvents._InvokeLoginFailure();
 				
-				else
+				else //parse client info, save it to client, invoke ServerEvents.LoginSuccess()
 				{
-					ArrayList<User> users = _ParseUsers(result);
-					serverEvents._InvokeLoginSuccess(users);
+					JSONObject json;
+					try 
+					{
+						Client client = Client.GetInstance();
+						json = new JSONObject(result);
+						client._firstName 		= json.getString("firstName");
+						client._lastName 		= json.getString("lastName");
+						client._email			= json.getString("email");
+						client._latitude 	    = json.getDouble("latitude");
+					 	client._longitude	    = json.getDouble("longitude");
+						//client._ 			= json.getLong("time");
+						client._clientUid		= json.getInt("uid");
+						client._globalVisibility = json.getInt("visible") == 1;
+						serverEvents._InvokeLoginSuccess();
+					} catch (JSONException e) {
+						serverEvents._InvokeLoginFailure();
+					}		
 				}
 			}
 		}).execute();
@@ -333,12 +354,11 @@ public class Server
 				
 				String firstName 		= json.getString("firstName");
 				String lastName 		= json.getString("lastName");
-				String phoneNumber		= json.getString("phoneNumber");
+				String email			= json.getString("email");
 				double latitude 	    = json.getDouble("latitude");
 			    double longitude 	    = json.getDouble("longitude");
 				long timestamp 			= json.getLong("time");
 				int uid 				= json.getInt("uid");
-				boolean isBlocked   	= json.getInt("isBlocked") == 1;
 				boolean shareLocation	= json.getInt("shareLocation") == 1;
 				
 				//determine whether or not this user will be visible
@@ -350,11 +370,10 @@ public class Server
 				User user = new User(uid,
 						firstName,
 						lastName,
-						phoneNumber,
+						email,
 						longitude,
 						latitude,
 						timestamp,
-						isBlocked,
 						locationShared,
 						shareLocation);
 				

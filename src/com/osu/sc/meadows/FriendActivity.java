@@ -85,7 +85,8 @@ public class FriendActivity extends Activity
      */
     public void ButtonClicked(View view)
     {
-    	client.Login("123475");
+    	client.CreateUser("Michael", "arnold", "a@b.c", "1234", "Dumb Question", "Dumb Answer");
+    	//client.Login("123475");
     }
     
     public void OnFriendsUpdated(ArrayList<User> users)

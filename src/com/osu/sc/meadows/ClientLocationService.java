@@ -63,7 +63,7 @@ public class ClientLocationService extends Service
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Client.GetInstance().GetGPSPeriod(), 0, locationListener);
 		
 		//Restore the most recent user location.
-	    restoreUserLocation();
+	    //restoreUserLocation();
 	    
 	    //Restore friend locations.
 	    restoreFriendLocations();

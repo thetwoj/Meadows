@@ -96,10 +96,10 @@ public class ServerEvents
 		_loginSuccessListeners.remove(listener);
 	}
 	
-	protected void _InvokeLoginSuccess(ArrayList<User> users)
+	protected void _InvokeLoginSuccess()
 	{
 		//create the event
-		UsersUpdatedEvent event = new UsersUpdatedEvent(this, users);
+		UsersUpdatedEvent event = new UsersUpdatedEvent(this, null);
 		//execute each listener passing the new event
 		for(UsersUpdatedListener listener : _loginSuccessListeners)
 			listener.EventFired(event);

@@ -11,13 +11,13 @@ public class Client
 	private ArrayList<User> _blockedUsers = new ArrayList<User>();
 	private ArrayList<User> _friends  = new ArrayList<User>();
 	private ArrayList<User> _friendRequests  = new ArrayList<User>();
-	private String 	_firstName;
-	private String	_lastName;
-	private String	_phoneNumber;
-	private double  _longitude;
-	private double  _latitude;
-	private int 	_clientUid;
-	private boolean _globalVisibility;
+	protected String 	_firstName;
+	protected String	_lastName;
+	protected String	_email;
+	protected double  	_longitude;
+	protected double  	_latitude;
+	protected int 		_clientUid;
+	protected boolean 	_globalVisibility;
 	
 	private static final int NETWORK_PERIOD = 4000;
     private static final int GPS_PERIOD = 4000;
@@ -28,7 +28,7 @@ public class Client
 	//public getters
 	public String 	       GetFirstName() 			{ return _firstName; }
 	public String 		   GetLastName()  			{ return _lastName;  }
-	public String 		   GetPhoneNumber()  		{ return _phoneNumber;  }
+	public String 		   GetEmail()  				{ return _email;  }
 	public double   	   GetLatitude()  		    { return _latitude;  }
 	public double  	       GetLongitude() 		    { return _longitude; }
 	public boolean 	       GetGlobalVisibility()	{ return _globalVisibility; }
@@ -55,7 +55,7 @@ public class Client
 	{
 		//Register so that successful logins updates local variables
 		ServerEvents events = ServerEvents.GetInstance();
-		events.AddLoginSuccessListener(new UsersUpdatedListener(){
+		/*events.AddLoginSuccessListener(new UsersUpdatedListener(){
     		public void EventFired(UsersUpdatedEvent event)
     		{
     			//get client's user object
@@ -67,7 +67,7 @@ public class Client
     			_clientUid = user.GetUid();
     			_globalVisibility = user.GetShareLocation();
     		}
-    	});
+    	});*/
 		
 		events.AddFriendsUpdatedListener(new UsersUpdatedListener(){
     		public void EventFired(UsersUpdatedEvent event)
@@ -94,14 +94,14 @@ public class Client
     	});
 	}
 	
-	public void Login(String clientPhoneNumber)
+	public void Login(String email, String password)
 	{
-		_server.Login(clientPhoneNumber);
+		_server.Login(email, password);
 	}
 	
-	public void CreateUser(String firstName, String lastName, String phoneNumber)
+	public void CreateUser(String firstName, String lastName, String email, String password, String secretQuestion, String secretAnswer)
 	{
-		_server.AddUser(phoneNumber, firstName, lastName);
+		_server.AddUser(email, password, secretQuestion, secretAnswer, firstName, lastName);
 	}
 	
 	public void RequestUpdateFriends()
@@ -140,7 +140,7 @@ public class Client
 			return;
 		
 		//send server request to add friend
-		_server.AddFriend(_clientUid, user.GetPhoneNumber());
+		_server.AddFriend(_clientUid, user.GetEmail());
 		
 		if(_friendRequests.contains(user))
 		{
