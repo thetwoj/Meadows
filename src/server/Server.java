@@ -160,11 +160,11 @@ public class Server
 		}).execute();
 	}
 	
-	protected void AddFriend(int senderUid, String recieverPhoneNumber)
+	protected void AddFriend(int senderUid, String recieverEmail)
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("senderUid", Integer.toString(senderUid)));
-		parameters.add(new BasicNameValuePair("recieverPhoneNumber", recieverPhoneNumber));
+		parameters.add(new BasicNameValuePair("recieverEmail", recieverEmail));
 		new HttpPostTask("AddFriend.php", parameters).execute();
 	}
 	
@@ -286,6 +286,7 @@ public class Server
 					{
 						//parse client info and store it
 						Client client = Client.GetInstance();
+						result = _SeparateUsers(result).get(0);
 						json = new JSONObject(result);
 						client._firstName 		 = json.getString("firstName");
 						client._lastName 		 = json.getString("lastName");
@@ -314,14 +315,16 @@ public class Server
 			int clientUid,
 			String firstName,
 			String lastName,
-			String phoneNumber, 
+			String email, 
+			String secretQuestion,
 			boolean visible )
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
 		parameters.add(new BasicNameValuePair("firstName", firstName));
 		parameters.add(new BasicNameValuePair("lastName", lastName));
-		parameters.add(new BasicNameValuePair("phoneNumber", phoneNumber));
+		parameters.add(new BasicNameValuePair("email", email));
+		parameters.add(new BasicNameValuePair("secretQuestion", secretQuestion));
 		parameters.add(new BasicNameValuePair("visible", Boolean.toString(visible)));
 		new HttpPostTask("UpdateClientData.php", parameters).execute();
 	}

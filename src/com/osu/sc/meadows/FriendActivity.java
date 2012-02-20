@@ -75,6 +75,7 @@ public class FriendActivity extends Activity
     	events.AddFriendRequestsUpdatedListener(friendRequestsListener);
     	events.AddLoginSuccessListener(loginSuccessListener);
 
+    	client.Login("A@A.A", "1234");
     }
     
     /**
@@ -85,8 +86,7 @@ public class FriendActivity extends Activity
      */
     public void ButtonClicked(View view)
     {
-    	client.CreateUser("Michael", "arnold", "a@b.c", "1234", "Dumb Question", "Dumb Answer");
-    	//client.Login("123475");
+    	Client.GetInstance().SetLastName("User");
     }
     
     public void OnFriendsUpdated(ArrayList<User> users)
@@ -105,7 +105,7 @@ public class FriendActivity extends Activity
     public void OnLogin()
     {
     	EditText textBox = (EditText)findViewById(R.id.testText);
-    	text += "Logged in as " + Boolean.toString(client.GetGlobalVisibility()) + '\n';
+    	text += "Logged in as " + client.GetFirstName() + '\n';
     	textBox.setText(text);
     }
     

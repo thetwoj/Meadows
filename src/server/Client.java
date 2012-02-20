@@ -199,10 +199,10 @@ public class Client
 		}
 	}
 	
-	public void AddFriend(String phoneNumber)
+	public void AddFriend(String recieverEmail)
 	{
 		if(LoggedIn())
-			_server.AddFriend(_clientUid, phoneNumber);
+			_server.AddFriend(_clientUid, recieverEmail);
 	}
 	
 	public void SetShareLocation(User user, boolean value)
@@ -210,8 +210,7 @@ public class Client
 		if(LoggedIn())
 			_server.SetShareLocation(_clientUid, user.GetUid(), value);
 	}
-	
-	/* <FIX "EMAIL"> */
+
 	
 	public void SetFirstName(String value)
 	{
@@ -223,6 +222,7 @@ public class Client
 					_firstName, 
 					_lastName,
 					_email, 
+					_secretQuestion,
 					_globalVisibility);		
 		}
 	}
@@ -237,6 +237,7 @@ public class Client
 					_firstName, 
 					_lastName,
 					_email, 
+					_secretQuestion,
 					_globalVisibility);		
 		}
 	}
@@ -251,6 +252,7 @@ public class Client
 					_firstName, 
 					_lastName,
 					_email, 
+					_secretQuestion,
 					_globalVisibility);	
 		}
 	}
@@ -301,11 +303,11 @@ public class Client
 					_firstName, 
 					_lastName,
 					_email,  
+					_secretQuestion,
 					_globalVisibility);	
 		}
 	}
-	
-	/* </FIX> */
+
 	
 	public void SetMapLocation(PointF location)
 	{
@@ -322,7 +324,7 @@ public class Client
 	/* Returns whether or not the client has logged in */
 	public boolean LoggedIn()
 	{
-		return _clientUid >= 0;
+		return _clientUid > 0;
 	}
 	
 	/* returns the singleton instance of Client */
