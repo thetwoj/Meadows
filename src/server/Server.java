@@ -284,18 +284,24 @@ public class Server
 					JSONObject json;
 					try 
 					{
+						//parse client info and store it
 						Client client = Client.GetInstance();
 						json = new JSONObject(result);
-						client._firstName 		= json.getString("firstName");
-						client._lastName 		= json.getString("lastName");
-						client._email			= json.getString("email");
-						client._latitude 	    = json.getDouble("latitude");
-					 	client._longitude	    = json.getDouble("longitude");
-						//client._ 			= json.getLong("time");
-						client._clientUid		= json.getInt("uid");
+						client._firstName 		 = json.getString("firstName");
+						client._lastName 		 = json.getString("lastName");
+						client._email			 = json.getString("email");
+						client._secretQuestion	 = json.getString("secretQuestion");
+						client._latitude 	     = json.getDouble("latitude");
+					 	client._longitude	     = json.getDouble("longitude");
+						client._timestamp 		 = json.getLong("time");
+						client._clientUid		 = json.getInt("uid");
 						client._globalVisibility = json.getInt("visible") == 1;
+						
 						serverEvents._InvokeLoginSuccess();
-					} catch (JSONException e) {
+					} 
+					
+					catch (JSONException e) 
+					{
 						serverEvents._InvokeLoginFailure();
 					}		
 				}

@@ -21,9 +21,10 @@ public class Client
 	protected double  	_latitude;
 	protected int 		_clientUid;
 	protected boolean 	_globalVisibility;
+	protected String 	_secretQuestion;
+	protected long    	_timestamp;
 	
 	private PointF  _mapLocation;
-	private long    _timestamp;
 	
 	private static final int NETWORK_PERIOD = 4000;
     private static final int GPS_PERIOD = 4000;
@@ -42,6 +43,7 @@ public class Client
 	public int             GetGPSPeriod()           { return GPS_PERIOD; }
 	public PointF          GetMapLocation()         { return _mapLocation; }
 	public long            GetTimestamp()           { return _timestamp; }
+	public String		   GetSecretQuestion()		{ return _secretQuestion; }
 
 	public ArrayList<User> GetFriends()             { return _friends;   }
 	public ArrayList<User> GetBlockedUsers()        { return _blockedUsers;   }
@@ -209,6 +211,8 @@ public class Client
 			_server.SetShareLocation(_clientUid, user.GetUid(), value);
 	}
 	
+	/* <FIX "EMAIL"> */
+	
 	public void SetFirstName(String value)
 	{
 		if(LoggedIn() && _firstName != value)
@@ -218,7 +222,7 @@ public class Client
 					_clientUid, 
 					_firstName, 
 					_lastName,
-					_phoneNumber, 
+					_email, 
 					_globalVisibility);		
 		}
 	}
@@ -232,21 +236,21 @@ public class Client
 					_clientUid, 
 					_firstName, 
 					_lastName,
-					_phoneNumber, 
+					_email, 
 					_globalVisibility);		
 		}
 	}
 	
-	public void SetPhoneNumber(String value)
+	public void SetEmail(String value)
 	{
-		if(LoggedIn() && _phoneNumber != value)
+		if(LoggedIn() && _email.toLowerCase() != value)
 		{
-			_phoneNumber = value;
+			_email = value;
 			_server.UpdateClientData(
 					_clientUid, 
 					_firstName, 
 					_lastName,
-					_phoneNumber, 
+					_email, 
 					_globalVisibility);	
 		}
 	}
@@ -276,21 +280,15 @@ public class Client
 		users.add(new User(_clientUid,
 				_firstName,
 				_lastName,
-				_phoneNumber,
+				_email,
 				_longitude,
 				_latitude,
 				-1,
-				false,
 				false,
 				false));
 		
 		//invoke event
 		events._InvokeClientLocationUpdated(users);
-	}
-	
-	public void SetMapLocation(PointF location)
-	{
-		_mapLocation = location;
 	}
 	
 	public void SetGlobalVisibility(boolean value)
@@ -302,10 +300,19 @@ public class Client
 					_clientUid, 
 					_firstName, 
 					_lastName,
-					_phoneNumber,  
+					_email,  
 					_globalVisibility);	
 		}
 	}
+	
+	/* </FIX> */
+	
+	public void SetMapLocation(PointF location)
+	{
+		_mapLocation = location;
+	}
+	
+
 	
 	public void SetTimestamp(long timestamp)
 	{
