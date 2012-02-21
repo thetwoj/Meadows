@@ -65,7 +65,7 @@ displayed when the button is unclicked (default), clicked or focused.
         </ImageButton>
 
         <ImageButton
-            android:id="@+id/socialButton"
+            android:id="@+id/friendButton"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"

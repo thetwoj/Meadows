@@ -36,36 +36,40 @@
         <activity
             android:label="@string/app_name"
             android:name=".MeadowsActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".FriendActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".LoginRegisterActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" 
+            android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
             android:name=".UpdatesActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
         <activity 
         	android:name=".GeoMapActivity"
-        	android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        	android:theme="@android:style/Theme.Black.NoTitleBar">
         </activity>
         <activity 
             android:name=".StatsActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.Black.NoTitleBar">
         </activity>
         <activity 
             android:name=".CreateMeetingActivity"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.Black.NoTitleBar">
         </activity>
         <service
             android:name=".ClientLocationService"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+            android:theme="@android:style/Theme.Black.NoTitleBar">
         </service>
     </application>
 

@@ -29,7 +29,7 @@ public class ClientLocationService extends Service
 	public void onCreate()
 	{
 		//Set up the client immediately when the application opens.
-		Client.GetInstance();
+		Client.GetInstance().Login("thetest@gmail.com", "hello");
 
 		//Start the location listener.
 		LocationListener locationListener = new LocationListener()
@@ -62,7 +62,7 @@ public class ClientLocationService extends Service
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Client.GetInstance().GetNetworkPeriod(), 0, locationListener);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Client.GetInstance().GetGPSPeriod(), 0, locationListener);
 
-		//Restore the most recent user location.
+		//Restore the most recent user location.		
 	    restoreUserLocation();
 	    
 	    //Restore friend locations.

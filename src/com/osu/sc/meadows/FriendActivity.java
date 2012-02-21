@@ -13,6 +13,7 @@ import server.UsersUpdatedListener;
 import android.view.View;
 import android.widget.EditText;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 /*
@@ -78,9 +79,7 @@ public class FriendActivity extends Activity
     	client.Login("A@A.A", "1234");
     }
     
-    /**
-     * @param view
-     */
+    
     /**
      * @param view
      */

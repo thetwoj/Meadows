@@ -1,6 +1,7 @@
 package com.osu.sc.meadows;
 
 
+import server.Client;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
  */
 public class MeadowsActivity extends Activity implements View.OnClickListener 
 {
+	Client client = Client.GetInstance();
 	private Intent locationServiceIntent;
 	
     /** Called when the activity is first created. */
@@ -25,21 +27,6 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
         //Start up the location service.
         locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
         startService(locationServiceIntent);
-    
-        /*
-        // Declare the ImageButtons on the homescreen by finding their ID's declared in 
-        // the main.xml file
-        final ImageButton socialB = (ImageButton) findViewById(R.id.socialButton);
-        final ImageButton mapB = (ImageButton) findViewById(R.id.mapButton);
-        final ImageButton updatesB = (ImageButton) findViewById(R.id.updatesButton);
-        final ImageButton statsB = (ImageButton) findViewById(R.id.statsButton);
-        
-        // Set onClickListener to all ImageButtons so that app can detect when they are pressed
-        socialB.setOnClickListener(this);
-        mapB.setOnClickListener(this);
-        updatesB.setOnClickListener(this);
-        statsB.setOnClickListener(this);
-        */
     }
     
     // Called when the soft "menu" key is pressed
@@ -62,10 +49,18 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
     public void onClick(View v) {
         switch(v.getId()) {
         
-        	// If the Social button is pressed, start social activity
-            case R.id.socialButton:
-            	Intent mySocialIntent = new Intent(MeadowsActivity.this, FriendActivity.class);
-            	MeadowsActivity.this.startActivity(mySocialIntent);
+        	// If the Friend button is pressed, start social activity
+            case R.id.friendButton:
+            	if(client.LoggedIn() == true)
+            	{
+            		Intent myFriendIntent = new Intent(MeadowsActivity.this, FriendActivity.class);
+            		MeadowsActivity.this.startActivity(myFriendIntent);
+            	}
+            	else
+            	{
+            		Intent myLoginRegisterIntent = new Intent(MeadowsActivity.this, LoginRegisterActivity.class);
+            		MeadowsActivity.this.startActivity(myLoginRegisterIntent);
+            	}
             break;
             
             // If the Map button is pressed, start map activity
