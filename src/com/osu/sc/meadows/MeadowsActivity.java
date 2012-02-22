@@ -4,6 +4,7 @@ package com.osu.sc.meadows;
 import server.Client;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +38,17 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.mainmenu, menu);
         return true;
+    }
+    
+    // TEMPORARY METHOD TO REVERT AUTOLOGIN TO FALSE
+    public void menuClick(View v) {
+    	String MEADOWS_USER_AUTOLOGIN = "meadows_user_autologin";
+    	String SHARED_PREFERENCES_NAME = "AppPreferences";
+
+    	SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+    	SharedPreferences.Editor editor = prefs.edit();
+    	editor.putBoolean(MEADOWS_USER_AUTOLOGIN, false);
+		editor.commit();
     }
     
 	/*

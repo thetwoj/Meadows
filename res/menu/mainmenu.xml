@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menuicon"
           android:icon="@drawable/icon"
-          android:title="temp" />
+          android:title="Autolog = False" 
+          android:onClick="menuClick" />
     <item android:id="@+id/help"
           android:icon="@drawable/icon"
           android:title="temp2" />

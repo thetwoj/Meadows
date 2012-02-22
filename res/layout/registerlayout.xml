@@ -148,6 +148,20 @@
             android:layout_marginTop="65dp"
             android:onClick="onClick"
             android:text="Register" />
+        
+        <Button
+              android:id="@+id/loginSwitch"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@+id/registerButton"
+              android:layout_centerHorizontal="true"
+              android:layout_marginTop="20dp"
+              android:text="Already have an account? Login here!"
+              android:background="@null"
+              android:textAppearance="?android:attr/textAppearanceSmall"
+              android:textColor="#0000FF"
+              android:onClick="onClick" 
+              android:paddingBottom="20dp"/>
     </RelativeLayout>
 
 </ScrollView>

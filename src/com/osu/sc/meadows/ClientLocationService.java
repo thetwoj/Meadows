@@ -17,8 +17,13 @@ public class ClientLocationService extends Service
 	
 	//Information for saving last known location.
 	public static final String SHARED_PREFERENCES_NAME = "AppPreferences";
-	public static final String USER_LATITUDE = "user_latitude";
-	public static final String USER_LONGITUDE = "user_longitude";
+	public static final String MEADOWS_USER_LATITUDE = "meadows_user_latitude";
+	public static final String MEADOWS_USER_LONGITUDE = "meadows_user_longitude";
+	
+	//Information for autologin procedure
+	public static final String MEADOWS_USER_EMAIL = "meadows_user_email";
+	public static final String MEADOWS_USER_PASS = "meadows_user_pass";
+	public static final String MEADOWS_USER_AUTOLOGIN = "meadows_user_autologin";
 	
 	//Maximum possible latitude and longitude.
 	private static final double LAT_MAX = 90.0;
@@ -29,8 +34,20 @@ public class ClientLocationService extends Service
 	public void onCreate()
 	{
 		//Set up the client immediately when the application opens.
-		Client.GetInstance().Login("thetest@gmail.com", "hello");
-
+		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+		Boolean autolog = prefs.getBoolean(MEADOWS_USER_AUTOLOGIN, false);
+		
+		if(autolog == true)
+		{
+			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
+			String pass = prefs.getString(MEADOWS_USER_PASS, "");
+			Client.GetInstance().Login(email, pass);
+		}
+		else
+		{
+			Client.GetInstance();
+		}
+		
 		//Start the location listener.
 		LocationListener locationListener = new LocationListener()
 		{
@@ -93,8 +110,8 @@ public class ClientLocationService extends Service
 	{
 		//Load the last location from the shared preferences.
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-		double lat = Double.parseDouble(prefs.getString(USER_LATITUDE, INVALID_LAT_LON));
-		double lon = Double.parseDouble(prefs.getString(USER_LONGITUDE, INVALID_LAT_LON));
+		double lat = Double.parseDouble(prefs.getString(MEADOWS_USER_LATITUDE, INVALID_LAT_LON));
+		double lon = Double.parseDouble(prefs.getString(MEADOWS_USER_LONGITUDE, INVALID_LAT_LON));
 		
 		//Return if there's no previous location.
 		if(Math.abs(lat) > LAT_MAX || Math.abs(lon) > LON_MAX)
@@ -116,8 +133,8 @@ public class ClientLocationService extends Service
 	{
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(USER_LATITUDE, Double.toString(Client.GetInstance().GetLatitude()));
-		editor.putString(USER_LONGITUDE, Double.toString(Client.GetInstance().GetLongitude()));
+		editor.putString(MEADOWS_USER_LATITUDE, Double.toString(Client.GetInstance().GetLatitude()));
+		editor.putString(MEADOWS_USER_LONGITUDE, Double.toString(Client.GetInstance().GetLongitude()));
 		editor.commit();
 	}
 

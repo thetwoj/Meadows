@@ -75,8 +75,6 @@ public class FriendActivity extends Activity
     	events.AddBlockedUsersUpdatedListener(blockedUsersListener);
     	events.AddFriendRequestsUpdatedListener(friendRequestsListener);
     	events.AddLoginSuccessListener(loginSuccessListener);
-
-    	client.Login("A@A.A", "1234");
     }
     
     
@@ -85,7 +83,9 @@ public class FriendActivity extends Activity
      */
     public void ButtonClicked(View view)
     {
-    	Client.GetInstance().SetLastName("User");
+    	EditText textBox = (EditText)findViewById(R.id.testText);
+    	text += "Logged in as " + client.GetFirstName() + '\n';
+    	textBox.setText(text);
     }
     
     public void OnFriendsUpdated(ArrayList<User> users)
