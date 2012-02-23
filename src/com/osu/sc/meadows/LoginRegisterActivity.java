@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -192,6 +193,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 					// Create user with input values
 					client.CreateUser(rFirstName, rLastName, rEmail, ePass, rSecurityQ, eSQAnswer);
 
+					
 					// Start the friend activity, log on is performed when creation succeeds
 					Intent myFriendIntent = new Intent(LoginRegisterActivity.this, FriendActivity.class);
 					LoginRegisterActivity.this.startActivity(myFriendIntent);
