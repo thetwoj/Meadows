@@ -63,21 +63,7 @@ public class Client
 	
 	protected Client()
 	{
-		//Register so that successful logins updates local variables
 		ServerEvents events = ServerEvents.GetInstance();
-		/*events.AddLoginSuccessListener(new UsersUpdatedListener(){
-    		public void EventFired(UsersUpdatedEvent event)
-    		{
-    			//get client's user object
-    			ArrayList<User> users = event.GetUsers();
-    			User user = users.get(0);
-    			
-    			_firstName = user.GetFirstName();
-    			_lastName = user.GetLastName();
-    			_clientUid = user.GetUid();
-    			_globalVisibility = user.GetShareLocation();
-    		}
-    	});*/
 		
 		events.AddFriendsUpdatedListener(new UsersUpdatedListener(){
     		public void EventFired(UsersUpdatedEvent event)
