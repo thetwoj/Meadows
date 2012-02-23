@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#ffffff" >
+
+    <Button
+        android:id="@+id/friendListButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:textColor="#000000"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:text="" 
+        android:onClick="onClick" 
+        android:gravity="left|center_vertical"
+        android:textSize="40dp"/>
+
+</LinearLayout>
