@@ -192,7 +192,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 			String rSQAnswer = mSQAnswer.getText().toString();
 
 			// Email validity checks
-			if(rEmail.isEmpty())
+			if(rEmail.length() <= 0)
 			{
 				alert.setMessage("Please enter an email address");
 				alert.show();
@@ -228,14 +228,14 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 			}
 
 			// Security Question validity checks
-			else if(rSecurityQ.isEmpty())
+			else if(rSecurityQ.length() <= 0)
 			{
 				alert.setMessage("Please enter a Security Question");
 				alert.show();
 			}
 
 			// SQ Answer validity checks
-			else if(rSQAnswer.isEmpty())
+			else if(rSQAnswer.length() <= 0)
 			{
 				alert.setMessage("Please enter an answer to your Security Question");
 				alert.show();
@@ -275,12 +275,11 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		{
 			EditText mEmail = (EditText) findViewById(R.id.loginEmail);
 			EditText mPass = (EditText) findViewById(R.id.loginPassword);
-
 			String lEmail = mEmail.getText().toString();
 			String lPass = mPass.getText().toString();
 
 			// Email validity checks
-			if(lEmail.isEmpty())
+			if(lEmail.length() <= 0)
 			{
 				alert.setMessage("Please enter an email address");
 				alert.show();
