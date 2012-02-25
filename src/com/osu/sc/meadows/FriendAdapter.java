@@ -2,6 +2,7 @@ package com.osu.sc.meadows;
 
 import java.util.List;
 
+import server.CallBack;
 import server.Client;
 import server.User;
 import server.UsersUpdatedEvent;
@@ -64,8 +65,15 @@ public class FriendAdapter extends ArrayAdapter{
 		{
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-				Client.GetInstance().SetShareLocation(user, isChecked);
+				//disable togglebuttonthing
+				CallBack callBack = new CallBack(){
+					public void Invoke(String result)
+					{
+						//enable togglebuttonthing
+					}
+				};
+				//SetShareLocation will execute callBack after server transaction is complete
+				Client.GetInstance().SetShareLocation(user, isChecked, callBack);
 				
 			}
 		};

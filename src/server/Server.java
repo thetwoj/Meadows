@@ -1,17 +1,24 @@
 package server;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,93 +29,8 @@ import android.os.AsyncTask;
  * This class will not be interacted with directly outside of this library, but rather 
  */
 public class Server 
-{
-	/*
-	 * This method wraps some code which is invoked upon http request completion
-	 */
-	class HttpCallBack
-	{
-		//The callback has one method which will be called upon
-		//http request completion. This method is overwritten 
-		//to give the callback functionality.
-		public void Invoke(String result){  }
-	}
-	
-	/*
-	 * An HTTPPost task will execute an Http request in a new thread,
-	 * then, upon Http request completion, will execute the given HttpCallBack 
-	 * in the UI thread.
-	 */
-	class HttpPostTask extends AsyncTask<String, Boolean, String>
-	{
-		//This contains the URL of the server we'll be interacting with
-		final String baseUrl = "http://people.oregonstate.edu/~schmitje/Meadows/";
-		final String _url;
-		final ArrayList<NameValuePair> _params;
-		final HttpCallBack _callBack;
-		
-		private HttpPostTask(String location, ArrayList<NameValuePair> params)
-		{
-			this(location, params, new HttpCallBack());
-		}
-		
-		/*
-		 * This constructor stores the given variables
-		 */
-		private HttpPostTask(String location, ArrayList<NameValuePair> params, HttpCallBack callBack)
-		{
-			_url = baseUrl + location;
-			_params = params;
-			_callBack = callBack;
-		}
-
-
-		@Override
-		protected String doInBackground(String... garbage) 
-		{
-			//This is the result which will be populated with whatever
-			//JSON is returned from our HTTP Post request.
-			String result = "";
-			
-			//create HTTP connection
-			HttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost(_url);
-
-			try
-			{			
-				//set post parameters			
-				post.setEntity(new UrlEncodedFormEntity(_params));
-
-				//execute http request
-				HttpResponse response = client.execute(post);
-				
-				//parse response
-				StringBuilder stringBuilder = new StringBuilder();
-				String line = "";
-				BufferedReader reader = 
-						new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-				
-				while((line = reader.readLine()) != null)
-					stringBuilder.append(line+"\n");
-				
-				result = stringBuilder.toString();		
-			}
-			catch(Exception e)
-			{
-				result = "failed like a badkid.";
-			}		
-			return result;		
-		}
-		
-		@Override
-		protected void onPostExecute(String result)
-		{
-			_callBack.Invoke(result);
-		}
-		
-	}
-	
-	
+{	
+	ArrayList<HttpPostTask> tasks = new ArrayList<HttpPostTask>();
 	//private singleton instance of Server
 	private static Server _server;
 	/* Returns the singleton instance of the server */
@@ -157,7 +79,7 @@ public class Server
 		parameters.add(new BasicNameValuePair("password", password));
 		parameters.add(new BasicNameValuePair("secretQuestion", secretQuestion));
 		parameters.add(new BasicNameValuePair("secretAnswer", secretAnswer));
-		new HttpPostTask("CreateUser.php", parameters, new HttpCallBack(){
+		new HttpPostTask("CreateUser.php", parameters, new CallBack(){
 			public void Invoke(String result)
 			{
 				Client.GetInstance().Login(email, password);
@@ -205,22 +127,31 @@ public class Server
 		new HttpPostTask("RemoveFriendRequest.php", parameters).execute();
 	}
 	
-	protected void SetShareLocation(int clientUid, int friendUid, boolean value)
+	protected void SetShareLocation(int clientUid, int friendUid, boolean value, CallBack callBack)
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
 		parameters.add(new BasicNameValuePair("friendUid", Integer.toString(friendUid)));
 		parameters.add(new BasicNameValuePair("value",     Boolean.toString(value)));
-		new HttpPostTask("SetShareLocation.php", parameters).execute();
+		ArrayList<CallBack> callBacks = new ArrayList<CallBack>();
+		callBacks.add(callBack);
+		new HttpPostTask("SetShareLocation.php", parameters, callBacks).execute();
 	}
 	
+	protected boolean allowRequestFriends = true;
 	protected void RequestUpdateFriends(int clientUid)
-	{
+	{	
+		//don't create multiple requests
+		if( !allowRequestFriends )
+			return;
+					
+
+		allowRequestFriends = false;
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
 		
-		new HttpPostTask("GetFriendData.php", parameters, new HttpCallBack(){
+		new HttpPostTask("GetFriendData.php", parameters, new CallBack(){
 			public void Invoke(String result)
 			{
 				ArrayList<User> users = _ParseUsers(result);
@@ -228,17 +159,24 @@ public class Server
 				//publish event
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				serverEvents._InvokeFriendsUpdated(users);
+				
+				Server.GetInstance().allowRequestFriends = true;
 			}
-		}).execute();
+		}).execute();		
 	}
 	
+	protected boolean allowRequestBlocked = true;
 	protected void RequestUpdateBlockedUsers(int clientUid)
 	{
+		//don't create multiple requests
+		if( !allowRequestBlocked )
+			return;
+				
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
 		
-		new HttpPostTask("GetBlockedUserData.php", parameters, new HttpCallBack(){
+		new HttpPostTask("GetBlockedUserData.php", parameters, new CallBack(){
 			public void Invoke(String result)
 			{
 				ArrayList<User> users = _ParseUsers(result);
@@ -246,17 +184,24 @@ public class Server
 				//publish event
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				serverEvents._InvokeBlockedUsersUpdated(users);
+				
+				Server.GetInstance().allowRequestBlocked = true;
 			}
 		}).execute();
 	}
 	
+	protected boolean allowRequestRequests = true;
 	protected void RequestUpdateFriendRequests(int clientUid)
 	{
+		//don't create multiple requests
+		if( !allowRequestRequests )
+			return;
+				
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
 		
-		new HttpPostTask("GetFriendRequestData.php", parameters, new HttpCallBack(){
+		new HttpPostTask("GetFriendRequestData.php", parameters, new CallBack(){
 			public void Invoke(String result)
 			{
 				ArrayList<User> users = _ParseUsers(result);
@@ -264,6 +209,8 @@ public class Server
 				//publish event
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				serverEvents._InvokeFriendRequestsUpdated(users);
+				
+				Server.GetInstance().allowRequestRequests = true;
 			}
 		}).execute();
 	}
@@ -275,7 +222,7 @@ public class Server
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("email", email));
 		parameters.add(new BasicNameValuePair("password", password));
-		new HttpPostTask("Login.php", parameters, new HttpCallBack(){
+		new HttpPostTask("Login.php", parameters, new CallBack(){
 			public void Invoke(String result)
 			{
 				ServerEvents serverEvents = ServerEvents.GetInstance();
@@ -419,5 +366,7 @@ public class Server
 		
 		return retList;
 	}
+	
+	
 	
 }
