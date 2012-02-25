@@ -114,10 +114,13 @@ public class GeoImageViewTouch extends ImageViewTouch
 		Calendar now = Calendar.getInstance();
 		long time = now.getTimeInMillis();
 		
-		for(User friend : Client.GetInstance().GetFriends())
+		for(User friend : Client.GetInstance().GetVisibleFriends())
 		{
 			PointF mapLoc = friend.GetMapLocation();
 			if(mapLoc == null)
+				continue;
+			
+			if(mapLoc.x < 0 || mapLoc.y < 0 || mapLoc.x > getBitmapWidth() || mapLoc.y > getBitmapHeight())
 				continue;
 			
 			int color = getNameplateColor(time, friend.GetTimestamp());
@@ -143,6 +146,9 @@ public class GeoImageViewTouch extends ImageViewTouch
 		Client client = Client.GetInstance();
 		PointF mapLoc = client.GetMapLocation();
 		if(mapLoc == null)
+			return;
+		
+		if(mapLoc.x < 0 || mapLoc.y < 0 || mapLoc.x > getBitmapWidth() || mapLoc.y > getBitmapHeight())
 			return;
 		
 		int color = getNameplateColor(Calendar.getInstance().getTimeInMillis(), client.GetTimestamp());
