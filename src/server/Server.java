@@ -121,7 +121,12 @@ public class Server
 	
 	
 	//Creates a new user in the server with the given data
-	protected void AddUser(final String email, final String password, String secretQuestion, String secretAnswer, String firstName, String lastName)
+	protected void AddUser(final String email, 
+			final String password, 
+			String secretQuestion, 
+			String secretAnswer, 
+			String firstName, 
+			String lastName)
 	{
 		//parse firstName to remove invalid input and provide proper formatting
 		firstName = firstName.toLowerCase();

@@ -13,10 +13,10 @@ public class User
 	private double _latitude;
 	private int    _uid;
 	private long _timestamp;
-	//whether or not this user  is sharing his location with the client
-	private boolean _locationShared;
 	//whether or not the client is sharing his location with this user
-	private boolean _shareLocation;
+	private boolean _shareWithUser;
+	//whether or not this user  is sharing his location with the client
+	private boolean _shareWithClient;
 	private PointF  _mapLocation;
 	
 	
@@ -28,9 +28,9 @@ public class User
 	public double  	GetLatitude()  		{ return _latitude;  }
 	public double  	GetLongitude() 		{ return _longitude; }
 	public long		GetTimestamp()		{ return _timestamp; }
-	public boolean 	GetLocationShared() { return _locationShared; }
-	public boolean 	GetShareLocation()  { return _shareLocation; }
-	public boolean  GetVisible()		{ return _locationShared && _shareLocation; }
+	public boolean 	GetShareWithUser()	{ return _shareWithUser; }
+	public boolean 	GetShareWithClient(){ return _shareWithClient; }
+	public boolean  GetVisible()		{ return _shareWithUser && _shareWithClient; }
 	public PointF   GetMapLocation()    { return _mapLocation; }
 	
 	//protected getters
@@ -45,8 +45,8 @@ public class User
 	protected void SetEmail			(String email) 				{ _email = email; }
 	protected void SetLongitude		(double longitude) 			{ _longitude = longitude; }
 	protected void SetLatitude		(double latitude) 		    { _latitude = latitude; }
-	protected void SetLocationShared(boolean locationShared)	{ _locationShared = locationShared; }
-	protected void SetShareLocation	(boolean value) 			{ _shareLocation = value; }
+	protected void SetShareWithUser	(boolean value)				{ _shareWithUser = value; }
+	protected void SetShareWithClient(boolean value) 			{ _shareWithClient = value; }
 	
 	
 	//Constructor for User class which fills local variables with passed values
@@ -57,8 +57,8 @@ public class User
 				 double longitude, 
 				 double latitude,
 				 long timestamp,
-				 boolean locationShared,
-				 boolean shareLocation)
+				 boolean shareWithUser,
+				 boolean shareWithClient)
 	{
 		_uid			= uid;
 		_firstName 		= firstName;
@@ -66,8 +66,8 @@ public class User
 		_email 			= email;
 		_longitude 		= longitude;
 		_latitude 		= latitude;
-		_locationShared = locationShared;
-		_shareLocation 	= shareLocation;
+		_shareWithUser 	= shareWithUser;
+		_shareWithClient= shareWithClient;
 		_timestamp 		= timestamp;
 		_mapLocation    = null;
 	}

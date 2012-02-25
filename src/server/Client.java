@@ -194,7 +194,11 @@ public class Client
 	public void SetShareLocation(User user, boolean value)
 	{
 		if(LoggedIn())
+		{
+			user.SetShareWithUser(value);
 			_server.SetShareLocation(_clientUid, user.GetUid(), value);
+			ServerEvents.GetInstance()._InvokeFriendsUpdated(GetFriends());
+		}
 	}
 
 	

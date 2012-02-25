@@ -71,6 +71,7 @@ public class ClientLocationService extends Service
 			@Override
 			public void onStatusChanged(String provider, int status, Bundle extras) 
 			{
+				System.out.println();
 			}
 
 		};
