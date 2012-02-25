@@ -14,7 +14,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class FriendAdapter extends ArrayAdapter{
 	public final Activity activity;
@@ -33,7 +36,7 @@ public class FriendAdapter extends ArrayAdapter{
 	{
 		View rowView = convertView;
 		FriendView fView = null;
-		OnClickListener acceptListener;
+		OnCheckedChangeListener fVisible;
 		final User user = (User)friends.get(position);
 
 		if(rowView == null)
@@ -45,7 +48,8 @@ public class FriendAdapter extends ArrayAdapter{
 			// Hold the view objects in an object,
 			// so they don't need to be re-fetched
 			fView = new FriendView();
-			fView.friendButton = (Button) rowView.findViewById(R.id.friendListButton);
+			fView.friendNameText = (TextView) rowView.findViewById(R.id.friendName);
+			fView.friendVisible = (ToggleButton) rowView.findViewById(R.id.friendVisibleToggle);
 
 			// Cache the view objects in the tag,
 			// so they can be re-accessed later
@@ -56,19 +60,24 @@ public class FriendAdapter extends ArrayAdapter{
 			fView = (FriendView) rowView.getTag();
 		}
 		
-		acceptListener = new OnClickListener()
+		fVisible = new OnCheckedChangeListener()
 		{
 			@Override
-			public void onClick(View v) {
-				Client.GetInstance().AcceptFriendRequest(user);
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+				Client.GetInstance().SetShareLocation(user, isChecked);
+				
 			}
 		};
 
 		// Transfer the stock data from the data object
 		// to the view objects
 		User currentFriend = (User) friends.get(position);
-		fView.friendButton.append(currentFriend.GetFirstName() + " " + currentFriend.GetLastName());
-		fView.friendButton.setOnClickListener(acceptListener);
+		
+		fView.friendNameText.append(currentFriend.GetFirstName() + " " + currentFriend.GetLastName());
+		
+		fView.friendVisible.setChecked(currentFriend.GetShareWithUser());
+		fView.friendVisible.setOnCheckedChangeListener(fVisible);
 
 		return rowView;
 	}
@@ -76,6 +85,7 @@ public class FriendAdapter extends ArrayAdapter{
 
 	protected static class FriendView
 	{
-		protected Button friendButton;
+		protected TextView friendNameText;
+		protected ToggleButton friendVisible;
 	}
 }

@@ -2,6 +2,8 @@ package com.osu.sc.meadows;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 import server.Client;
 import server.Server;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,7 +26,7 @@ import android.os.Bundle;
 /*
  * Place holder activity for eventual Social features
  */
-public class FriendActivity extends ListActivity 
+public class FriendActivity extends ListActivity implements Comparator<User>
 {
 	Client client = Client.GetInstance();
 	ServerEvents events = ServerEvents.GetInstance();
@@ -34,14 +37,21 @@ public class FriendActivity extends ListActivity
 	
 	ArrayList<User> friends;
 
+	ProgressDialog loadingFriends;
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
 
-		friends = client.GetFriendRequests();
+		loadingFriends = ProgressDialog.show(this, "", "Loading friends, please wait...", true);
+		
+		friends = client.GetFriends();
+		Collections.sort(friends, this);
 		setListAdapter(new FriendAdapter(this, friends));
+		
+		loadingFriends.dismiss();
 		//setContentView(R.layout.friendlayout);
 
 		//Create the listeners.
@@ -87,14 +97,14 @@ public class FriendActivity extends ListActivity
 	
 	public void OnFriendsUpdated(ArrayList<User> users)
 	{
-
+		friends = client.GetFriends();
+		Collections.sort(friends, this);
+		setListAdapter(new FriendAdapter(this, friends));
 	}
 
 	public void OnLogin()
 	{
-		//    	EditText textBox = (EditText)findViewById(R.id.testText);
-		//    	text += "Logged in as " + client.GetFirstName() + '\n';
-		//    	textBox.setText(text);
+		
 	}
 
 	public void OnBlockedUsersUpdated(ArrayList<User> users)
@@ -105,8 +115,8 @@ public class FriendActivity extends ListActivity
 	public void OnFriendRequestsUpdated(ArrayList<User> users)
 	{
 		
-		friends = client.GetFriendRequests();
-		setListAdapter(new FriendAdapter(this, friends));
+//		friends = client.GetFriendRequests();
+//		setListAdapter(new FriendAdapter(this, friends));
 
 	}
 
@@ -123,9 +133,9 @@ public class FriendActivity extends ListActivity
 		super.onDestroy();
 	}
 
-	public void onClick(View v)
-	{
-		;
+	@Override
+	public int compare(User lhs, User rhs) {
+		return lhs.GetFirstName().compareTo(rhs.GetFirstName());
 	}
 
 }
