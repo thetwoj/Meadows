@@ -191,12 +191,12 @@ public class Client
 			_server.AddFriend(_clientUid, recieverEmail);
 	}
 	
-	public void SetShareLocation(User user, boolean value)
+	public void SetShareLocation(User user, boolean value, CallBack callBack)
 	{
 		if(LoggedIn())
 		{
 			user.SetShareWithUser(value);
-			_server.SetShareLocation(_clientUid, user.GetUid(), value);
+			_server.SetShareLocation(_clientUid, user.GetUid(), value, callBack);
 			ServerEvents.GetInstance()._InvokeFriendsUpdated(GetFriends());
 		}
 	}
@@ -249,7 +249,7 @@ public class Client
 	
 	public void SetLocation(double latitude, double longitude)
 	{
-		if(!(_latitude != latitude || _longitude != longitude))
+		if(_latitude == latitude && _longitude == longitude)
 			return;
 		
 		_latitude = latitude;
