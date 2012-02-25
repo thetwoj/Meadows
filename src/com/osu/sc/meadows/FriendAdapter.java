@@ -48,7 +48,7 @@ public class FriendAdapter extends ArrayAdapter{
 			// Hold the view objects in an object,
 			// so they don't need to be re-fetched
 			fView = new FriendView();
-			fView.friendNameText = (TextView) rowView.findViewById(R.id.friendName);
+			fView.friendNameText = (TextView) rowView.findViewById(R.id.friendNameTV);
 			fView.friendVisible = (ToggleButton) rowView.findViewById(R.id.friendVisibleToggle);
 
 			// Cache the view objects in the tag,
@@ -74,8 +74,9 @@ public class FriendAdapter extends ArrayAdapter{
 		// to the view objects
 		User currentFriend = (User) friends.get(position);
 		
+		fView.friendNameText.setText("");
 		fView.friendNameText.append(currentFriend.GetFirstName() + " " + currentFriend.GetLastName());
-		
+				
 		fView.friendVisible.setChecked(currentFriend.GetShareWithUser());
 		fView.friendVisible.setOnCheckedChangeListener(fVisible);
 
