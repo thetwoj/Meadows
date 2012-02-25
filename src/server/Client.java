@@ -123,7 +123,7 @@ public class Client
 		if(!LoggedIn() || !_friendRequests.contains(user))
 			return;
 		
-		_server.RemoveFriend(user.GetUid(), _clientUid);
+		_server.RemoveFriend(_clientUid, user.GetUid());
 		
 		_friendRequests.remove(user);
 		ServerEvents.GetInstance()._InvokeFriendRequestsUpdated(_friendRequests);	
