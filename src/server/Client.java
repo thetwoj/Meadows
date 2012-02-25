@@ -26,8 +26,8 @@ public class Client
 	
 	private PointF  _mapLocation;
 	
-	private static final int NETWORK_PERIOD = 4000;
-    private static final int GPS_PERIOD = 4000;
+	private static final int NETWORK_PERIOD = 10000;
+    private static final int GPS_PERIOD = 10000;
 	
 	private Server _server = Server.GetInstance();
 	

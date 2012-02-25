@@ -1,5 +1,9 @@
 package com.osu.sc.meadows;
 
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import server.Client;
 
 import android.app.Service;
@@ -37,15 +41,11 @@ public class ClientLocationService extends Service
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
 		Boolean autolog = prefs.getBoolean(MEADOWS_USER_AUTOLOGIN, false);
 		
-		if(autolog == true)
+		if(autolog)
 		{
 			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
 			String pass = prefs.getString(MEADOWS_USER_PASS, "");
 			Client.GetInstance().Login(email, pass);
-		}
-		else
-		{
-			Client.GetInstance();
 		}
 		
 		//Start the location listener.
@@ -56,29 +56,40 @@ public class ClientLocationService extends Service
 			public void onLocationChanged(Location location) 
 			{
 				Client.GetInstance().SetLocation(location.getLatitude(), location.getLongitude());
+				Client.GetInstance().SetTimestamp(Calendar.getInstance().getTimeInMillis());
 			}
-
 			@Override
 			public void onProviderDisabled(String provider) 
 			{
 			}
-
 			@Override
 			public void onProviderEnabled(String provider) 
 			{
 			}
-
 			@Override
 			public void onStatusChanged(String provider, int status, Bundle extras) 
 			{
 				System.out.println();
 			}
-
 		};
 
+		//Start the location listener.
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Client.GetInstance().GetNetworkPeriod(), 0, locationListener);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Client.GetInstance().GetGPSPeriod(), 0, locationListener);
+		
+		//Schedule periodic client updates.
+		Timer pollTimer = new Timer();
+		TimerTask pollTask = new TimerTask()
+		{
+			public void run() 
+			{
+				Client.GetInstance().RequestUpdateFriendRequests();
+				Client.GetInstance().RequestUpdateFriends();
+			}
+		};
+		
+		pollTimer.scheduleAtFixedRate(pollTask, 0, Client.GetInstance().GetNetworkPeriod());
 
 		//Restore the most recent user location.		
 	    restoreUserLocation();
@@ -107,12 +118,31 @@ public class ClientLocationService extends Service
 		super.onDestroy();
 	}
 	
+	protected void restoreFriendLocations()
+	{
+	}
+	
+	protected void saveFriendLocations()
+	{
+	}
+	
 	protected void restoreUserLocation()
 	{
 		//Load the last location from the shared preferences.
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-		double lat = Double.parseDouble(prefs.getString(MEADOWS_USER_LATITUDE, INVALID_LAT_LON));
-		double lon = Double.parseDouble(prefs.getString(MEADOWS_USER_LONGITUDE, INVALID_LAT_LON));
+		
+		//Temporarily catch class cast exceptions until we make sure no one has the old data types in their prefs.
+		double lat = Double.parseDouble(INVALID_LAT_LON);
+		double lon = Double.parseDouble(INVALID_LAT_LON);
+		try
+		{
+			lat = Double.parseDouble(prefs.getString(MEADOWS_USER_LATITUDE, INVALID_LAT_LON));
+			lon = Double.parseDouble(prefs.getString(MEADOWS_USER_LONGITUDE, INVALID_LAT_LON));
+		}
+		catch(Exception e)
+		{
+			return;
+		}
 		
 		//Return if there's no previous location.
 		if(Math.abs(lat) > LAT_MAX || Math.abs(lon) > LON_MAX)
@@ -120,14 +150,6 @@ public class ClientLocationService extends Service
 		
 		//Update the map position.
 		Client.GetInstance().SetLocation(lat, lon);
-	}
-	
-	protected void restoreFriendLocations()
-	{
-	}
-	
-	protected void saveFriendLocations()
-	{
 	}
 	
 	protected void saveUserLocation()

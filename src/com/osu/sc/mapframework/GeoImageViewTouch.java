@@ -26,15 +26,12 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 public class GeoImageViewTouch extends ImageViewTouch
 {
 	protected GeoMapActivity geoMapActivity;
-	private final Bitmap userBmp = BitmapFactory.decodeResource(getResources(), R.drawable.user_icon);
-    private final Bitmap meetingBmp = BitmapFactory.decodeResource(getResources(), R.drawable.meeting_icon);
-    private final Bitmap friendBmp = BitmapFactory.decodeResource(getResources(), R.drawable.friend_icon);
 
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 	}
-	
+	/*
 	protected boolean checkIfTappedFriend(PointF imageLoc)
 	{
 		return false;
@@ -82,6 +79,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		return true;
 		
 	}
+	*/
 	
 	protected void drawNameplateAt(Canvas canvas, Paint paint, Point screenLoc, String name, int color)
 	{
@@ -175,6 +173,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	@Override
 	protected void longPressed(Point loc)
 	{
+		/*
 		if(mBitmapDisplayed == null)
 			return;
 		
@@ -189,11 +188,13 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 		//Notify the activity that the long press has occurred.
 		this.geoMapActivity.startCreateMeeting(imageLoc);
+		*/
 	}
 	
 	@Override
 	protected void singleTapped(Point loc)
 	{
+		/*
 		PointF imageLoc = screenToImage(loc);
 		if(checkIfTappedUser(imageLoc))
 			return;
@@ -201,6 +202,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 			return;
 		if(checkIfTappedFriend(imageLoc))
 			return;
+		*/
 	}
 	
 	protected void onDraw(Canvas canvas)
@@ -216,7 +218,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		drawUserLocation(canvas, paint);
 		drawFriendLocations(canvas, paint);
-		drawMeetingPoints(canvas, paint);
+		//drawMeetingPoints(canvas, paint);
 	}
 	
 	@Override
