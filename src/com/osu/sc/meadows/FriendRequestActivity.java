@@ -1,56 +1,46 @@
 package com.osu.sc.meadows;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
-import server.CallBack;
 import server.Client;
+import server.Server;
 import server.ServerEvents;
 import server.User;
 import server.UsersUpdatedEvent;
 import server.UsersUpdatedListener;
 
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ToggleButton;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 /*
  * Place holder activity for eventual Social features
  */
-public class FriendActivity extends ListActivity implements Comparator<User>
+public class FriendRequestActivity extends ListActivity implements Comparator<User>
 {
 	Client client = Client.GetInstance();
 	ServerEvents events = ServerEvents.GetInstance();
-	private UsersUpdatedListener friendsListener;
 	private UsersUpdatedListener blockedUsersListener;
 	private UsersUpdatedListener friendRequestsListener;
-	
-	OnCheckedChangeListener gVisible;
 
-	ArrayList<User> friends;
 	ArrayList<User> friendRequests;
 
 	ProgressDialog loadingFriends;
-	
-	ToggleButton globalVisible;
 
 	ListView lv;
 
@@ -64,41 +54,22 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 		loadingFriends = ProgressDialog.show(this, "", "Loading friends, please wait...", true);
 
 		// Get the client's friends
-		friends = client.GetFriends();
+		friendRequests = client.GetFriendRequests();
 
 		// Sort the friends by first name
-		Collections.sort(friends, this);
+		Collections.sort(friendRequests, this);
 
 		lv = getListView();
 		LayoutInflater inflater = getLayoutInflater();
-		View header = inflater.inflate(R.layout.friendheader, (ViewGroup) findViewById(R.id.friendHeaderRoot));
-		lv.addHeaderView(header, null, false);
+		View requestheader = inflater.inflate(R.layout.friendrequestheader, (ViewGroup) findViewById(R.id.friendRequestHeaderRoot));
+		lv.addHeaderView(requestheader, null, false);
 
-		lv.setAdapter(new FriendAdapter(this, friends));
-		
+		lv.setAdapter(new FriendRequestAdapter(this, friendRequests));
+
 		// Dismiss the friend loading message
 		loadingFriends.dismiss();
-		
-		globalVisible = (ToggleButton) findViewById(R.id.globalVisibleToggle);
-		globalVisible.setChecked(Client.GetInstance().GetGlobalVisibility());
-		globalVisible.setOnCheckedChangeListener(gVisible);
-		
-		gVisible = new OnCheckedChangeListener()
-		{
-			@Override
-			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-				Client.GetInstance().SetGlobalVisibility(buttonView.isChecked());
-			}
-		};
+
 		//Create the listeners.
-		friendsListener = new UsersUpdatedListener()
-		{
-			public void EventFired(UsersUpdatedEvent event)
-			{
-				ArrayList<User> users = event.GetUsers();
-				OnFriendsUpdated(users);
-			}
-		};
 		blockedUsersListener = new UsersUpdatedListener()
 		{
 			public void EventFired(UsersUpdatedEvent event)
@@ -117,21 +88,8 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 		};
 
 		//Register the listeners.
-		events.AddFriendsUpdatedListener(friendsListener);
 		events.AddBlockedUsersUpdatedListener(blockedUsersListener);
 		events.AddFriendRequestsUpdatedListener(friendRequestsListener);
-	}
-
-	public void OnFriendsUpdated(ArrayList<User> users)
-	{
-		friends = client.GetFriends();
-		Collections.sort(friends, this);
-		setListAdapter(new FriendAdapter(this, friends));
-	}
-
-	public void OnLogin()
-	{
-
 	}
 
 	public void OnBlockedUsersUpdated(ArrayList<User> users)
@@ -141,43 +99,9 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 
 	public void OnFriendRequestsUpdated(ArrayList<User> users)
 	{
-		int numberOfRequests = users.size();
-
-		ImageView requestCount = (ImageView) findViewById(R.id.friendRequestCount);
-
-		Drawable zero = getResources().getDrawable(R.drawable.zero);
-		Drawable one = getResources().getDrawable(R.drawable.one);
-		Drawable two = getResources().getDrawable(R.drawable.two);
-		Drawable three = getResources().getDrawable(R.drawable.three);
-		Drawable four = getResources().getDrawable(R.drawable.four);
-		Drawable five = getResources().getDrawable(R.drawable.five);
-
-		switch(numberOfRequests)
-		{
-		case(0):
-			requestCount.setBackgroundDrawable(zero);
-		break;
-		case(1):
-			requestCount.setBackgroundDrawable(one);
-		break;
-		case(2):
-			requestCount.setBackgroundDrawable(two);
-		break;
-		case(3):
-			requestCount.setBackgroundDrawable(three);
-		break;
-		case(4):
-			requestCount.setBackgroundDrawable(four);
-		break;
-		case(5):
-			requestCount.setBackgroundDrawable(five);
-		break;
-		default:
-			requestCount.setBackgroundDrawable(five);
-			break;
-		}
-
-		requestCount.invalidate();
+		friendRequests = client.GetFriendRequests();
+		Collections.sort(friendRequests, this);
+		lv.setAdapter(new FriendRequestAdapter(this, friendRequests));
 	}
 
 	public void OnClick(View v)
@@ -191,7 +115,7 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 
 			alert.setTitle("Add Friend"); 
 			alert.setMessage("Enter your friend's email:"); 
-
+			
 			// Set an EditText view to get user input  
 			alert.setView(textEntryView); 
 
@@ -205,17 +129,12 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 			});
 			alert.setNeutralButton("Cancel", new DialogInterface.OnClickListener() { 
 				public void onClick(DialogInterface dialog, int whichButton) { 
-
+		
 				}
 			});
-
+			
 			alert.show();
-
-		}
-		else if(v.getId() == R.id.friendRequestCount)
-		{
-			Intent myFriendRequestIntent = new Intent(FriendActivity.this, FriendRequestActivity.class);
-			FriendActivity.this.startActivity(myFriendRequestIntent);
+			
 		}
 	}
 
@@ -223,8 +142,8 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 	public void onDestroy()
 	{
 		//Unregister the listeners.
-		events.RemoveFriendsUpdatedListener(friendsListener);
 		events.RemoveBlockedUsersUpdatedListener(blockedUsersListener);
+		events.RemoveFriendRequestsUpdatedListener(friendRequestsListener);
 
 		//Call the base class destroy.
 		super.onDestroy();

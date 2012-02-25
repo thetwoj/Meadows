@@ -60,31 +60,34 @@ public class FriendAdapter extends ArrayAdapter{
 		{
 			fView = (FriendView) rowView.getTag();
 		}
-		
+
 		fVisible = new OnCheckedChangeListener()
 		{
 			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				//disable togglebuttonthing
+			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+				//disable togglebutton thing
+				buttonView.setClickable(false);
+
 				CallBack callBack = new CallBack(){
 					public void Invoke(String result)
 					{
-						//enable togglebuttonthing
+						//enable togglebutton thing
+						buttonView.setClickable(true);
 					}
 				};
 				//SetShareLocation will execute callBack after server transaction is complete
 				Client.GetInstance().SetShareLocation(user, isChecked, callBack);
-				
+
 			}
 		};
 
 		// Transfer the stock data from the data object
 		// to the view objects
 		User currentFriend = (User) friends.get(position);
-		
+
 		fView.friendNameText.setText("");
 		fView.friendNameText.append(currentFriend.GetFirstName() + " " + currentFriend.GetLastName());
-				
+
 		fView.friendVisible.setChecked(currentFriend.GetShareWithUser());
 		fView.friendVisible.setOnCheckedChangeListener(fVisible);
 

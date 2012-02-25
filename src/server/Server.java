@@ -227,37 +227,37 @@ public class Server
 			{
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				
-				//if login unsuccessful
-				if(result == "")
-					serverEvents._InvokeLoginFailure();
-				
-				else //parse client info, save it to client, invoke ServerEvents.LoginSuccess()
+				JSONObject json;
+				try 
 				{
-					JSONObject json;
-					try 
-					{
-						//parse client info and store it
-						Client client = Client.GetInstance();
-						result = _SeparateUsers(result).get(0);
-						json = new JSONObject(result);
-						client._firstName 		 = json.getString("firstName");
-						client._lastName 		 = json.getString("lastName");
-						client._email			 = json.getString("email");
-						client._secretQuestion	 = json.getString("secretQuestion");
-						client._latitude 	     = json.getDouble("latitude");
-					 	client._longitude	     = json.getDouble("longitude");
-						client._timestamp 		 = json.getLong("time");
-						client._clientUid		 = json.getInt("uid");
-						client._globalVisibility = json.getInt("visible") == 1;
-						
-						serverEvents._InvokeLoginSuccess();
-					} 
-					
-					catch (JSONException e) 
+					//parse client info and store it
+					Client client = Client.GetInstance();
+					ArrayList<String> users = _SeparateUsers(result);
+					if(users.size() == 0)
 					{
 						serverEvents._InvokeLoginFailure();
-					}		
-				}
+						return;
+					}
+					
+					result = users.get(0);
+					json = new JSONObject(result);
+					client._firstName 		 = json.getString("firstName");
+					client._lastName 		 = json.getString("lastName");
+					client._email			 = json.getString("email");
+					client._secretQuestion	 = json.getString("secretQuestion");
+					client._latitude 	     = json.getDouble("latitude");
+				 	client._longitude	     = json.getDouble("longitude");
+					client._timestamp 		 = json.getLong("time");
+					client._clientUid		 = json.getInt("uid");
+					client._globalVisibility = json.getInt("visible") == 1;
+					
+					serverEvents._InvokeLoginSuccess();
+				} 
+				
+				catch (JSONException e) 
+				{
+					serverEvents._InvokeLoginFailure();
+				}		
 			}
 		}).execute();
 	}

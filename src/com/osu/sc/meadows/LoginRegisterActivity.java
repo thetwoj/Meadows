@@ -9,6 +9,7 @@ import server.UsersUpdatedListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,7 +27,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	public static final String MEADOWS_USER_EMAIL = "meadows_user_email";
 	public static final String MEADOWS_USER_PASS = "meadows_user_pass";
 	public static final String MEADOWS_USER_AUTOLOGIN = "meadows_user_autologin";
-	
+
 	ServerEvents events = ServerEvents.GetInstance();
 	private UsersUpdatedListener loginSuccessListener;
 	private UsersUpdatedListener loginFailureListener;
@@ -35,14 +36,14 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 	String PASS_REGEX = "[^\\s]";
 	String NAME_REGEX = "[a-zA-Z]+";
-	
+
 	AlertDialog alert;
 	ProgressDialog loggingIn;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		// Initialize the alert box for error reporting
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCancelable(true);
@@ -60,7 +61,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		// Restore state, start layout
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loginlayout);
-		
+
 		// Set up to listen for login success
 		loginSuccessListener = new UsersUpdatedListener()
 		{
@@ -70,7 +71,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 				onLoginSuccess();
 			}
 		};
-		
+
 		// Set up to listen for login failure
 		loginFailureListener = new UsersUpdatedListener()
 		{
@@ -80,22 +81,22 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 				onLoginFailure();
 			}
 		};
-		
+
 		// Register as a login listeners
 		events.AddLoginSuccessListener(loginSuccessListener);
 		events.AddLoginFailureListener(loginFailureListener);
 	}
-	
+
 	// When login is successful
 	public void onLoginSuccess()
 	{
 		// Dismiss the logging in message
 		loggingIn.dismiss();
-		
+
 		// Destroy listeners in order to avoid weird issues later on
 		events.RemoveLoginSuccessListener(loginSuccessListener);
 		events.RemoveLoginSuccessListener(loginFailureListener);
-		
+
 		// Start Friends activity
 		Intent myFriendIntent = new Intent(LoginRegisterActivity.this, FriendActivity.class);
 		LoginRegisterActivity.this.startActivity(myFriendIntent);
@@ -103,25 +104,26 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		// Finish this activity, don't want the back button to bring user back to login screen
 		finish();
 	}
-	
+
 	public void onLoginFailure()
 	{
 		// Dismiss the logging in message
 		loggingIn.dismiss();
-		
+
 		// Alert user of the error
 		alert.setTitle("Login Failed! Please try again later");
 		alert.show();
-		
+
 		// Send the user back to the home screen, destroy listeners
 		finish();
 	}
 
 	private boolean isNetworkAvailable() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-
-		return activeNetworkInfo != null;
+		ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+	    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+	    NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+	    
+	    return (mWifi.isAvailable() || mMobile.isAvailable());
 	}
 
 	private String md5(String in) 
@@ -158,10 +160,10 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		editor.putBoolean(MEADOWS_USER_AUTOLOGIN, autolog);
 		editor.commit();
 	}
-	
+
 	@Override
 	public void onClick(View v) {
-		
+
 
 		// Switch to the Registration view
 		if(v.getId() == R.id.registerSwitch)
@@ -254,7 +256,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 					// Create user with input values
 					client.CreateUser(rFirstName, rLastName, rEmail, ePass, rSecurityQ, eSQAnswer);
 
-					
+
 					// Start the friend activity, log on is performed when creation succeeds
 					Intent myFriendIntent = new Intent(LoginRegisterActivity.this, FriendActivity.class);
 					LoginRegisterActivity.this.startActivity(myFriendIntent);
@@ -317,13 +319,13 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 
 					if(cb.isChecked())
 						autolog = true;
-					
+
 					// Save the user email, encrypted password and auto login preference
 					saveUserCredentials(lEmail, ePass, autolog);
 
 					// Attempt to log in with supplied credentials
 					client.Login(lEmail, ePass);
-					
+
 					// Logging in progress message
 					loggingIn = ProgressDialog.show(this, "", "Logging in, please wait...", true);
 				}
@@ -336,7 +338,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 			}
 		}	
 	}
-	
+
 	@Override
 	public void onDestroy()
 	{
