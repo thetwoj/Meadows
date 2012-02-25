@@ -1,5 +1,6 @@
 package com.osu.sc.meadows;
 
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,6 +56,7 @@ public class ClientLocationService extends Service
 			public void onLocationChanged(Location location) 
 			{
 				Client.GetInstance().SetLocation(location.getLatitude(), location.getLongitude());
+				Client.GetInstance().SetTimestamp(Calendar.getInstance().getTimeInMillis());
 			}
 			@Override
 			public void onProviderDisabled(String provider) 
@@ -128,8 +130,19 @@ public class ClientLocationService extends Service
 	{
 		//Load the last location from the shared preferences.
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-		double lat = Double.parseDouble(prefs.getString(MEADOWS_USER_LATITUDE, INVALID_LAT_LON));
-		double lon = Double.parseDouble(prefs.getString(MEADOWS_USER_LONGITUDE, INVALID_LAT_LON));
+		
+		//Temporarily catch class cast exceptions until we make sure no one has the old data types in their prefs.
+		double lat = Double.parseDouble(INVALID_LAT_LON);
+		double lon = Double.parseDouble(INVALID_LAT_LON);
+		try
+		{
+			lat = Double.parseDouble(prefs.getString(MEADOWS_USER_LATITUDE, INVALID_LAT_LON));
+			lon = Double.parseDouble(prefs.getString(MEADOWS_USER_LONGITUDE, INVALID_LAT_LON));
+		}
+		catch(Exception e)
+		{
+			return;
+		}
 		
 		//Return if there's no previous location.
 		if(Math.abs(lat) > LAT_MAX || Math.abs(lon) > LON_MAX)
