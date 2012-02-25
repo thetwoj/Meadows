@@ -45,15 +45,21 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 	{
 		super.onCreate(savedInstanceState);
 
+		// Display loading message in case this takes a second or two
 		loadingFriends = ProgressDialog.show(this, "", "Loading friends, please wait...", true);
 		
+		// Get the client's friends
 		friends = client.GetFriends();
+		
+		// Sort the friends by first name
 		Collections.sort(friends, this);
+		
+		// Set the list adapter to the client's friends
 		setListAdapter(new FriendAdapter(this, friends));
 		
+		// Dismiss the friend loading message
 		loadingFriends.dismiss();
-		//setContentView(R.layout.friendlayout);
-
+		
 		//Create the listeners.
 		friendsListener = new UsersUpdatedListener()
 		{
