@@ -3,25 +3,18 @@ package com.osu.sc.meadows;
 import java.util.List;
 import server.Client;
 import server.User;
-import server.UsersUpdatedEvent;
-import server.UsersUpdatedListener;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
+@SuppressWarnings("rawtypes")
 public class FriendRequestAdapter extends ArrayAdapter{
 	public final Activity activity;
 	public final List friendRequests;

@@ -71,6 +71,10 @@
             android:name=".FriendRequestActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
 
         <service
             android:name=".ClientLocationService"

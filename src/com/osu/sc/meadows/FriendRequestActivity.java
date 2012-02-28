@@ -1,31 +1,24 @@
 package com.osu.sc.meadows;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
 import server.Client;
-import server.Server;
 import server.ServerEvents;
 import server.User;
 import server.UsersUpdatedEvent;
 import server.UsersUpdatedListener;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 /*
@@ -99,6 +92,8 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 	public void OnFriendRequestsUpdated(ArrayList<User> users)
 	{
+		// When friend requests are updated pass new list to FriendRequestAdapter
+		// so the View will be updated and the new Requests will be visible
 		friendRequests = client.GetFriendRequests();
 		Collections.sort(friendRequests, this);
 		lv.setAdapter(new FriendRequestAdapter(this, friendRequests));
@@ -106,6 +101,7 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 	public void OnClick(View v)
 	{
+		// Add Friend button clicked
 		if(v.getId() == R.id.addFriendButton)
 		{
 			LayoutInflater factory = LayoutInflater.from(this);            
@@ -113,9 +109,10 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 			AlertDialog.Builder alert = new AlertDialog.Builder(this); 
 
+			// Set up prompts asking for friend's email
 			alert.setTitle("Add Friend"); 
 			alert.setMessage("Enter your friend's email:"); 
-			
+
 			// Set an EditText view to get user input  
 			alert.setView(textEntryView); 
 
@@ -123,18 +120,19 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() { 
 				public void onClick(DialogInterface dialog, int whichButton) { 
+					// If "Add" clicked, get the email from the input box and send request
 					String friendEmail = input1.getText().toString();
 					client.AddFriend(friendEmail);
 				}
 			});
 			alert.setNeutralButton("Cancel", new DialogInterface.OnClickListener() { 
 				public void onClick(DialogInterface dialog, int whichButton) { 
-		
+					// "Cancel" pressed, let the dialog dismiss
 				}
 			});
-			
+
 			alert.show();
-			
+
 		}
 	}
 
@@ -149,6 +147,7 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 		super.onDestroy();
 	}
 
+	// Method used to sort FriendRequests lists alphabetically
 	@Override
 	public int compare(User lhs, User rhs) {
 		return lhs.GetFirstName().compareTo(rhs.GetFirstName());

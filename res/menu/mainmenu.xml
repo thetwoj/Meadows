@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:id="@+id/menuicon"
-          android:icon="@drawable/icon"
-          android:title="Autolog = False" 
-          android:onClick="menuClick" />
           
-    <item android:id="@+id/help"
+    <item android:id="@+id/settingsMenuButton"
           android:icon="@drawable/icon"
-          android:title="Add Friend" 
-          android:onClick="friendMenuClick" />
+          android:title="Settings" 
+          android:onClick="settingsClick" />
 </menu>

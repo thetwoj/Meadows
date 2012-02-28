@@ -33,6 +33,9 @@ public class ClientLocationService extends Service
 	private static final double LAT_MAX = 90.0;
 	private static final double LON_MAX = 180.0;
 	private static final String INVALID_LAT_LON = "360.0";
+	
+	Timer pollTimer;
+	LocationListener locationListener;
 
 	@Override
 	public void onCreate()
@@ -41,15 +44,17 @@ public class ClientLocationService extends Service
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
 		Boolean autolog = prefs.getBoolean(MEADOWS_USER_AUTOLOGIN, false);
 		
+		// If auto-login is selected by the user
 		if(autolog)
 		{
+			// Get the email and pass from the prefs file and attempt to login
 			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
 			String pass = prefs.getString(MEADOWS_USER_PASS, "");
 			Client.GetInstance().Login(email, pass);
 		}
 		
 		//Start the location listener.
-		LocationListener locationListener = new LocationListener()
+		locationListener = new LocationListener()
 		{
 
 			@Override
@@ -78,7 +83,7 @@ public class ClientLocationService extends Service
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Client.GetInstance().GetGPSPeriod(), 0, locationListener);
 		
 		//Schedule periodic client updates.
-		Timer pollTimer = new Timer();
+		pollTimer = new Timer();
 		TimerTask pollTask = new TimerTask()
 		{
 			public void run() 
@@ -106,6 +111,11 @@ public class ClientLocationService extends Service
 	@Override
 	public void onDestroy()
 	{
+		pollTimer.cancel();
+		
+		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		
+		locationManager.removeUpdates(locationListener);
 		
 		//Save the user location.
 		saveUserLocation();

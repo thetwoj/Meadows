@@ -9,7 +9,6 @@ import server.UsersUpdatedListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,7 +21,6 @@ import android.widget.EditText;
 
 public class LoginRegisterActivity extends Activity implements View.OnClickListener 
 {
-
 	public static final String SHARED_PREFERENCES_NAME = "AppPreferences";
 	public static final String MEADOWS_USER_EMAIL = "meadows_user_email";
 	public static final String MEADOWS_USER_PASS = "meadows_user_pass";
@@ -33,6 +31,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	private UsersUpdatedListener loginFailureListener;
 
 	Client client = Client.GetInstance();
+
 	String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 	String PASS_REGEX = "[^\\s]";
 	String NAME_REGEX = "[a-zA-Z]+";
@@ -44,7 +43,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
-		// Initialize the alert box for error reporting
+		// Initialize the alert box for error reporting later on
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCancelable(true);
 		builder.setIcon(R.drawable.icon);
@@ -53,9 +52,11 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				// When "OK" is clicked, dismiss the alert
 				dialog.dismiss();
 			}
 		});
+
 		alert = builder.create();
 
 		// Restore state, start layout
@@ -111,21 +112,32 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		loggingIn.dismiss();
 
 		// Alert user of the error
-		alert.setTitle("Login Failed! Please try again later");
-		alert.show();
+		AlertDialog.Builder alert = new AlertDialog.Builder(this); 
 
-		// Send the user back to the home screen, destroy listeners
-		finish();
+		alert.setTitle("Login Error"); 
+		alert.setMessage("User not found, please double check your credentials and try again"); 
+
+		alert.setNeutralButton("OK", new DialogInterface.OnClickListener() { 
+			public void onClick(DialogInterface dialog, int whichButton) {
+				// Send the user back to the home screen, destroy listeners
+				finish();
+			}
+		});
+
+		alert.show();
 	}
 
+	// Method for determining whether or not the user is in service (wifi or mobile network)
 	private boolean isNetworkAvailable() {
 		ConnectivityManager connManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-	    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-	    NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-	    
-	    return (mWifi.isAvailable() || mMobile.isAvailable());
+		NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		NetworkInfo mMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+		// Return true if either wifi or mobile network is available
+		return (mWifi.isAvailable() || mMobile.isAvailable());
 	}
 
+	// Method to encrypt the password and secret answer using md5
 	private String md5(String in) 
 	{
 		MessageDigest digest;
@@ -151,6 +163,7 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		return null;
 	}
 
+	// Method called to save the user's credentials in the case that auto-login is selected
 	protected void saveUserCredentials(String email, String pass, Boolean autolog)
 	{
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
@@ -164,34 +177,29 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	@Override
 	public void onClick(View v) {
 
-
-		// Switch to the Registration view
+		// If "New? Register here!" was clicked
 		if(v.getId() == R.id.registerSwitch)
 		{
+			// Switch to registration layout
 			setContentView(R.layout.registerlayout);
 		}
 
+		// If "Already have account? Login here!" was clicked
 		if(v.getId() == R.id.loginSwitch)
 		{
+			// Switch back to login layout
 			setContentView(R.layout.loginlayout);
 		}
 
 		// Attempt to Register 
 		else if(v.getId() == R.id.registerButton)
 		{
-			EditText mEmail = (EditText) findViewById(R.id.registerEmail);
-			EditText mPass = (EditText) findViewById(R.id.registerPassword);
-			EditText mFirstName = (EditText) findViewById(R.id.registerFirstName);
-			EditText mLastName = (EditText) findViewById(R.id.registerLastName);
-			EditText mSecurityQ = (EditText) findViewById(R.id.secureQInput);
-			EditText mSQAnswer = (EditText) findViewById(R.id.secureQAnswer);
-
-			String rEmail = mEmail.getText().toString();
-			String rPass = mPass.getText().toString();
-			String rFirstName = mFirstName.getText().toString();
-			String rLastName = mLastName.getText().toString();
-			String rSecurityQ = mSecurityQ.getText().toString();
-			String rSQAnswer = mSQAnswer.getText().toString();
+			String rEmail = ((EditText) findViewById(R.id.registerEmail)).getText().toString();
+			String rPass = ((EditText) findViewById(R.id.registerPassword)).getText().toString();
+			String rFirstName = ((EditText) findViewById(R.id.registerFirstName)).getText().toString();
+			String rLastName = ((EditText) findViewById(R.id.registerLastName)).getText().toString();
+			String rSecurityQ = ((EditText) findViewById(R.id.secureQInput)).getText().toString();
+			String rSQAnswer = ((EditText) findViewById(R.id.secureQAnswer)).getText().toString();
 
 			// Email validity checks
 			if(rEmail.length() <= 0)
@@ -248,14 +256,16 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 			{
 				// Check to see if user has service
 				if(isNetworkAvailable())
-				{				
+				{		
+					// Remove case sensitivity from secret question answer
+					rSQAnswer = rSQAnswer.toLowerCase();
+
 					// Encrypt password and security question answer
 					String ePass = md5(rPass);
 					String eSQAnswer = md5(rSQAnswer);
 
 					// Create user with input values
 					client.CreateUser(rFirstName, rLastName, rEmail, ePass, rSecurityQ, eSQAnswer);
-
 
 					// Start the friend activity, log on is performed when creation succeeds
 					Intent myFriendIntent = new Intent(LoginRegisterActivity.this, FriendActivity.class);

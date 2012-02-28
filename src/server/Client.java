@@ -26,8 +26,8 @@ public class Client
 	
 	private PointF  _mapLocation;
 	
-	private static final int NETWORK_PERIOD = 10000;
-    private static final int GPS_PERIOD = 10000;
+	private int NETWORK_PERIOD = 10000;
+    private int GPS_PERIOD = 10000;
 	
 	private Server _server = Server.GetInstance();
 	
@@ -309,6 +309,16 @@ public class Client
 	public void SetTimestamp(long timestamp)
 	{
 		_timestamp = timestamp;
+	}
+	
+	public void SetGPSPeriod(int period)
+	{
+		NETWORK_PERIOD = period;
+	}
+	
+	public void SetNetworkPeriod(int period)
+	{
+		GPS_PERIOD = period;
 	}
 	
 	/* Returns whether or not the client has logged in */
