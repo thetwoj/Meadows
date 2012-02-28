@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="general_Category"
+        android:title="General Settings" >
+
+        <ListPreference
+            android:defaultValue="15000"
+            android:entries="@array/periodLabels"
+            android:entryValues="@array/periodValues"
+            android:key="meadows_user_update_interval"
+            android:summary="How often your device will attempt to communicate with server"
+            android:title="Updates Interval" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
