@@ -45,6 +45,8 @@ public class ClientLocationService extends Service
 	Notification notify;
 	NotificationManager nM;
 
+	Client client = Client.GetInstance();
+	
 	@Override
 	public void onCreate()
 	{
