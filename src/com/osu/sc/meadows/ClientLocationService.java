@@ -39,17 +39,18 @@ public class ClientLocationService extends Service
 
 	final int MEADOWS_STATUS_ID = 1;
 
-	Timer pollTimer;
-	LocationListener locationListener;
-
-	Notification notify;
-	NotificationManager nM;
-
-	Client client = Client.GetInstance();
+	protected Timer pollTimer;
+	protected LocationListener locationListener;
+	protected NotificationManager nM;
+	protected Client client;
 	
 	@Override
 	public void onCreate()
 	{
+		
+		//Initialize the client.
+		client = Client.GetInstance();
+		
 		// Create service status bar notification
 		initServiceNotification();
 
@@ -63,7 +64,7 @@ public class ClientLocationService extends Service
 			// Get the email and pass from the prefs file and attempt to login
 			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
 			String pass = prefs.getString(MEADOWS_USER_PASS, "");
-			Client.GetInstance().Login(email, pass);
+			client.Login(email, pass);
 		}
 
 		//Start the location listener.
@@ -73,8 +74,8 @@ public class ClientLocationService extends Service
 			@Override
 			public void onLocationChanged(Location location) 
 			{
-				Client.GetInstance().SetLocation(location.getLatitude(), location.getLongitude());
-				Client.GetInstance().SetTimestamp(Calendar.getInstance().getTimeInMillis());
+				client.SetLocation(location.getLatitude(), location.getLongitude());
+				client.SetTimestamp(Calendar.getInstance().getTimeInMillis());
 			}
 			@Override
 			public void onProviderDisabled(String provider) 
@@ -92,8 +93,8 @@ public class ClientLocationService extends Service
 
 		//Start the location listener.
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Client.GetInstance().GetNetworkPeriod(), 0, locationListener);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Client.GetInstance().GetGPSPeriod(), 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, client.GetNetworkPeriod(), 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, client.GetGPSPeriod(), 0, locationListener);
 
 		//Schedule periodic client updates.
 		pollTimer = new Timer();
@@ -101,12 +102,12 @@ public class ClientLocationService extends Service
 		{
 			public void run() 
 			{
-				Client.GetInstance().RequestUpdateFriendRequests();
-				Client.GetInstance().RequestUpdateFriends();
+				client.RequestUpdateFriendRequests();
+				client.RequestUpdateFriends();
 			}
 		};
 
-		pollTimer.scheduleAtFixedRate(pollTask, 0, Client.GetInstance().GetNetworkPeriod());
+		pollTimer.scheduleAtFixedRate(pollTask, 0, client.GetNetworkPeriod());
 
 		//Restore the most recent user location.		
 		restoreUserLocation();
@@ -127,7 +128,7 @@ public class ClientLocationService extends Service
 		long when = System.currentTimeMillis();
 
 		// Initialize notification with all information from above
-		notify = new Notification(icon, tickerText, when);
+		Notification notify = new Notification(icon, tickerText, when);
 
 		// Set notification to be an ongoing event and not cleared by "clear all"
 		notify.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_NO_CLEAR;
@@ -210,15 +211,15 @@ public class ClientLocationService extends Service
 			return;
 
 		//Update the map position.
-		Client.GetInstance().SetLocation(lat, lon);
+		client.SetLocation(lat, lon);
 	}
 
 	protected void saveUserLocation()
 	{
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(MEADOWS_USER_LATITUDE, Double.toString(Client.GetInstance().GetLatitude()));
-		editor.putString(MEADOWS_USER_LONGITUDE, Double.toString(Client.GetInstance().GetLongitude()));
+		editor.putString(MEADOWS_USER_LATITUDE, Double.toString(client.GetLatitude()));
+		editor.putString(MEADOWS_USER_LONGITUDE, Double.toString(client.GetLongitude()));
 		editor.commit();
 	}
 
