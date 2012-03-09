@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/friendPage"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     android:layout_alignParentLeft="true"
     android:background="#ffffff"
     android:orientation="horizontal" >
@@ -10,13 +10,14 @@
     <RelativeLayout
         android:id="@+id/friendHeaderRoot"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp" >
+        android:paddingTop="10dp" 
+        android:background="#FFFFFF"> 
 
         <ImageView
             android:id="@+id/friendPageLogo"
@@ -63,7 +64,7 @@
         android:layout_below="@+id/friendHeaderRoot"
         android:gravity="center_horizontal"
         android:paddingBottom="10dp"
-        android:paddingLeft="10dp" >
+        android:paddingLeft="10dp">
 
         <ToggleButton
             android:id="@+id/globalVisibleToggle"

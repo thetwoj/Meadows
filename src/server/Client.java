@@ -10,9 +10,10 @@ public class Client
 	private static Client _client;
 	
 	//private variables
-	private ArrayList<User> _blockedUsers = new ArrayList<User>();
-	private ArrayList<User> _friends  = new ArrayList<User>();
-	private ArrayList<User> _friendRequests  = new ArrayList<User>();
+	ArrayList<User> _blockedUsers			= new ArrayList<User>();
+	ArrayList<User> _friends  				= new ArrayList<User>();
+	ArrayList<User> _friendRequests  		= new ArrayList<User>();
+	ArrayList<MeetingPoint> _meetingPoints 	= new ArrayList<MeetingPoint>();
 	
 	protected String 	_firstName;
 	protected String	_lastName;
@@ -33,22 +34,23 @@ public class Client
 	
 	
 	//public getters
-	public String 	       GetFirstName() 			{ return _firstName; }
-	public String 		   GetLastName()  			{ return _lastName;  }
-	public String 		   GetEmail()  				{ return _email;  }
-	public double   	   GetLatitude()  		    { return _latitude;  }
-	public double  	       GetLongitude() 		    { return _longitude; }
-	public boolean 	       GetGlobalVisibility()	{ return _globalVisibility; }
-	public int             GetNetworkPeriod()       { return NETWORK_PERIOD; }
-	public int             GetGPSPeriod()           { return GPS_PERIOD; }
-	public PointF          GetMapLocation()         { return _mapLocation; }
-	public long            GetTimestamp()           { return _timestamp; }
-	public String		   GetSecretQuestion()		{ return _secretQuestion; }
+	public String  	GetFirstName() 			{ return _firstName; }
+	public String 	GetLastName()  			{ return _lastName;  }
+	public String  	GetEmail()  			{ return _email;  }
+	public double 	GetLatitude()  		    { return _latitude;  }
+	public double  	GetLongitude() 		    { return _longitude; }
+	public boolean 	GetGlobalVisibility()	{ return _globalVisibility; }
+	public int      GetNetworkPeriod()      { return NETWORK_PERIOD; }
+	public int      GetGPSPeriod()          { return GPS_PERIOD; }
+	public PointF   GetMapLocation()        { return _mapLocation; }
+	public long     GetTimestamp()          { return _timestamp; }
+	public String	GetSecretQuestion()		{ return _secretQuestion; }
 
-	public ArrayList<User> GetFriends()             { return _friends;   }
-	public ArrayList<User> GetBlockedUsers()        { return _blockedUsers;   }
-	public ArrayList<User> GetFriendRequests()		{ return _friendRequests; }
-	public ArrayList<User> GetVisibleFriends() 
+	public ArrayList<MeetingPoint>	GetMeetingPoints() 	{ return _meetingPoints; }
+ 	public ArrayList<User> 			GetFriends()        { return _friends;   }
+	public ArrayList<User> 			GetBlockedUsers()   { return _blockedUsers;   }
+	public ArrayList<User> 			GetFriendRequests()	{ return _friendRequests; }
+	public ArrayList<User> 			GetVisibleFriends() 
 	{ 
 		//create list to be returned
 		ArrayList<User> retList = new ArrayList<User>();
@@ -123,7 +125,7 @@ public class Client
 		if(!LoggedIn() || !_friendRequests.contains(user))
 			return;
 		
-		_server.RemoveFriend(_clientUid, user.GetUid());
+		_server.RemoveFriendRequest(_clientUid, user.GetUid());
 		
 		_friendRequests.remove(user);
 		ServerEvents.GetInstance()._InvokeFriendRequestsUpdated(_friendRequests);	
@@ -191,6 +193,16 @@ public class Client
 			_server.AddFriend(_clientUid, recieverEmail);
 	}
 	
+	public void RemoveFriend(User friend)
+	{
+		if(!LoggedIn() || !_friends.contains(friend))
+			return;
+		
+		_server.RemoveFriend(_clientUid, friend.GetUid());
+		_friends.remove(friend);
+		ServerEvents.GetInstance()._InvokeFriendsUpdated(_friends);
+	}
+	
 	public void SetShareLocation(User user, boolean value, CallBack callBack)
 	{
 		if(LoggedIn())
@@ -201,6 +213,47 @@ public class Client
 		}
 	}
 
+	
+	public void CreateMeetingPoint(String description, long time)
+	{
+		if(LoggedIn())
+		{
+			Server server = Server.GetInstance();
+			server.CreateMeetingPoint(_clientUid, description, time);
+			server.RequestUpdateMeetingPoints(_clientUid);
+		}
+			
+	}
+	
+	public void DeleteMeetingPoint(MeetingPoint meetingPoint)
+	{
+		if(LoggedIn())
+		{
+			Server server = Server.GetInstance();
+			server.DeleteMeetingPoint(_clientUid, meetingPoint.GetMid());
+		}
+			
+	}
+	
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description)
+	{
+		UpdateMeetingPoint(meetingPoint, description, meetingPoint.GetTime());
+	}
+	
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, long time)
+	{
+		UpdateMeetingPoint(meetingPoint, meetingPoint.GetDescription(), time);
+	}
+	
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description, long time)
+	{
+		if(LoggedIn())
+		{
+			Server server = Server.GetInstance();
+			server.UpdateMeetingPoint(_clientUid, description, time, meetingPoint.GetMid());
+		}
+	}
+	
 	
 	public void SetFirstName(String value)
 	{

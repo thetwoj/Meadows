@@ -1,28 +1,12 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.os.AsyncTask;
 
 /* 
  * This is the server class used to interact with the database containing all user data.
@@ -119,12 +103,9 @@ public class Server
 		new HttpPostTask("UnblockUser.php", parameters).execute();
 	}
 	
-	protected void RemoveFriendRequest(int senderUid, int recieverUid)
-	{
-		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
-		parameters.add(new BasicNameValuePair("senderUid", Integer.toString(senderUid)));
-		parameters.add(new BasicNameValuePair("recieverUid", Integer.toString(recieverUid)));
-		new HttpPostTask("RemoveFriendRequest.php", parameters).execute();
+	protected void RemoveFriendRequest(int clientUid, int friendUid)
+	{		
+		RemoveFriend(clientUid, friendUid);
 	}
 	
 	protected void SetShareLocation(int clientUid, int friendUid, boolean value, CallBack callBack)
@@ -136,6 +117,61 @@ public class Server
 		ArrayList<CallBack> callBacks = new ArrayList<CallBack>();
 		callBacks.add(callBack);
 		new HttpPostTask("SetShareLocation.php", parameters, callBacks).execute();
+	}
+	
+	protected void CreateMeetingPoint(int creatorUid, String description, long time)
+	{
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
+		parameters.add(new BasicNameValuePair("description", description));
+		parameters.add(new BasicNameValuePair("time", Long.toString(time)));
+		new HttpPostTask("CreateMeetingPoint.php", parameters).execute();
+	}
+	
+	protected void UpdateMeetingPoint(int creatorUid, String description, long time, int mid)
+	{
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
+		parameters.add(new BasicNameValuePair("mid", Integer.toString(mid)));
+		parameters.add(new BasicNameValuePair("description", description));
+		parameters.add(new BasicNameValuePair("time", Long.toString(time)));
+		new HttpPostTask("UpdateMeetingPoint.php", parameters).execute();
+	}
+	
+	protected void DeleteMeetingPoint(int creatorUid, int mid)
+	{
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
+		parameters.add(new BasicNameValuePair("mid", Integer.toString(mid)));
+		new HttpPostTask("DeleteMeetingPoint.php", parameters).execute();
+	}
+	
+	/* TODO: Write this. */
+	protected boolean allowRequestMeetingPoints = true;
+	protected void RequestUpdateMeetingPoints(int clientUid)
+	{	
+		//don't create multiple requests
+		if( !allowRequestMeetingPoints )
+			return;
+					
+
+		allowRequestMeetingPoints = false;
+		//query server requesting users
+		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
+		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
+		
+		new HttpPostTask("GetMeetingPoint.php", parameters, new CallBack(){
+			public void Invoke(String result)
+			{
+				ArrayList<User> users = _ParseUsers(result);
+				
+				//publish event
+				ServerEvents serverEvents = ServerEvents.GetInstance();
+				serverEvents._InvokeFriendsUpdated(users);
+				
+				Server.GetInstance().allowRequestMeetingPoints = true;
+			}
+		}).execute();		
 	}
 	
 	protected boolean allowRequestFriends = true;
