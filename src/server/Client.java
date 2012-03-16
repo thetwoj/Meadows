@@ -214,12 +214,12 @@ public class Client
 	}
 
 	
-	public void CreateMeetingPoint(String description, long time)
+	public void CreateMeetingPoint(String description, double latitude, double longitude, long time)
 	{
 		if(LoggedIn())
 		{
 			Server server = Server.GetInstance();
-			server.CreateMeetingPoint(_clientUid, description, time);
+			server.CreateMeetingPoint(_clientUid, description, latitude, longitude, time);
 			server.RequestUpdateMeetingPoints(_clientUid);
 		}
 			
@@ -235,22 +235,35 @@ public class Client
 			
 	}
 	
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, long latitude, long longitude)
+	{
+		long time = meetingPoint.GetTime();
+		String description = meetingPoint.GetDescription();
+		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
+	}
+	
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description)
 	{
-		UpdateMeetingPoint(meetingPoint, description, meetingPoint.GetTime());
+		long time = meetingPoint.GetTime();
+		long latitude = meetingPoint.GetLatitude();
+		long longitude = meetingPoint.GetLongitude();
+		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
 	}
 	
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, long time)
 	{
-		UpdateMeetingPoint(meetingPoint, meetingPoint.GetDescription(), time);
+		String description = meetingPoint.GetDescription();
+		long latitude = meetingPoint.GetLatitude();
+		long longitude = meetingPoint.GetLongitude();
+		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
 	}
 	
-	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description, long time)
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description, double latitude, double longitude, long time)
 	{
 		if(LoggedIn())
 		{
 			Server server = Server.GetInstance();
-			server.UpdateMeetingPoint(_clientUid, description, time, meetingPoint.GetMid());
+			server.UpdateMeetingPoint(_clientUid, description, latitude, longitude, time, meetingPoint.GetMid());
 		}
 	}
 	

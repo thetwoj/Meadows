@@ -119,21 +119,25 @@ public class Server
 		new HttpPostTask("SetShareLocation.php", parameters, callBacks).execute();
 	}
 	
-	protected void CreateMeetingPoint(int creatorUid, String description, long time)
+	protected void CreateMeetingPoint(int creatorUid, String description, double latitude, double longitude, long time)
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
 		parameters.add(new BasicNameValuePair("description", description));
+		parameters.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
+		parameters.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(time)));
 		new HttpPostTask("CreateMeetingPoint.php", parameters).execute();
 	}
 	
-	protected void UpdateMeetingPoint(int creatorUid, String description, long time, int mid)
+	protected void UpdateMeetingPoint(int creatorUid, String description, double latitude, double longitude, long time, int mid)
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
 		parameters.add(new BasicNameValuePair("mid", Integer.toString(mid)));
 		parameters.add(new BasicNameValuePair("description", description));
+		parameters.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
+		parameters.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(time)));
 		new HttpPostTask("UpdateMeetingPoint.php", parameters).execute();
 	}
