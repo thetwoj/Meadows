@@ -322,8 +322,13 @@ public class Server
 	}
 	
 	/* Updates the location of the client with the given lat/long and the current time */
+	HttpPostTask updateLocationTask;
 	protected void UpdateLocation(int clientUid, double latitude, double longitude)
 	{
+		//keep location updates in order
+		if(updateLocationTask != null)
+			updateLocationTask.cancel(true);
+		
 		//Calendar object used to get current time
 		Calendar now = Calendar.getInstance();
 		
@@ -332,7 +337,8 @@ public class Server
 		parameters.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
 		parameters.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(now.getTimeInMillis())));
-		new HttpPostTask("UpdateLocation.php", parameters).execute();
+		updateLocationTask = new HttpPostTask("UpdateLocation.php", parameters);
+		updateLocationTask.execute();
 	}
 	
 	
