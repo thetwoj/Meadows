@@ -311,8 +311,9 @@ public class ImageViewTouchBase extends ImageView
         protected Point imageToScreen(PointF imageLoc)
         {
         	//Map the point into its world coordinates, accounting for the zoom scale.
-    		float worldX = (int)(imageLoc.x * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getWidth()));
-    		float worldY = (int)(imageLoc.y * (Math.min(mThisWidth, mThisHeight)) * getScale() / (this.mBitmapDisplayed.getHeight()));
+        	int wd = this.mBitmapDisplayed.getWidth();
+    		float worldX = (int)(imageLoc.x * mThisWidth * getScale() / wd);
+    		float worldY = (int)(imageLoc.y * mThisWidth * getScale() / wd);
     		
     		Matrix m = getImageViewMatrix();
     		float transX = getValue(m, Matrix.MTRANS_X);
@@ -334,8 +335,11 @@ public class ImageViewTouchBase extends ImageView
     		float worldX = screenLoc.x - transX;
     		float worldY = screenLoc.y - transY;
     		
-    		float imageLocX = worldX * this.mBitmapDisplayed.getWidth() / (Math.min(mThisWidth,  mThisHeight) * getScale());
-    		float imageLocY = worldY * this.mBitmapDisplayed.getHeight() / (Math.min(mThisWidth,  mThisHeight) * getScale());
+    		float wd = this.mBitmapDisplayed.getWidth();
+    		float scale = getScale();
+    		
+    		float imageLocX = worldX * wd / (mThisWidth * scale);
+    		float imageLocY = worldY * wd / (mThisWidth * scale);
     		
     		return new PointF(imageLocX, imageLocY);
         }
