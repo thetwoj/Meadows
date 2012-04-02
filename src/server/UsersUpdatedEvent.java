@@ -6,6 +6,7 @@ import java.util.EventObject;
 /*
  * This is an event that will be fired whenever the server successfully logs in.
  */
+@SuppressWarnings("serial")
 public class UsersUpdatedEvent extends EventObject
 {
 	private ArrayList<User> _users;

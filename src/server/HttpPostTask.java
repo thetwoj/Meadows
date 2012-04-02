@@ -38,6 +38,7 @@ public class HttpPostTask extends AsyncTask<String, Boolean, String>
 		this(location, params, (ArrayList<CallBack>)null);
 	}
 	
+	@SuppressWarnings("serial")
 	public HttpPostTask(String location, ArrayList<NameValuePair> params, final CallBack callBack)
 	{
 		this(location, params, new ArrayList<CallBack>(){{add(callBack);}});

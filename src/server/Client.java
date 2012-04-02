@@ -3,6 +3,7 @@ package server;
 import java.util.ArrayList;
 
 import android.graphics.PointF;
+import android.util.Log;
 
 public class Client
 {
@@ -90,6 +91,16 @@ public class Client
     			_friendRequests = users;
     		}
     	});
+    	
+    	events.AddMeetingPointsUpdatedListener(new MeetingPointsUpdatedListener(){
+    		public void EventFired(MeetingPointsUpdatedEvent event)
+    		{
+    			ArrayList<MeetingPoint> meetingPoints = event.GetMeetingPoints();
+    			_meetingPoints = meetingPoints;
+    		}
+    	});
+    	
+    	Log.v("Client", "Client constructed.");
 	}
 	
 	public void Login(String email, String password)
@@ -118,6 +129,12 @@ public class Client
 	{
 		if(LoggedIn())
 			_server.RequestUpdateFriendRequests(_clientUid);
+	}
+	
+	public void RequestUpdateMeetingPoints()
+	{
+		if(LoggedIn())
+			_server.RequestUpdateMeetingPoints(_clientUid);
 	}
 	
 	public void DenyFriendRequest(User user)
@@ -245,16 +262,16 @@ public class Client
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description)
 	{
 		long time = meetingPoint.GetTime();
-		long latitude = meetingPoint.GetLatitude();
-		long longitude = meetingPoint.GetLongitude();
+		double latitude = meetingPoint.GetLatitude();
+		double longitude = meetingPoint.GetLongitude();
 		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
 	}
 	
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, long time)
 	{
 		String description = meetingPoint.GetDescription();
-		long latitude = meetingPoint.GetLatitude();
-		long longitude = meetingPoint.GetLongitude();
+		double latitude = meetingPoint.GetLatitude();
+		double longitude = meetingPoint.GetLongitude();
 		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
 	}
 	

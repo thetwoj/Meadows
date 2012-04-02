@@ -151,42 +151,42 @@ public class Server
 	}
 	
 	/* TODO: Write this. */
-	protected boolean allowRequestMeetingPoints = true;
+	protected boolean meetingPointsRequested = false;
 	protected void RequestUpdateMeetingPoints(int clientUid)
 	{	
 		//don't create multiple requests
-		if( !allowRequestMeetingPoints )
+		if(meetingPointsRequested)
 			return;
 					
 
-		allowRequestMeetingPoints = false;
+		meetingPointsRequested = true;
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
 		
-		new HttpPostTask("GetMeetingPoint.php", parameters, new CallBack(){
+		new HttpPostTask("GetMeetingPoints.php", parameters, new CallBack(){
 			public void Invoke(String result)
 			{
-				ArrayList<User> users = _ParseUsers(result);
+				ArrayList<MeetingPoint> meetingPoints = _ParseMeetingPoints(result);
 				
 				//publish event
 				ServerEvents serverEvents = ServerEvents.GetInstance();
-				serverEvents._InvokeFriendsUpdated(users);
+				serverEvents._InvokeMeetingPointsUpdated(meetingPoints);
 				
-				Server.GetInstance().allowRequestMeetingPoints = true;
+				Server.GetInstance().meetingPointsRequested = false;
 			}
 		}).execute();		
 	}
 	
-	protected boolean allowRequestFriends = true;
+	protected boolean friendsRequested = false;
 	protected void RequestUpdateFriends(int clientUid)
 	{	
 		//don't create multiple requests
-		if( !allowRequestFriends )
+		if( friendsRequested )
 			return;
 					
-
-		allowRequestFriends = false;
+		friendsRequested = true;
+		
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
@@ -200,17 +200,19 @@ public class Server
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				serverEvents._InvokeFriendsUpdated(users);
 				
-				Server.GetInstance().allowRequestFriends = true;
+				Server.GetInstance().friendsRequested = false;
 			}
 		}).execute();		
 	}
 	
-	protected boolean allowRequestBlocked = true;
+	protected boolean blockedUsersRequested = false;
 	protected void RequestUpdateBlockedUsers(int clientUid)
 	{
 		//don't create multiple requests
-		if( !allowRequestBlocked )
+		if(blockedUsersRequested)
 			return;
+		
+		blockedUsersRequested = true;
 				
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
@@ -225,18 +227,20 @@ public class Server
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				serverEvents._InvokeBlockedUsersUpdated(users);
 				
-				Server.GetInstance().allowRequestBlocked = true;
+				Server.GetInstance().blockedUsersRequested = false;
 			}
 		}).execute();
 	}
 	
-	protected boolean allowRequestRequests = true;
+	protected boolean friendRequestsRequested = false;
 	protected void RequestUpdateFriendRequests(int clientUid)
 	{
 		//don't create multiple requests
-		if( !allowRequestRequests )
+		if(friendRequestsRequested)
 			return;
 				
+		friendRequestsRequested = true;
+		
 		//query server requesting users
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("clientUid", Integer.toString(clientUid)));
@@ -250,7 +254,7 @@ public class Server
 				ServerEvents serverEvents = ServerEvents.GetInstance();
 				serverEvents._InvokeFriendRequestsUpdated(users);
 				
-				Server.GetInstance().allowRequestRequests = true;
+				Server.GetInstance().friendRequestsRequested = false;
 			}
 		}).execute();
 	}
@@ -272,7 +276,7 @@ public class Server
 				{
 					//parse client info and store it
 					Client client = Client.GetInstance();
-					ArrayList<String> users = _SeparateUsers(result);
+					ArrayList<String> users = _SeparateObjects(result);
 					if(users.size() == 0)
 					{
 						serverEvents._InvokeLoginFailure();
@@ -346,7 +350,7 @@ public class Server
 	private ArrayList<User> _ParseUsers(String httpResult)
 	{
 		//parse results into list of users' json info
-		ArrayList<String> userStrings = _SeparateUsers(httpResult);
+		ArrayList<String> userStrings = _SeparateObjects(httpResult);
 		
 		
 		//parse user json to create User objects
@@ -391,13 +395,53 @@ public class Server
 		
 		return users;
 	}
+
+	private ArrayList<MeetingPoint> _ParseMeetingPoints(String httpResult)
+	{
+		//parse results into list of users' json info
+		ArrayList<String> meetingPointStrings = _SeparateObjects(httpResult);
+		
+		
+		//parse user json to create User objects
+		ArrayList<MeetingPoint> meetingPoints = new ArrayList<MeetingPoint>();
+		for(String meetingPointJson : meetingPointStrings)
+		{
+			JSONObject json;
+			//parse the user's information
+			try
+			{ 
+				json = new JSONObject(meetingPointJson);
+				
+				
+				String description	= json.getString("description");				
+				double latitude  	= json.getDouble("latitude");
+			    double longitude 	= json.getDouble("longitude");			    
+				long time 		 	= json.getLong("time");				
+				int mid 			= json.getInt("mid");
+				int creatorUid 		= json.getInt("creatorUid");
+				
+				//create user
+				MeetingPoint meetingPoint = new MeetingPoint(creatorUid,
+						mid,
+						time,
+						description,
+						latitude,
+						longitude);
+				
+				meetingPoints.add(meetingPoint);
+			}
+			catch(Exception e){ }
+		}
+		
+		return meetingPoints;
+	}
 	
 	/*
 	 * separates a string containing many users' json information clumped together
 	 *into a list of strings, each containing 1 user's information.
 	 *Returned strings are easily parsed as json.
 	 */
-	private ArrayList<String> _SeparateUsers(String result)
+	private ArrayList<String> _SeparateObjects(String result)
 	{
 		ArrayList<String> retList = new ArrayList<String>();
 		

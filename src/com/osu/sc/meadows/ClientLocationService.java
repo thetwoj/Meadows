@@ -18,6 +18,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 public class ClientLocationService extends Service
 {
@@ -104,6 +105,8 @@ public class ClientLocationService extends Service
 			{
 				client.RequestUpdateFriendRequests();
 				client.RequestUpdateFriends();
+				client.RequestUpdateMeetingPoints();
+				client.RequestUpdateBlockedUsers();
 			}
 		};
 
@@ -114,6 +117,8 @@ public class ClientLocationService extends Service
 
 		//Restore friend locations.
 		restoreFriendLocations();
+		
+		Log.v("ClientLocationService", "ClientLocationService constructed.");
 	}
 
 	public void initServiceNotification()
