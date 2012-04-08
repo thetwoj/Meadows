@@ -16,7 +16,7 @@ public class ServerEvents
 	ArrayList<UsersUpdatedListener> _loginFailureListeners 			= new ArrayList<UsersUpdatedListener>();
 	ArrayList<UsersUpdatedListener> _loginSuccessListeners 			= new ArrayList<UsersUpdatedListener>();
 	ArrayList<UsersUpdatedListener> _clientLocationUpdatedListeners = new ArrayList<UsersUpdatedListener>();
-	
+	ArrayList<MeetingPointsUpdatedListener> _meetingPointsUpdatedListeners = new ArrayList<MeetingPointsUpdatedListener>();
 	
 	public void AddFriendsUpdatedListener(UsersUpdatedListener listener)
 	{
@@ -155,6 +155,26 @@ public class ServerEvents
 			listener.EventFired(event);
 	}
 	
+	
+	public void AddMeetingPointsUpdatedListener(MeetingPointsUpdatedListener listener)
+	{
+		if( !_meetingPointsUpdatedListeners.contains(listener))
+			_meetingPointsUpdatedListeners.add(listener);
+	}
+	
+	public void RemoveMeetingPointsUpdatedListener(MeetingPointsUpdatedListener listener)
+	{
+		_meetingPointsUpdatedListeners.remove(listener);
+	}
+	
+	protected void _InvokeMeetingPointsUpdated(ArrayList<MeetingPoint> meetingPoints)
+	{
+		//create the event
+		MeetingPointsUpdatedEvent event = new MeetingPointsUpdatedEvent(this, meetingPoints);
+		//execute each listener passing the new event
+		for(MeetingPointsUpdatedListener listener : _meetingPointsUpdatedListeners)
+			listener.EventFired(event);
+	}
 	
 	public static ServerEvents GetInstance()
 	{

@@ -15,12 +15,18 @@
     <string name="movingtlabel">Moving Time:</string>
     <string name="createmeeting">Create Meeting Point</string>
     <string-array name="periodLabels">
+        <item>2 seconds</item>
+		<item>5 seconds</item>
+        <item>10 seconds</item>
         <item>15 seconds</item>
         <item>30 seconds</item>
         <item>45 seconds</item>
         <item>60 seconds</item>
     </string-array>
     <string-array name="periodValues">
+        <item >2000</item>
+        <item >5000</item>
+        <item >10000</item>
         <item >15000</item>
         <item >30000</item>
         <item >45000</item>
