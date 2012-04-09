@@ -43,15 +43,15 @@ public class ClientLocationService extends Service
 	protected Timer pollTimer;
 	protected LocationListener locationListener;
 	protected NotificationManager nM;
-	protected Client client;
-	
+	protected Client client; 
+
 	@Override
 	public void onCreate()
 	{
-		
+
 		//Initialize the client.
 		client = Client.GetInstance();
-		
+
 		// Create service status bar notification
 		initServiceNotification();
 
@@ -75,8 +75,11 @@ public class ClientLocationService extends Service
 			@Override
 			public void onLocationChanged(Location location) 
 			{
-				client.SetLocation(location.getLatitude(), location.getLongitude());
-				client.SetTimestamp(Calendar.getInstance().getTimeInMillis());
+				if(location.getAccuracy() < 20)
+				{
+					client.SetLocation(location.getLatitude(), location.getLongitude());
+					client.SetTimestamp(Calendar.getInstance().getTimeInMillis());
+				}
 			}
 			@Override
 			public void onProviderDisabled(String provider) 
@@ -94,7 +97,7 @@ public class ClientLocationService extends Service
 
 		//Start the location listener.
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, client.GetNetworkPeriod(), 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, client.GetGPSPeriod(), 0, locationListener);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, client.GetGPSPeriod(), 0, locationListener);
 
 		//Schedule periodic client updates.
@@ -117,7 +120,7 @@ public class ClientLocationService extends Service
 
 		//Restore friend locations.
 		restoreFriendLocations();
-		
+
 		Log.v("ClientLocationService", "ClientLocationService constructed.");
 	}
 
@@ -183,7 +186,7 @@ public class ClientLocationService extends Service
 
 		//Call the base class.
 		super.onDestroy();
-		
+
 		Log.v("ClientLocationService", "ClientLocationService destroyed.");
 	}
 

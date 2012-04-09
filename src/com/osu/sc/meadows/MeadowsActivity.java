@@ -78,7 +78,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 	public void setUpdatesInterval(int interval)
 	{
 		client.SetNetworkPeriod(interval);
-		client.SetGPSPeriod(interval);
+		client.SetGPSPeriod(200);
 	}
 
 	// Called when the soft "menu" key is pressed
