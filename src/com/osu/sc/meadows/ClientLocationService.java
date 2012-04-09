@@ -183,6 +183,8 @@ public class ClientLocationService extends Service
 
 		//Call the base class.
 		super.onDestroy();
+		
+		Log.v("ClientLocationService", "ClientLocationService destroyed.");
 	}
 
 	protected void restoreFriendLocations()
