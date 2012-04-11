@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 /*
  * The Homescreen activity class - contains links to all other main activities
@@ -22,7 +25,11 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 	String SHARED_PREFERENCES_NAME = "AppPreferences";
 	String NETWORK_PERIOD = "meadows_user_network_period";
 	String GPS_PERIOD = "meadows_user_gps_period";
-	String SELECTED_PERIOD = "meadows_user_update_interval";
+	String SELECTED_NETWORK_PERIOD = "meadows_user_update_interval";
+	String SELECTED_GPS_PERIOD = "meadows_location_update_interval";
+	String SELECTED_GPS_ACCURACY = "meadows_gps_accuracy";
+	String DISABLE_AUTOLOG = "meadows_autolog_disable";
+	String MEADOWS_USER_AUTOLOGIN = "meadows_user_autologin";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -34,17 +41,43 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
 
 		// Retrieve the selected interval for updates from prefs file
-		setUpdatesInterval(Integer.parseInt(prefs.getString(SELECTED_PERIOD, "15000")));
+		setUpdatesInterval(Integer.parseInt(prefs.getString(SELECTED_NETWORK_PERIOD, "15000")));
 
 		// Setup a listener to detect changes to the prefs file
 		settingsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 			public void onSharedPreferenceChanged(SharedPreferences prefer, String key) {
 				// If it was the update period that was changed
-				if(key.equals(SELECTED_PERIOD))
+				if(key.equals(SELECTED_GPS_PERIOD))
 				{
-					// Set the update intervals to the newly selected value
-					settingsChanged(prefer);
+					// Update the GPS interval to the new value
+					setLocationInterval(Integer.parseInt(prefer.getString(SELECTED_GPS_PERIOD, "500")));
+					// Restart service with new preferences
+					restartService(prefer);
 				}
+				else if(key.equals(SELECTED_NETWORK_PERIOD))
+				{
+					// Update the Network interval to the new value
+					setUpdatesInterval(Integer.parseInt(prefer.getString(SELECTED_NETWORK_PERIOD, "15000")));
+					// Restart service with new preferences
+					restartService(prefer);
+				}
+				else if(key.equals(SELECTED_GPS_ACCURACY))
+				{
+					// Update the Network interval to the new value
+					setGPSAccuracy(Integer.parseInt(prefer.getString(SELECTED_GPS_ACCURACY, "20")));
+					// Restart service with new preferences
+					restartService(prefer);
+				}
+				// TODO FIX THIS SHIT
+//				else if(key.equals(DISABLE_AUTOLOG))
+//				{
+//					SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+//					SharedPreferences.Editor editor = prefs.edit();
+//					editor.putBoolean(MEADOWS_USER_AUTOLOGIN, false);
+//					editor.commit();
+//					 
+//					Toast.makeText(getBaseContext(), "Auto-Login Disabled", Toast.LENGTH_LONG);
+//				}
 			}
 		};
 
@@ -60,13 +93,10 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 
 	// Called after prefs file is changed in order to stop the current service
 	// and restart a new service with the new update interval in place
-	public void settingsChanged(SharedPreferences prefers)
+	public void restartService(SharedPreferences prefers)
 	{
 		// Stop current service
 		stopService(locationServiceIntent);
-
-		// Update the GPS and Network intervals to the new value
-		setUpdatesInterval(Integer.parseInt(prefers.getString(SELECTED_PERIOD, "15000")));
 
 		// Start a new service with the new update value
 		locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
@@ -74,11 +104,24 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 	}
 
 	// Called when the prefs file is first read or changed in order to set the 
-	// correct interval for Network and GPS updates
+	// correct interval for Network updates
 	public void setUpdatesInterval(int interval)
 	{
 		client.SetNetworkPeriod(interval);
-		client.SetGPSPeriod(200);
+	}
+	
+	// Called when the prefs file is first read or changed in order to set the 
+	// correct interval for the GPS updates
+	public void setLocationInterval(int interval)
+	{
+		client.SetGPSPeriod(interval);
+	}
+	
+	// Called when the prefs file is first read or changed in order to set the 
+	// correct interval for Network updates
+	public void setGPSAccuracy(int interval)
+	{
+		client.SetGPSAccuracy(interval);
 	}
 
 	// Called when the soft "menu" key is pressed

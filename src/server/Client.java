@@ -28,8 +28,9 @@ public class Client
 	
 	private PointF  _mapLocation;
 	
-	private int NETWORK_PERIOD = 10000;
-    private int GPS_PERIOD = 200;
+	private int NETWORK_PERIOD = 15000;
+    private int GPS_PERIOD = 500;
+    private int GPS_ACCURACY = 20;
 	
 	private Server _server = Server.GetInstance();
 	
@@ -43,6 +44,7 @@ public class Client
 	public boolean 	GetGlobalVisibility()	{ return _globalVisibility; }
 	public int      GetNetworkPeriod()      { return NETWORK_PERIOD; }
 	public int      GetGPSPeriod()          { return GPS_PERIOD; }
+	public int		GetGPSAccuracy()		{ return GPS_ACCURACY; }
 	public PointF   GetMapLocation()        { return _mapLocation; }
 	public long     GetTimestamp()          { return _timestamp; }
 	public String	GetSecretQuestion()		{ return _secretQuestion; }
@@ -402,6 +404,11 @@ public class Client
 	public void SetNetworkPeriod(int period)
 	{
 		NETWORK_PERIOD = period;
+	}
+	
+	public void SetGPSAccuracy(int accuracy)
+	{
+		GPS_ACCURACY = accuracy;
 	}
 	
 	/* Returns whether or not the client has logged in */

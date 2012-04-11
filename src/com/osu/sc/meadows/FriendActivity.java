@@ -127,6 +127,9 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 		events.AddFriendsUpdatedListener(friendsListener);
 		events.AddBlockedUsersUpdatedListener(blockedUsersListener);
 		events.AddFriendRequestsUpdatedListener(friendRequestsListener);
+
+		// Request friend requests in order to ensure the count is up to date
+		client.RequestUpdateFriendRequests();
 	}
 
 	public void OnFriendsUpdated(ArrayList<User> users)

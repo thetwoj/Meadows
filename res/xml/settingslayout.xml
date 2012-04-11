@@ -6,12 +6,34 @@
         android:title="General Settings" >
 
         <ListPreference
+            android:defaultValue="200"
+            android:entries="@array/gpsPeriodLabels"
+            android:entryValues="@array/gpsPeriodValues"
+            android:key="meadows_location_update_interval"
+            android:summary="How often your location will be polled"
+            android:title="GPS Interval" />
+
+        <ListPreference
             android:defaultValue="15000"
             android:entries="@array/periodLabels"
             android:entryValues="@array/periodValues"
             android:key="meadows_user_update_interval"
             android:summary="How often your device will attempt to communicate with server"
             android:title="Updates Interval" />
+        
+        <ListPreference
+            android:defaultValue="20"
+            android:entries="@array/accuracyLabels"
+            android:entryValues="@array/accuracyValues"
+            android:key="meadows_gps_accuracy"
+            android:summary="What accuracy to require from GPS polling"
+            android:title="GPS Accuracy" />
+        
+        <Preference
+            android:title="Disable Auto-Login"
+            android:summary="Turn off the auto-login feature"
+            android:key="meadows_autolog_disable" />
+            
     </PreferenceCategory>
 
 </PreferenceScreen>
