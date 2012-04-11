@@ -110,6 +110,18 @@ public class Client
 		_server.Login(email, password);
 	}
 	
+	public void LogOut()
+	{
+		_clientUid = -1;
+		_firstName = "";
+		_lastName = "";
+		_email = "";
+		_longitude = -1;
+		_latitude = -1;
+		_secretQuestion = "";
+		_timestamp = 0;
+	}
+	
 	public void CreateUser(String firstName, String lastName, String email, String password, String secretQuestion, String secretAnswer)
 	{
 		_server.AddUser(email, password, secretQuestion, secretAnswer, firstName, lastName);
