@@ -87,6 +87,8 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		prefs.registerOnSharedPreferenceChangeListener(settingsListener);
 
 		setContentView(R.layout.main);
+		
+		locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
 
 		// Check to see if service is already running, indicating that the app
 		// was idle long enough for the main activity to be cleaned up. In this
@@ -95,7 +97,6 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		if(!isMyServiceRunning())
 		{
 			//Start up the location service.
-			locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
 			startService(locationServiceIntent);
 		}
 	}
