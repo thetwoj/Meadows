@@ -2,6 +2,8 @@ package com.osu.sc.meadows;
 
 import server.Client;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -69,15 +71,15 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 					restartService(prefer);
 				}
 				// TODO FIX THIS SHIT
-//				else if(key.equals(DISABLE_AUTOLOG))
-//				{
-//					SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-//					SharedPreferences.Editor editor = prefs.edit();
-//					editor.putBoolean(MEADOWS_USER_AUTOLOGIN, false);
-//					editor.commit();
-//					 
-//					Toast.makeText(getBaseContext(), "Auto-Login Disabled", Toast.LENGTH_LONG);
-//				}
+				//				else if(key.equals(DISABLE_AUTOLOG))
+				//				{
+				//					SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+				//					SharedPreferences.Editor editor = prefs.edit();
+				//					editor.putBoolean(MEADOWS_USER_AUTOLOGIN, false);
+				//					editor.commit();
+				//					 
+				//					Toast.makeText(getBaseContext(), "Auto-Login Disabled", Toast.LENGTH_LONG);
+				//				}
 			}
 		};
 
@@ -86,9 +88,16 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 
 		setContentView(R.layout.main);
 
-		//Start up the location service.
-		locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
-		startService(locationServiceIntent);
+		// Check to see if service is already running, indicating that the app
+		// was idle long enough for the main activity to be cleaned up. In this
+		// case we don't want to start a second service, we want to continue using
+		// the one that is already running
+		if(!isMyServiceRunning())
+		{
+			//Start up the location service.
+			locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
+			startService(locationServiceIntent);
+		}
 	}
 
 	// Called after prefs file is changed in order to stop the current service
@@ -109,14 +118,14 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 	{
 		client.SetNetworkPeriod(interval);
 	}
-	
+
 	// Called when the prefs file is first read or changed in order to set the 
 	// correct interval for the GPS updates
 	public void setLocationInterval(int interval)
 	{
 		client.SetGPSPeriod(interval);
 	}
-	
+
 	// Called when the prefs file is first read or changed in order to set the 
 	// correct interval for Network updates
 	public void setGPSAccuracy(int interval)
@@ -196,11 +205,31 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		}
 	}
 
+	// Utility method to check and see if the location service is already running
+	private boolean isMyServiceRunning() {
+		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (ClientLocationService.class.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		// Make sure that the location service has been stopped when the activity
+		// is backed out of
+		client.LogOut();
+		stopService(locationServiceIntent);
+
+		super.onBackPressed();
+	}
+
 	@Override
 	public void onDestroy()
 	{
-		//Make sure that the location service has been stopped.
-		stopService(locationServiceIntent);
 		super.onDestroy();
 	}
 }
