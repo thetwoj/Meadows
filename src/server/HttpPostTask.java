@@ -57,11 +57,7 @@ public class HttpPostTask extends AsyncTask<String, Boolean, String>
 
 	@Override
 	protected String doInBackground(String... garbage) 
-	{
-		//This is the result which will be populated with whatever
-		//JSON is returned from our HTTP Post request.
-		String result = "";
-		
+	{		
 		//set HTTP connection to timeout after 3 seconds
 		HttpParams httpParams = new BasicHttpParams();
 		HttpConnectionParams.setConnectionTimeout(httpParams, 3000);
@@ -71,19 +67,18 @@ public class HttpPostTask extends AsyncTask<String, Boolean, String>
 		HttpClient client = new DefaultHttpClient(httpParams);
 		HttpPost post = new HttpPost(_url);
 
-		boolean connectionMade = false;
-		while(!connectionMade)
+		while(true)
 		{
 			try
 			{			
+				String result = "";
 				//set post parameters			
 				post.setEntity(new UrlEncodedFormEntity(_params));
 	
 				//execute http request
 				HttpResponse response = client.execute(post);
 				
-				//parse response
-				
+				//parse response				
 				try 
 				{
 					StringBuilder stringBuilder = new StringBuilder();
@@ -94,32 +89,20 @@ public class HttpPostTask extends AsyncTask<String, Boolean, String>
 						stringBuilder.append(line+"\n");
 					result = stringBuilder.toString();	
 				} 
-				catch (Exception e) 
-				{
-					result = "";
-				}
-				
-				
-				
-					
-				connectionMade = true;
+				catch (Exception e) {}					
+				return result;
 			}
-			//if connection could not be made, try again. Is this dangerous?
-			catch(SocketTimeoutException e)
-			{
-				try {Thread.sleep(15000);} 
-				catch (InterruptedException e1) { }
-			} 
-			catch (ClientProtocolException e) { } catch (UnsupportedEncodingException e) {
-				try {Thread.sleep(15000);} 
-				catch (InterruptedException e1) { }
-			} catch (IOException e) {
-				try {Thread.sleep(15000);} 
-				catch (InterruptedException e1) { }
-			} 
+			catch (SocketTimeoutException e){} 
+			catch (ClientProtocolException e) {}
+			catch (UnsupportedEncodingException e) {} 
+			catch (IOException e){} 
+			
+			//If the connection could not be made, 
+			//wait a few seconds and try again
+			try {Thread.sleep(5000);} 
+			catch (InterruptedException e1) { }
 		}
-		
-		return result;		
+				
 	}
 	
 	@Override

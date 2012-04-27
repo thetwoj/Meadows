@@ -86,6 +86,45 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 		// Register as a login listeners
 		events.AddLoginSuccessListener(loginSuccessListener);
 		events.AddLoginFailureListener(loginFailureListener);
+
+		//Set up the client immediately when the application opens.
+		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+		Boolean autolog = prefs.getBoolean(MEADOWS_USER_AUTOLOGIN, false);
+
+		// If auto-login is selected by the user
+		if(autolog)
+		{
+			// Retrieve state of "Remember Me" CheckBox, see if checked
+			CheckBox cb = (CheckBox)findViewById(R.id.rememberMeCheckBox);
+			cb.setChecked(true);
+
+			// Get the email and pass from the prefs file and attempt to login
+			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
+			String pass = prefs.getString(MEADOWS_USER_PASS, "");
+
+			// Get the text fields so that the can be populated with saved data
+			EditText mEmail = (EditText) findViewById(R.id.loginEmail);
+			EditText mPass = (EditText) findViewById(R.id.loginPassword);
+
+			// Set the user/pass fields to the saved values
+			mEmail.setText(email);
+			mPass.setText(pass);
+
+			// Check to see if network is available before trying to log in
+			if(isNetworkAvailable())
+			{
+				// Attempt to login with saved credentials
+				client.Login(email, pass);
+
+				// Display logging in message
+				loggingIn = ProgressDialog.show(this, "", "Logging in, please wait...", true);
+			}
+			else 
+			{
+				alert.setMessage("No Internet connection available, cannot connect at this time!");
+				alert.show();
+			}
+		}
 	}
 
 	// When login is successful

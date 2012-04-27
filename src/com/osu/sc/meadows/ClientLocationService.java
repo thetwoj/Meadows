@@ -43,12 +43,12 @@ public class ClientLocationService extends Service
 	protected Timer pollTimer;
 	protected LocationListener locationListener;
 	protected NotificationManager nM;
-	protected Client client;
-	
+	protected Client client; 
+
 	@Override
 	public void onCreate()
 	{
-		
+
 		//Initialize the client.
 		client = Client.GetInstance();
 		
@@ -56,27 +56,31 @@ public class ClientLocationService extends Service
 		initServiceNotification();
 
 		//Set up the client immediately when the application opens.
-		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-		Boolean autolog = prefs.getBoolean(MEADOWS_USER_AUTOLOGIN, false);
-
-		// If auto-login is selected by the user
-		if(autolog)
-		{
-			// Get the email and pass from the prefs file and attempt to login
-			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
-			String pass = prefs.getString(MEADOWS_USER_PASS, "");
-			client.Login(email, pass);
-		}
+//		SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
+//		Boolean autolog = prefs.getBoolean(MEADOWS_USER_AUTOLOGIN, false);
+//
+//		// If auto-login is selected by the user
+//		if(autolog)
+//		{
+//			// Get the email and pass from the prefs file and attempt to login
+//			String email = prefs.getString(MEADOWS_USER_EMAIL, "");
+//			String pass = prefs.getString(MEADOWS_USER_PASS, "");
+//			client.Login(email, pass);
+//		}
 
 		//Start the location listener.
 		locationListener = new LocationListener()
 		{
-
+			int accuracy = client.GetGPSAccuracy();
+			
 			@Override
 			public void onLocationChanged(Location location) 
 			{
-				client.SetLocation(location.getLatitude(), location.getLongitude());
-				client.SetTimestamp(Calendar.getInstance().getTimeInMillis());
+				if(location.getAccuracy() < accuracy)
+				{
+					client.SetLocation(location.getLatitude(), location.getLongitude());
+					client.SetTimestamp(Calendar.getInstance().getTimeInMillis());
+				}
 			}
 			@Override
 			public void onProviderDisabled(String provider) 
@@ -94,7 +98,7 @@ public class ClientLocationService extends Service
 
 		//Start the location listener.
 		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, client.GetNetworkPeriod(), 0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, client.GetGPSPeriod(), 0, locationListener);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, client.GetGPSPeriod(), 0, locationListener);
 
 		//Schedule periodic client updates.
@@ -117,7 +121,7 @@ public class ClientLocationService extends Service
 
 		//Restore friend locations.
 		restoreFriendLocations();
-		
+
 		Log.v("ClientLocationService", "ClientLocationService constructed.");
 	}
 
@@ -155,7 +159,10 @@ public class ClientLocationService extends Service
 		notify.setLatestEventInfo(context, ongoingTitle, ongoingText, contentIntent);
 
 		// Send notification
-		nM.notify(MEADOWS_STATUS_ID, notify);
+		//nM.notify(MEADOWS_STATUS_ID, notify);
+		
+		// TODO Figure out whether or not this works and cleanup
+		startForeground(MEADOWS_STATUS_ID, notify);
 	}
 
 	@Override
@@ -183,7 +190,7 @@ public class ClientLocationService extends Service
 
 		//Call the base class.
 		super.onDestroy();
-		
+
 		Log.v("ClientLocationService", "ClientLocationService destroyed.");
 	}
 

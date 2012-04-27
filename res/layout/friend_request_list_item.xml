@@ -19,7 +19,6 @@
             android:layout_marginLeft="10dp"
             android:focusable="false"
             android:gravity="left|center_vertical"
-            android:onClick="onClick"
             android:paddingBottom="20dp"
             android:paddingRight="40dp"
             android:paddingTop="20dp"
