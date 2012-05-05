@@ -132,6 +132,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void drawMeetingPoints(Canvas canvas, Paint paint)
 	{
+		/*
 		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
 		{
 			Point screen = imageToScreen(mPoint.mapLoc);
@@ -139,6 +140,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 			drawNameplateAt(canvas, paint, screen, "12:05 P.M", Color.WHITE);
 			
 		}
+		*/
 	}
 	
 	protected void drawUserLocation(Canvas canvas, Paint paint)

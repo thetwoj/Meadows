@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import server.Client;
+import server.MeetingPoint;
 import server.ServerEvents;
 import server.User;
 import server.UsersUpdatedEvent;
@@ -21,7 +22,6 @@ import com.osu.sc.mapframework.ClosestPointTrio;
 import com.osu.sc.mapframework.GeoImageViewTouch;
 import com.osu.sc.mapframework.GeoreferencedPoint;
 import com.osu.sc.mapframework.GeoPoint;
-import com.osu.sc.mapframework.MeetingPoint;
 import com.osu.sc.mapframework.MapUtils;
 
 import android.app.Activity;
@@ -38,9 +38,6 @@ public class GeoMapActivity extends Activity
 	
 	//A list of the geo referenced points for this map.
 	List<GeoreferencedPoint> geoReferencedPoints;
-	
-	//A list for the meeting points for this map.
-	List<MeetingPoint> meetingPoints;
 	
 	//The currently long pressed location on the image for setting meeting points.
 	private PointF longPressLoc;
@@ -109,9 +106,6 @@ public class GeoMapActivity extends Activity
 		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
-	
-		//Create a list for the meeting points.
-		this.meetingPoints = new ArrayList<MeetingPoint>();
 		
 		//Save the image view.
 		this.geoImageView = (GeoImageViewTouch) findViewById(R.id.meadowsImageView);
@@ -120,7 +114,7 @@ public class GeoMapActivity extends Activity
 		this.geoImageView.setGeoMapActivity(this);
 		
 		//Load georeferenced points from the meadows data file.
-		this.currentMapFileId = R.raw.meadows;
+		this.currentMapFileId = R.raw.campus;
 		
 		//Create a new 2d tree to hold the geo points.
 		loadGeoreferencedPoints(this.currentMapFileId);
@@ -166,11 +160,6 @@ public class GeoMapActivity extends Activity
 		return this.userMapLoc;
 	}
 	
-	public List<MeetingPoint> getMeetingPoints()
-	{
-		return this.meetingPoints;
-	}
-	
 	public void meetingSelected(MeetingPoint mPoint)
 	{
 		//TODO
@@ -191,13 +180,13 @@ public class GeoMapActivity extends Activity
 	
 	
 	//Utility functions
-	protected void createMeetingPoint(PointF imageLoc)
+	protected void createMeetingPoint(String description, double latitude, double longitude, double time)
 	{
-		this.meetingPoints.add(new MeetingPoint(this.currentMapFileId, imageLoc));
+		Client.GetInstance().CreateMeetingPoint(description, latitude, longitude, 0);
 		this.geoImageView.invalidate();
 	}
 	
-	protected ClosestPointTrio getClosestPointTrioSmart(GeoPoint worldLoc)
+	public ClosestPointTrio getClosestPointTrioSmart(GeoPoint worldLoc)
 	{
 		if(this.geoReferencedPoints.size() < 3)
 			return null;
@@ -254,7 +243,7 @@ public class GeoMapActivity extends Activity
 		return new ClosestPointTrio(bestFirst, bestSecond, bestThird);
 	}
 	
-	protected double getSuitability(GeoPoint worldLoc, GeoPoint first, GeoPoint second, GeoPoint third)
+	public double getSuitability(GeoPoint worldLoc, GeoPoint first, GeoPoint second, GeoPoint third)
 	{
 		//Compute the perimeter of the triangle.
 		double side1 = MapUtils.pyth(first, second);
@@ -280,7 +269,7 @@ public class GeoMapActivity extends Activity
 		
 	}
 
-	protected PointF getGeoMapPosition(GeoPoint worldLoc)
+	public PointF getGeoMapPosition(GeoPoint worldLoc)
 	{
 		ClosestPointTrio trio = getClosestPointTrioSmart(worldLoc);
 		if(trio == null)
@@ -335,7 +324,8 @@ public class GeoMapActivity extends Activity
 	       this.homePointLoc = new PointF(homeX, homeY);
 	       
 	       //Load in all of the georeferenced points.
-	       while ((strLine = br.readLine()) != null)   {
+	       while ((strLine = br.readLine()) != null)   
+	       {
 	    	   st = new StringTokenizer(strLine);
 	    	   float x = Float.parseFloat(st.nextToken());
 	    	   float y = Float.parseFloat(st.nextToken());
@@ -378,7 +368,7 @@ public class GeoMapActivity extends Activity
 			return;
 		
 		//Create a meeting point at the long press location.
-		createMeetingPoint(this.longPressLoc);
+		//createMeetingPoint(this.longPressLoc);
 		
     }
 	
