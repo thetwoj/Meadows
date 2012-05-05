@@ -293,7 +293,7 @@ public class GeoMapActivity extends Activity
 		
 		
 		double numeratorA = (x4 - x3) * (y2 - y3) - (y4 - y3) * (x2 - x3);
-		double numeratorB = (x4 - x3) * (y4 - y3) - (y1 - y3) * (x4 - x3);
+		double numeratorB = (x1 - x3) * (y4 - y3) - (y1 - y3) * (x4 - x3);
 		double denominatorAB = (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
 		
 		double a = numeratorA / denominatorAB;
