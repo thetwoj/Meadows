@@ -80,19 +80,9 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 		// Dismiss the friend loading message
 		loadingFriends.dismiss();
 
-		// Set the "Global Visibility" button to match current Client info
-		globalVisible = (ToggleButton) findViewById(R.id.globalVisibleToggle);
-		globalVisible.setChecked(Client.GetInstance().GetGlobalVisibility());
-
-		// Listener for "Global Visibility" button
-		gVisible = new OnCheckedChangeListener()
-		{
-			@Override
-			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-				// On click, set Global Visibility to the checked state of toggleButton
-				Client.GetInstance().SetGlobalVisibility(buttonView.isChecked());
-			}
-		};
+		// Set the "Global Visibility" to true as it is a redundant feature
+		// but may be useful for some development later on
+		Client.GetInstance().SetGlobalVisibility(true);
 
 		//Create the event listeners.
 		friendsListener = new UsersUpdatedListener()
@@ -119,9 +109,6 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 				OnFriendRequestsUpdated(users);
 			}
 		};
-
-		// Register the onCheck listener to the "Global Visibility" toggleButton
-		globalVisible.setOnCheckedChangeListener(gVisible);
 
 		//Register the listeners.
 		events.AddFriendsUpdatedListener(friendsListener);

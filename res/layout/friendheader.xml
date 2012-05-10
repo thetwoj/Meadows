@@ -57,7 +57,7 @@
             android:onClick="OnClick"
             android:src="@drawable/add" />
     </RelativeLayout>
-
+<!-- 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -77,5 +77,5 @@
             android:textOff="Globally Invisible"
             android:textOn="Globally Visible" />
     </RelativeLayout>
-
+-->
 </RelativeLayout>
