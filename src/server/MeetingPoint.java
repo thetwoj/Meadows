@@ -34,4 +34,10 @@ public class MeetingPoint
 	public    String    GetTimeString()  { return _timeString; }
 	public    double 	GetImageLocY()	 { return _imageLocY; }
 	public    double 	GetImageLocX()	 { return _imageLocX; }
+	
+
+	public boolean ClientIsOwner()
+	{
+		return Client.GetInstance().GetClientUid() == _creatorUid;
+	}
 }

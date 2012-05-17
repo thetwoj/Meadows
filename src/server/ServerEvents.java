@@ -16,6 +16,7 @@ public class ServerEvents
 	ArrayList<UsersUpdatedListener> _loginFailureListeners 			= new ArrayList<UsersUpdatedListener>();
 	ArrayList<UsersUpdatedListener> _loginSuccessListeners 			= new ArrayList<UsersUpdatedListener>();
 	ArrayList<UsersUpdatedListener> _clientLocationUpdatedListeners = new ArrayList<UsersUpdatedListener>();
+	ArrayList<ConditionsListener> _conditionsListeners = new ArrayList<ConditionsListener>();
 	ArrayList<MeetingPointsUpdatedListener> _meetingPointsUpdatedListeners = new ArrayList<MeetingPointsUpdatedListener>();
 	
 	public void AddFriendsUpdatedListener(UsersUpdatedListener listener)
@@ -39,6 +40,25 @@ public class ServerEvents
 	}
 	
 	
+	public void AddConditionsUpdatedListener(ConditionsListener listener)
+	{
+		if( !_conditionsListeners.contains(listener))
+			_conditionsListeners.add(listener);
+	}
+	
+	public void RemoveConditionsUpdatedListener(ConditionsListener listener)
+	{
+		_conditionsListeners.remove(listener);
+	}
+	
+	protected void _InvokeConditionsUpdated(Conditions conditions)
+	{
+		//create the event
+		ConditionsUpdated event = new ConditionsUpdated(this, conditions);
+		//execute each listener passing the new event
+		for(ConditionsListener listener : _conditionsListeners)
+			listener.EventFired(event);
+	}
 	
 	public void AddBlockedUsersUpdatedListener(UsersUpdatedListener listener)
 	{
