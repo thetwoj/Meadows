@@ -178,6 +178,29 @@ public class Server
 		}).execute();		
 	}
 	
+	protected boolean conditionsRequested = false;
+	protected void RequestConditions()
+	{	
+		//don't create multiple requests
+		if( conditionsRequested )
+			return;
+					
+		conditionsRequested = true;
+		
+		new HttpPostTask(new CallBack(){
+			public void Invoke(String result)
+			{
+				Conditions conditions = new Conditions(result);
+				
+				//publish event
+				ServerEvents serverEvents = ServerEvents.GetInstance();
+				serverEvents._InvokeConditionsUpdated(conditions);
+				
+				Server.GetInstance().conditionsRequested = false;
+			}
+		}).execute();		
+	}
+	
 	protected boolean friendsRequested = false;
 	protected void RequestUpdateFriends(int clientUid)
 	{	

@@ -33,6 +33,19 @@ public class HttpPostTask extends AsyncTask<String, Boolean, String>
 	final ArrayList<NameValuePair> _params;
 	final ArrayList<CallBack> _callBacks;
 	
+	@SuppressWarnings("serial")
+	public HttpPostTask(final CallBack callBack)
+	{
+		this(new ArrayList<CallBack>(){{add(callBack);}});
+	}
+	
+	public HttpPostTask(ArrayList<CallBack> callBacks)
+	{
+		_callBacks = callBacks;
+		_params = new ArrayList<NameValuePair>();
+		_url = "http://www.skihood.com/The-Mountain/Conditions";
+	}
+	
 	public HttpPostTask(String location, ArrayList<NameValuePair> params)
 	{
 		this(location, params, (ArrayList<CallBack>)null);

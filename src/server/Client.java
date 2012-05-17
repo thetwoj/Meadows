@@ -151,6 +151,11 @@ public class Client
 			_server.RequestUpdateMeetingPoints(_clientUid);
 	}
 	
+	public void RequestConditions()
+	{
+		Server.GetInstance().RequestConditions();
+	}
+	
 	public void DenyFriendRequest(User user)
 	{
 		if(!LoggedIn() || !_friendRequests.contains(user))
