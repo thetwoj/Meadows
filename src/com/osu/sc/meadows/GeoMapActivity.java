@@ -6,13 +6,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Map;
 
 import server.Client;
 import server.MeetingPoint;
+import server.MeetingPointsUpdatedEvent;
+import server.MeetingPointsUpdatedListener;
 import server.ServerEvents;
 import server.User;
 import server.UsersUpdatedEvent;
@@ -56,6 +61,7 @@ public class GeoMapActivity extends Activity
 	
 	private UsersUpdatedListener clientLocationListener;
 	private UsersUpdatedListener friendsLocationListener;
+	private MeetingPointsUpdatedListener meetingPointsListener;
 	
 	//On activity creation.
 	public void onCreate(Bundle savedInstanceState)
@@ -101,8 +107,19 @@ public class GeoMapActivity extends Activity
 			}
 		};
 		
+		//Set up the meeting points listener.
+		meetingPointsListener = new MeetingPointsUpdatedListener()
+		{
+			@Override
+			public void EventFired(MeetingPointsUpdatedEvent event)
+			{
+			}
+		};
+		
 		//Register the listener with the event system.
 		ServerEvents.GetInstance().AddFriendsUpdatedListener(friendsLocationListener);
+		
+		ServerEvents.GetInstance().AddMeetingPointsUpdatedListener(meetingPointsListener);
 		
 		//Set the content view to the map layout.
 		setContentView(R.layout.maplayout);
@@ -368,7 +385,8 @@ public class GeoMapActivity extends Activity
 			return;
 		
 		//Create a meeting point at the long press location.
-		//createMeetingPoint(this.longPressLoc);
+		Calendar cal = Calendar.getInstance();
+		Client.GetInstance().CreateMeetingPoint("Lunch", this.longPressLoc.x, this.longPressLoc.y, cal.getTimeInMillis() + 1000000);
 		
     }
 	

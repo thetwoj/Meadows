@@ -1,6 +1,7 @@
 package com.osu.sc.meadows;
 
 import java.util.List;
+
 import server.Client;
 import server.User;
 import android.app.Activity;

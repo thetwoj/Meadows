@@ -1,53 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentLeft="true"
+    android:layout_height="fill_parent"
     android:background="#ffffff"
     android:orientation="horizontal" >
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/friendRequestName"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#ffffff"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:focusable="false"
+        android:gravity="left|center_vertical"
+        android:paddingBottom="20dp"
+        android:paddingRight="40dp"
+        android:paddingTop="20dp"
+        android:textColor="#000000"
+        android:textSize="25dp" />
 
-        <TextView
-            android:id="@+id/friendRequestName"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:focusable="false"
-            android:gravity="left|center_vertical"
-            android:paddingBottom="20dp"
-            android:paddingRight="40dp"
-            android:paddingTop="20dp"
-            android:textColor="#000000"
-            android:textSize="25dp" />
+    <ImageButton
+        android:id="@+id/acceptFriendRequestButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/denyFriendRequestButton"
+        android:background="@null"
+        android:onClick="OnAcceptClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/accept" />
 
-        <ImageButton
-            android:id="@+id/acceptFriendRequestButton"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:background="@null"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/denyFriendRequestButton"
-            android:onClick="OnAcceptClick"
-            android:scaleType="fitCenter"
-            android:src="@drawable/accept" />
+    <ImageButton
+        android:id="@+id/denyFriendRequestButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:background="@null"
+        android:onClick="OnDenyClick"
+        android:scaleType="fitCenter"
+        android:src="@drawable/deny" />
 
-        <ImageButton
-            android:id="@+id/denyFriendRequestButton"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:background="@null"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:onClick="OnDenyClick"
-            android:scaleType="fitCenter"
-            android:src="@drawable/deny" />
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

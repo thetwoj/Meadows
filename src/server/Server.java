@@ -119,25 +119,25 @@ public class Server
 		new HttpPostTask("SetShareLocation.php", parameters, callBacks).execute();
 	}
 	
-	protected void CreateMeetingPoint(int creatorUid, String description, double latitude, double longitude, long time)
+	protected void CreateMeetingPoint(int creatorUid, String description, double imageLocX, double imageLocY, long time)
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
 		parameters.add(new BasicNameValuePair("description", description));
-		parameters.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
-		parameters.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
+		parameters.add(new BasicNameValuePair("imageLocX", Double.toString(imageLocX)));
+		parameters.add(new BasicNameValuePair("imageLocY", Double.toString(imageLocY)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(time)));
 		new HttpPostTask("CreateMeetingPoint.php", parameters).execute();
 	}
 	
-	protected void UpdateMeetingPoint(int creatorUid, String description, double latitude, double longitude, long time, int mid)
+	protected void UpdateMeetingPoint(int creatorUid, String description, double imageLocX, double imageLocY, long time, int mid)
 	{
 		ArrayList<NameValuePair> parameters = new ArrayList<NameValuePair>();
 		parameters.add(new BasicNameValuePair("creatorUid", Integer.toString(creatorUid)));
 		parameters.add(new BasicNameValuePair("mid", Integer.toString(mid)));
 		parameters.add(new BasicNameValuePair("description", description));
-		parameters.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
-		parameters.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
+		parameters.add(new BasicNameValuePair("imageLocX", Double.toString(imageLocX)));
+		parameters.add(new BasicNameValuePair("imageLocY", Double.toString(imageLocY)));
 		parameters.add(new BasicNameValuePair("time", Long.toString(time)));
 		new HttpPostTask("UpdateMeetingPoint.php", parameters).execute();
 	}
@@ -437,8 +437,8 @@ public class Server
 				
 				
 				String description	= json.getString("description");				
-				double latitude  	= json.getDouble("latitude");
-			    double longitude 	= json.getDouble("longitude");			    
+				double imageLocX     = json.getDouble("imageLocX");
+			    double imageLocY     = json.getDouble("imageLocY");			    
 				long time 		 	= json.getLong("time");				
 				int mid 			= json.getInt("mid");
 				int creatorUid 		= json.getInt("creatorUid");
@@ -448,8 +448,8 @@ public class Server
 						mid,
 						time,
 						description,
-						latitude,
-						longitude);
+						imageLocX,
+						imageLocY);
 				
 				meetingPoints.add(meetingPoint);
 			}

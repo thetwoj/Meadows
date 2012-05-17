@@ -4,16 +4,18 @@ import server.Client;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 /*
  * The Homescreen activity class - contains links to all other main activities
@@ -44,6 +46,14 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 
 		// Retrieve the selected interval for updates from prefs file
 		setUpdatesInterval(Integer.parseInt(prefs.getString(SELECTED_NETWORK_PERIOD, "15000")));
+
+		// Create a Location Manager to check if GPS is enabled
+		final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+		// If GPS is disabled, call function to alert user
+		if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+			buildAlertMessageNoGps();
+		}
 
 		// Setup a listener to detect changes to the prefs file
 		settingsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -87,7 +97,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		prefs.registerOnSharedPreferenceChangeListener(settingsListener);
 
 		setContentView(R.layout.main);
-		
+
 		locationServiceIntent = new Intent(MeadowsActivity.this, ClientLocationService.class);
 
 		// Check to see if service is already running, indicating that the app
@@ -99,6 +109,29 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 			//Start up the location service.
 			startService(locationServiceIntent);
 		}
+	}
+
+	// Method to create alert to let user know GPS is disabled and give them
+	// the chance to turn it on before continuing with a link to the phone settings
+	private void buildAlertMessageNoGps() {
+		// Initialize alert, set message and button options
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Your GPS seems to be disabled, do you want to enable it?"
+				+"\n"+"\n"+"This app will not function correctly without it!")
+				.setCancelable(false)
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(final DialogInterface dialog, final int id) {
+						startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(final DialogInterface dialog, final int id) {
+						dialog.cancel();
+					}
+				});
+		// Create and show alert
+		final AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 	// Called after prefs file is changed in order to stop the current service
