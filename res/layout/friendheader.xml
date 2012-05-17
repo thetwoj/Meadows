@@ -1,81 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/friendPage"
+    android:id="@+id/friendHeaderRoot"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_alignParentLeft="true"
-    android:background="#ffffff"
-    android:orientation="horizontal" >
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:background="#FFFFFF"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp" >
 
-    <RelativeLayout
-        android:id="@+id/friendHeaderRoot"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:baselineAligned="false"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp" 
-        android:background="#FFFFFF"> 
+    <ImageView
+        android:id="@+id/friendPageLogo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/icon" />
 
-        <ImageView
-            android:id="@+id/friendPageLogo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/icon" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/friendPageLogo"
-            android:longClickable="true"
-            android:text="Friends"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
-
-        <ImageView
-            android:id="@+id/friendRequestCount"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/addFriendButton"
-            android:background="@drawable/zero"
-            android:onClick="OnClick" />
-
-        <ImageView
-            android:id="@+id/addFriendButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="10dp"
-            android:onClick="OnClick"
-            android:src="@drawable/add" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="fill_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/friendHeaderRoot"
-        android:gravity="center_horizontal"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp">
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/friendPageLogo"
+        android:longClickable="true"
+        android:text="Friends"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#000000" />
 
-        <ToggleButton
-            android:id="@+id/globalVisibleToggle"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="10dp"
-            android:text="ToggleButton"
-            android:textOff="Globally Invisible"
-            android:textOn="Globally Visible" />
-    </RelativeLayout>
+    <ImageView
+        android:id="@+id/friendRequestCount"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/addFriendButton"
+        android:background="@drawable/zero"
+        android:onClick="OnClick" />
+
+    <ImageView
+        android:id="@+id/addFriendButton"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="10dp"
+        android:onClick="OnClick"
+        android:src="@drawable/add" />
 
 </RelativeLayout>

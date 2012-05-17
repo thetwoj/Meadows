@@ -46,10 +46,10 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 		// Display loading message in case this takes a second or two
 		loadingFriends = ProgressDialog.show(this, "", "Loading friends, please wait...", true);
 
-		// Get the client's friends
+		// Get the client's friend requests
 		friendRequests = client.GetFriendRequests();
 
-		// Sort the friends by first name
+		// Sort the requests by first name
 		Collections.sort(friendRequests, this);
 
 		lv = getListView();

@@ -1,8 +1,6 @@
 package com.osu.sc.meadows;
 
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
 public class SettingsActivity extends PreferenceActivity 
