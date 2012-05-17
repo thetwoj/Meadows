@@ -48,6 +48,7 @@ public class Client
 	public PointF   GetMapLocation()        { return _mapLocation; }
 	public long     GetTimestamp()          { return _timestamp; }
 	public String	GetSecretQuestion()		{ return _secretQuestion; }
+	protected int	GetClientUid()			{ return _clientUid; }
 
 	public ArrayList<MeetingPoint>	GetMeetingPoints() 	{ return _meetingPoints; }
  	public ArrayList<User> 			GetFriends()        { return _friends;   }

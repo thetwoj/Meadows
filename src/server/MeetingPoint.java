@@ -1,6 +1,5 @@
 package server;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,4 +34,10 @@ public class MeetingPoint
 	public    String    GetTimeString()  { return _timeString; }
 	public    double 	GetImageLocY()	 { return _imageLocY; }
 	public    double 	GetImageLocX()	 { return _imageLocX; }
+	
+
+	public boolean ClientIsOwner()
+	{
+		return Client.GetInstance().GetClientUid() == _creatorUid;
+	}
 }
