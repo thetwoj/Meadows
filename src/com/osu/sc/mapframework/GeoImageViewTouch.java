@@ -29,7 +29,7 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 public class GeoImageViewTouch extends ImageViewTouch
 {
 	protected GeoMapActivity geoMapActivity;
-	protected static final int SELECTED_FUDGE = 6;
+	protected static final int SELECTED_FUDGE = 9;
 
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
