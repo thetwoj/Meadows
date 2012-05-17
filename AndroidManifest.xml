@@ -68,6 +68,14 @@
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
         <activity
+            android:name=".EditMeetingActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
+            android:name=".ViewMeetingActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+        </activity>
+        <activity
             android:name=".FriendRequestActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>

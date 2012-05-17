@@ -272,6 +272,33 @@ public class Client
 			
 	}
 	
+	public User GetFriend(int uid)
+	{
+		for(User friend : _friends)
+		{
+			if(uid == friend.GetUid())
+				return friend;
+		}
+		
+		return null;
+	}
+	
+	public MeetingPoint GetMeetingPoint(int mid)
+	{
+		for(MeetingPoint mPoint : _meetingPoints)
+		{
+			if(mPoint.GetMid() == mid)
+				return mPoint;
+		}
+		
+		return null;
+	}
+	
+	public User GetMeetingPointCreator(MeetingPoint mPoint)
+	{
+		return GetFriend(mPoint._creatorUid);
+	}
+	
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, double imageLocX, double imageLocY)
 	{
 		long time = meetingPoint.GetTime();
@@ -301,6 +328,7 @@ public class Client
 		{
 			Server server = Server.GetInstance();
 			server.UpdateMeetingPoint(_clientUid, description, imageLocX, imageLocY, time, meetingPoint.GetMid());
+			server.RequestUpdateMeetingPoints(_clientUid);
 		}
 	}
 	

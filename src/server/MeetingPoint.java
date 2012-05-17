@@ -24,11 +24,11 @@ public class MeetingPoint
 		
 		//Save a string representing the time so it does not need to get recomputed.
 		Date d = new Date(time);
-		SimpleDateFormat df = new SimpleDateFormat("HH:mm aaa");
+		SimpleDateFormat df = new SimpleDateFormat("h:mm aaa");
 		_timeString = df.format(d);
 	}
 	
-	protected int 	 	GetMid()		 { return _mid; }
+	public    int 	 	GetMid()		 { return _mid; }
 	public 	  String 	GetDescription() { return _description; }
 	public    long 	 	GetTime()	     { return _time; }
 	public    String    GetTimeString()  { return _timeString; }

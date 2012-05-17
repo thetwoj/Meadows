@@ -9,12 +9,18 @@
     <color name="red">#77DD7777</color>
     <color name="green">#7777DD77</color>
     <color name="darkFont">#ff555555</color>
+    
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="ok">Ok</string>
 
     <string name="averagelabel">Avg. Speed:</string>
     <string name="distancelabel">Total Distance:</string>
     <string name="totaltlabel">Total Time:</string>
     <string name="movingtlabel">Moving Time:</string>
     <string name="createmeeting">Create Meeting Point</string>
+    <string name="editmeeting">Edit Meeting Point</string>
+    <string name="viewmeeting">View Meeting Point</string>
 
     <string-array name="periodLabels">
         <item>5 seconds</item>

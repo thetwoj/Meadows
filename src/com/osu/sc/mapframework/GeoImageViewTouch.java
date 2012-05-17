@@ -28,6 +28,7 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 public class GeoImageViewTouch extends ImageViewTouch
 {
 	protected GeoMapActivity geoMapActivity;
+	protected static final int SELECTED_FUDGE = 6;
 
 	public GeoImageViewTouch(Context context, AttributeSet attrs)
 	{
@@ -38,18 +39,25 @@ public class GeoImageViewTouch extends ImageViewTouch
 	{
 		return false;
 	}
-	
-	protected boolean checkIfTappedMeeting(PointF imageLoc)
+	*/
+	protected boolean meetingPointPressed(Point loc)
 	{
-		int wd = meetingBmp.getWidth();
-		int ht = meetingBmp.getHeight();
+		Paint paint = new Paint();
+		paint.setTextSize(16);
+		paint.setTypeface(Typeface.DEFAULT_BOLD);
+		
 		//Convert the screen location to image coordinates.
-		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
+		for(MeetingPoint mPoint : Client.GetInstance().GetMeetingPoints())
 		{
-			float origX = mPoint.mapLoc.x;
-			float origY = mPoint.mapLoc.y;
+			Point screenLoc = imageToScreen(new PointF((float)mPoint.GetImageLocX(), (float)mPoint.GetImageLocY()));
+			Point screenOrig = new Point(screenLoc.x + 15, screenLoc.y + 15);
 			
-			if(imageLoc.x < origX || imageLoc.x > (origX + wd) || imageLoc.y < origY || imageLoc.y > (origY + ht))
+			Rect rect = new Rect();
+			
+			paint.getTextBounds(mPoint.GetTimeString(), 0, mPoint.GetTimeString().length(), rect);
+			rect.offsetTo((int)screenOrig.x, (int)screenOrig.y);
+			
+			if(loc.x < (rect.left - SELECTED_FUDGE) || loc.x > (rect.right + SELECTED_FUDGE) || loc.y < (rect.top - SELECTED_FUDGE) || (loc.y > rect.bottom + SELECTED_FUDGE))
 				continue;
 			
 			//Found a meeting point, notify the Activity and return true.
@@ -60,6 +68,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		return false;
 	}
 	
+	/*
 	protected boolean checkIfTappedUser(PointF imageLoc)
 	{
 	    //Ensure that there is a valid map location point.
@@ -198,15 +207,9 @@ public class GeoImageViewTouch extends ImageViewTouch
 	@Override
 	protected void singleTapped(Point loc)
 	{
-		/*
-		PointF imageLoc = screenToImage(loc);
-		if(checkIfTappedUser(imageLoc))
+		//Check to see if there is a meeting point pressed.
+		if(meetingPointPressed(loc))
 			return;
-		if(checkIfTappedMeeting(imageLoc))
-			return;
-		if(checkIfTappedFriend(imageLoc))
-			return;
-		*/
 	}
 	
 	protected void onDraw(Canvas canvas)

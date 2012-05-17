@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="@string/createmeeting"
+        android:text="@string/editmeeting"
         android:textColor="@color/darkFont"
         android:textSize="30sp" >
     </TextView>
@@ -21,19 +21,30 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="28dp"
-        android:layout_marginLeft="40dp"
-        android:onClick="cancelCreateMeeting"
+        android:layout_marginLeft="36dp"
+        android:onClick="cancelEditMeeting"
         android:text="@string/cancel" />
-
+    
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/button3"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/button1"
         android:layout_alignBottom="@+id/button1"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="64dp"
-        android:onClick="acceptCreateMeeting"
+        android:layout_toRightOf="@+id/button1"
+        android:layout_marginLeft="10dp"
+        android:onClick="deleteMeeting"
+        android:text="@string/delete" />
+    
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button3"
+        android:layout_alignBottom="@+id/button3"
+        android:layout_toRightOf="@+id/button3"
+        android:layout_marginLeft="10dp"
+        android:onClick="acceptEditMeeting"
         android:text="@string/ok" />
 
     <TextView
@@ -49,7 +60,7 @@
             android:textColor="#000000" />
     
     <EditText
-            android:id="@+id/meetingDesc"
+            android:id="@+id/editMeetingDesc"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/DescriptionTextAnchor"
@@ -69,7 +80,7 @@
             android:textColor="#000000" />
 
     <TimePicker
-        android:id="@+id/timePicker1"
+        android:id="@+id/editTimePicker1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/DescriptionTextAnchor"
