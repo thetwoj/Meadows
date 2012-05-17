@@ -6,8 +6,13 @@ import server.CallBack;
 import server.Client;
 import server.User;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
@@ -79,6 +84,42 @@ public class FriendAdapter extends ArrayAdapter{
 				Client.GetInstance().SetShareLocation(user, isChecked, callBack);
 			}
 		};
+
+		// Initialize alert that will confirm the user wishes to remove given friend
+		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+		// Set a listener for long clicks on friends so that friends can be removed
+		OnLongClickListener rowLongClick = new OnLongClickListener(){
+
+			@Override
+			public boolean onLongClick(View v) {
+				// Initialize alert, confirm that the user wants to remove the friend they have selected
+				builder.setMessage("Remove " + user.GetFirstName() + " " + user.GetLastName() + " from friends?")
+				.setCancelable(false)
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					public void onClick(final DialogInterface dialog, final int id) {
+						// If removal is confirmed, remove given user from friends
+						Client.GetInstance().RemoveFriend(user);
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(final DialogInterface dialog, final int id) {
+						// If remove is declined, close dialog and do nothing else
+						dialog.cancel();
+					}
+				});
+				// Create and show alert
+				final AlertDialog alert = builder.create();
+				alert.show();
+
+				// Return true to inform onLongClick that the callback was consumed
+				return true;
+			}
+
+		};
+
+		// Set onLongClickListener to each rowView so that friends can be removed
+		rowView.setOnLongClickListener(rowLongClick);
 
 		// Transfer the stock data from the data object to the view objects
 		fView.friendNameText.setText("");
