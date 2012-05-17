@@ -1,7 +1,13 @@
 package com.osu.sc.meadows;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TimePicker;
 
 public class CreateMeetingActivity extends Activity
 {
@@ -14,7 +20,17 @@ public class CreateMeetingActivity extends Activity
 	
 	public void acceptCreateMeeting(View v)
 	{
-		setResult(RESULT_OK);
+		Intent intentData = new Intent();
+		String mDesc = ((EditText) findViewById(R.id.meetingDesc)).getText().toString();
+		int hour = ((TimePicker) findViewById(R.id.timePicker1)).getCurrentHour();
+		int minute = ((TimePicker) findViewById(R.id.timePicker1)).getCurrentMinute();
+		Calendar c = Calendar.getInstance();
+		GregorianCalendar gc = new GregorianCalendar(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), hour, minute);
+		long time = gc.getTimeInMillis();
+		
+		intentData.putExtra("Description", mDesc);
+		intentData.putExtra("Time", time);
+		this.setResult(RESULT_OK, intentData);
 		finish();
 	}
 	

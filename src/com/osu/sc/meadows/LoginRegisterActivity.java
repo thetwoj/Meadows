@@ -131,7 +131,8 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	public void onLoginSuccess()
 	{
 		// Dismiss the logging in message
-		loggingIn.dismiss();
+		if(loggingIn != null)
+			loggingIn.dismiss();
 
 		// Destroy listeners in order to avoid weird issues later on
 		events.RemoveLoginSuccessListener(loginSuccessListener);
@@ -148,7 +149,8 @@ public class LoginRegisterActivity extends Activity implements View.OnClickListe
 	public void onLoginFailure()
 	{
 		// Dismiss the logging in message
-		loggingIn.dismiss();
+		if(loggingIn != null)
+			loggingIn.dismiss();
 
 		// Alert user of the error
 		AlertDialog.Builder alert = new AlertDialog.Builder(this); 

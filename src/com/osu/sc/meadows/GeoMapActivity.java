@@ -58,6 +58,8 @@ public class GeoMapActivity extends Activity
 
 	//Meeting request code.
 	private static final int MEETING_REQUEST_CODE = 0;
+	private static final int EDIT_MEETING_REQUEST_CODE = 1;
+	private static final int VIEW_MEETING_REQUEST_CODE = 2;
 	
 	private UsersUpdatedListener clientLocationListener;
 	private UsersUpdatedListener friendsLocationListener;
@@ -113,6 +115,7 @@ public class GeoMapActivity extends Activity
 			@Override
 			public void EventFired(MeetingPointsUpdatedEvent event)
 			{
+				geoImageView.invalidate();
 			}
 		};
 		
@@ -154,6 +157,9 @@ public class GeoMapActivity extends Activity
 		//Unregister the friends location listener.
 		ServerEvents.GetInstance().RemoveFriendsUpdatedListener(friendsLocationListener);
 		
+		//Unregister the meeting points updated listener.
+		ServerEvents.GetInstance().RemoveMeetingPointsUpdatedListener(meetingPointsListener);
+		
 		//Force destroy the bitmap.
 		this.geoImageView.dispose();
 		
@@ -179,28 +185,32 @@ public class GeoMapActivity extends Activity
 	
 	public void meetingSelected(MeetingPoint mPoint)
 	{
-		//TODO
+		if(mPoint.ClientIsOwner())
+		{
+			Intent editMeetingIntent = new Intent(this, EditMeetingActivity.class);
+		    editMeetingIntent.putExtra("mId", mPoint.GetMid());
+			startActivityForResult(editMeetingIntent, EDIT_MEETING_REQUEST_CODE);
+		}
+		else
+		{
+			Intent viewMeetingIntent = new Intent(this, ViewMeetingActivity.class);
+			viewMeetingIntent.putExtra("mId", mPoint.GetMid());
+			startActivityForResult(viewMeetingIntent, VIEW_MEETING_REQUEST_CODE);
+		}
+			
 	}
 	
 	//Initiate the create meeting activity.
 	public void startCreateMeeting(PointF imageLoc)
 	{
 		this.longPressLoc = imageLoc;
-		Intent meetingIntent = new Intent(this, CreateMeetingActivity.class);
-		startActivityForResult(meetingIntent, MEETING_REQUEST_CODE);
+		Intent createMeetingIntent = new Intent(this, CreateMeetingActivity.class);
+		startActivityForResult(createMeetingIntent, MEETING_REQUEST_CODE);
 	}
 	
 	public void userSelected()
 	{
 		//TODO
-	}
-	
-	
-	//Utility functions
-	protected void createMeetingPoint(String description, double latitude, double longitude, double time)
-	{
-		Client.GetInstance().CreateMeetingPoint(description, latitude, longitude, 0);
-		this.geoImageView.invalidate();
 	}
 	
 	public ClosestPointTrio getClosestPointTrioSmart(GeoPoint worldLoc)
@@ -367,26 +377,68 @@ public class GeoMapActivity extends Activity
 		}
 	  }
 	
+	protected void handleCreateMeeting(Intent data)
+	{
+		//If there's no valid long press location, return.
+		if(this.longPressLoc == null)
+			return;
+				
+		//Create a meeting point at the long press location.
+		Calendar cal = Calendar.getInstance();
+		String meetingDesc = data.getStringExtra("Description");
+		long meetingTime = data.getLongExtra("Time", -1);
+		if(meetingTime < cal.getTimeInMillis())
+			return;
+				
+		Client.GetInstance().CreateMeetingPoint(meetingDesc, this.longPressLoc.x, this.longPressLoc.y, meetingTime);
+	}
+	
+	protected void handleEditMeeting(Intent data)
+	{
+		//Edit the meeting point.
+		int mId = data.getIntExtra("mId", -1);
+		if(mId == -1)
+			return;
+		
+		MeetingPoint mPoint = Client.GetInstance().GetMeetingPoint(mId);
+		if(mPoint == null)
+			return;
+		
+		boolean deleted = data.getBooleanExtra("Deleted", false);
+		if(deleted)
+			Client.GetInstance().DeleteMeetingPoint(mPoint);
+		
+		String meetingDesc = data.getStringExtra("Description");
+		long meetingTime = data.getLongExtra("Time", -1);
+		Calendar cal = Calendar.getInstance();
+		if(meetingTime < cal.getTimeInMillis())
+			return;
+		
+		Client.GetInstance().UpdateMeetingPoint(mPoint, meetingDesc, mPoint.GetImageLocX(), mPoint.GetImageLocY(), meetingTime);
+	}
+	
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) 
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		//Ensure the request code is for the meeting activity.
-		if(requestCode != MEETING_REQUEST_CODE)
-			return;
-		
 		//Do nothing if the user canceled.
 		if(resultCode == RESULT_CANCELED)
 			return;
 		
-		//If there's no valid long press location, return.
-		if(this.longPressLoc == null)
+		//Do nothing if the request code was just to view the meeting details.
+		if(requestCode == VIEW_MEETING_REQUEST_CODE)
 			return;
 		
-		//Create a meeting point at the long press location.
-		Calendar cal = Calendar.getInstance();
-		Client.GetInstance().CreateMeetingPoint("Lunch", this.longPressLoc.x, this.longPressLoc.y, cal.getTimeInMillis() + 1000000);
+		if(requestCode == MEETING_REQUEST_CODE)
+		{
+			handleCreateMeeting(data);
+		}
+		
+		else if(requestCode == EDIT_MEETING_REQUEST_CODE)
+		{
+			handleEditMeeting(data);
+		}
 		
     }
 	
