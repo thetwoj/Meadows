@@ -1,6 +1,8 @@
 package com.osu.sc.mapframework;
 
 import java.util.Calendar;
+import server.MeetingPoint;
+import java.util.Map.Entry;
 
 import server.Client;
 import server.User;
@@ -132,15 +134,11 @@ public class GeoImageViewTouch extends ImageViewTouch
 	
 	protected void drawMeetingPoints(Canvas canvas, Paint paint)
 	{
-		/*
-		for(MeetingPoint mPoint : this.geoMapActivity.getMeetingPoints())
+		for(MeetingPoint mPoint : Client.GetInstance().GetMeetingPoints())
 		{
-			Point screen = imageToScreen(mPoint.mapLoc);
-			
-			drawNameplateAt(canvas, paint, screen, "12:05 P.M", Color.WHITE);
-			
+			Point screen = imageToScreen(new PointF((float)mPoint.GetImageLocX(), (float)mPoint.GetImageLocY()));
+			drawNameplateAt(canvas, paint, screen, mPoint.GetTimeString(), Color.WHITE);
 		}
-		*/
 	}
 	
 	protected void drawUserLocation(Canvas canvas, Paint paint)
@@ -181,7 +179,6 @@ public class GeoImageViewTouch extends ImageViewTouch
 	@Override
 	protected void longPressed(Point loc)
 	{
-		/*
 		if(mBitmapDisplayed == null)
 			return;
 		
@@ -196,7 +193,6 @@ public class GeoImageViewTouch extends ImageViewTouch
 		
 		//Notify the activity that the long press has occurred.
 		this.geoMapActivity.startCreateMeeting(imageLoc);
-		*/
 	}
 	
 	@Override
@@ -226,7 +222,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 		paint.setTypeface(Typeface.DEFAULT_BOLD);
 		drawUserLocation(canvas, paint);
 		drawFriendLocations(canvas, paint);
-		//drawMeetingPoints(canvas, paint);
+		drawMeetingPoints(canvas, paint);
 	}
 	
 	@Override

@@ -245,12 +245,12 @@ public class Client
 	}
 
 	
-	public void CreateMeetingPoint(String description, double latitude, double longitude, long time)
+	public void CreateMeetingPoint(String description, double imageLocX, double imageLocY, long time)
 	{
 		if(LoggedIn())
 		{
 			Server server = Server.GetInstance();
-			server.CreateMeetingPoint(_clientUid, description, latitude, longitude, time);
+			server.CreateMeetingPoint(_clientUid, description, imageLocX, imageLocY, time);
 			server.RequestUpdateMeetingPoints(_clientUid);
 		}
 			
@@ -266,35 +266,35 @@ public class Client
 			
 	}
 	
-	public void UpdateMeetingPoint(MeetingPoint meetingPoint, long latitude, long longitude)
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, double imageLocX, double imageLocY)
 	{
 		long time = meetingPoint.GetTime();
 		String description = meetingPoint.GetDescription();
-		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
+		UpdateMeetingPoint(meetingPoint, description, imageLocX, imageLocY, time);
 	}
 	
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description)
 	{
 		long time = meetingPoint.GetTime();
-		double latitude = meetingPoint.GetLatitude();
-		double longitude = meetingPoint.GetLongitude();
-		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
+		double imageLocX = meetingPoint.GetImageLocX();
+		double imageLocY = meetingPoint.GetImageLocY();
+		UpdateMeetingPoint(meetingPoint, description, imageLocX, imageLocY, time);
 	}
 	
 	public void UpdateMeetingPoint(MeetingPoint meetingPoint, long time)
 	{
 		String description = meetingPoint.GetDescription();
-		double latitude = meetingPoint.GetLatitude();
-		double longitude = meetingPoint.GetLongitude();
-		UpdateMeetingPoint(meetingPoint, description, latitude, longitude, time);
+		double imageLocX = meetingPoint.GetImageLocX();
+		double imageLocY = meetingPoint.GetImageLocY();
+		UpdateMeetingPoint(meetingPoint, description, imageLocX, imageLocY, time);
 	}
 	
-	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description, double latitude, double longitude, long time)
+	public void UpdateMeetingPoint(MeetingPoint meetingPoint, String description, double imageLocX, double imageLocY, long time)
 	{
 		if(LoggedIn())
 		{
 			Server server = Server.GetInstance();
-			server.UpdateMeetingPoint(_clientUid, description, latitude, longitude, time, meetingPoint.GetMid());
+			server.UpdateMeetingPoint(_clientUid, description, imageLocX, imageLocY, time, meetingPoint.GetMid());
 		}
 	}
 	
