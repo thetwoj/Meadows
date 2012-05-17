@@ -200,10 +200,6 @@ public class GeoImageViewTouch extends ImageViewTouch
 		if(this.geoMapActivity == null)
 			return;
 		
-		//Check to see if there is a meeting point pressed.
-		if(meetingPointPressed(loc))
-			return;
-		
 		//Notify the activity that the long press has occurred.
 		this.geoMapActivity.startCreateMeeting(imageLoc);
 	}
@@ -211,15 +207,9 @@ public class GeoImageViewTouch extends ImageViewTouch
 	@Override
 	protected void singleTapped(Point loc)
 	{
-		/*
-		PointF imageLoc = screenToImage(loc);
-		if(checkIfTappedUser(imageLoc))
+		//Check to see if there is a meeting point pressed.
+		if(meetingPointPressed(loc))
 			return;
-		if(checkIfTappedMeeting(imageLoc))
-			return;
-		if(checkIfTappedFriend(imageLoc))
-			return;
-		*/
 	}
 	
 	protected void onDraw(Canvas canvas)
