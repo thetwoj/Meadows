@@ -10,6 +10,7 @@ import server.User;
 import com.osu.sc.meadows.GeoMapActivity;
 import com.osu.sc.meadows.R;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -207,6 +208,9 @@ public class GeoImageViewTouch extends ImageViewTouch
 	@Override
 	protected void singleTapped(Point loc)
 	{
+		if(!Client.GetInstance().LoggedIn())
+			return;
+		
 		//Check to see if there is a meeting point pressed.
 		if(meetingPointPressed(loc))
 			return;
