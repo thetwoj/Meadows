@@ -35,12 +35,7 @@ public class GeoImageViewTouch extends ImageViewTouch
 	{
 		super(context, attrs);
 	}
-	/*
-	protected boolean checkIfTappedFriend(PointF imageLoc)
-	{
-		return false;
-	}
-	*/
+
 	protected boolean meetingPointPressed(Point loc)
 	{
 		Paint paint = new Paint();
