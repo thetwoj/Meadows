@@ -2,10 +2,12 @@ package com.osu.sc.meadows;
 
 import java.util.List;
 
+import server.CallBack;
 import server.Client;
 import server.User;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +18,16 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 @SuppressWarnings("rawtypes")
-public class FriendRequestAdapter extends ArrayAdapter{
+public class FriendRequestAdapter extends ArrayAdapter
+{
 	public final Activity activity;
 	public final List friendRequests;
 
 	OnClickListener accept;
 	OnClickListener deny;
+
+	ProgressDialog acceptFriend;
+	ProgressDialog denyFriend;
 
 	@SuppressWarnings("unchecked")
 	public FriendRequestAdapter(Activity activity, List objects)
@@ -61,29 +67,56 @@ public class FriendRequestAdapter extends ArrayAdapter{
 			fRView = (FriendView) rowView.getTag();
 		}
 
-		accept = new OnClickListener(){
-
+		// Create dialog on friend request denial to allow user the option to block requesting user
+		final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() 
+		{
 			@Override
-			public void onClick(View v) {
-				Client.GetInstance().AcceptFriendRequest(user);
-			}
-		};
-
-		final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				// If yes, block user
 				if(which == DialogInterface.BUTTON_POSITIVE)
 					Client.GetInstance().BlockUser(user);
-
+				// If no, simply deny the friend request
 				else if(which == DialogInterface.BUTTON_NEGATIVE)
 					Client.GetInstance().DenyFriendRequest(user);
 			}
 		};
 
-		deny = new OnClickListener(){
+		// When a friend request is accepted
+		accept = new OnClickListener()
+		{
+			@Override
+			public void onClick(View v) 
+			{
+				// Create loading message that lets the user know the friend request acceptance is pending
+				////acceptFriend = ProgressDialog.show(getContext(), "", "Accepting friend request, please wait...", true);
+
+				// Accept the friend request
+				Client.GetInstance().AcceptFriendRequest(user);
+
+				/*
+				CallBack callBack = new CallBack()
+				{
+					public void Invoke(String result)
+					{
+						// Dismiss the loading message on a successful 
+						// callback from setting visibility to new friend
+						acceptFriend.dismiss();
+					}
+				};
+				// Make sure that visibility to new friend is set to true
+				Client.GetInstance().SetShareLocation(user, true, callBack);
+				 */
+			}
+		};
+
+		// When a friend request is denied
+		deny = new OnClickListener()
+		{
 
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) 
+			{
 				final AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
 				alert.setIcon(android.R.drawable.ic_dialog_alert);
@@ -103,6 +136,7 @@ public class FriendRequestAdapter extends ArrayAdapter{
 		fRView.acceptFriend.setOnClickListener(accept);
 		fRView.denyFriend.setOnClickListener(deny);
 
+		// Return the populated list element
 		return rowView;
 	}
 

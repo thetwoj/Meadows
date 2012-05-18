@@ -56,8 +56,10 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		}
 
 		// Setup a listener to detect changes to the prefs file
-		settingsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-			public void onSharedPreferenceChanged(SharedPreferences prefer, String key) {
+		settingsListener = new SharedPreferences.OnSharedPreferenceChangeListener() 
+		{
+			public void onSharedPreferenceChanged(SharedPreferences prefer, String key) 
+			{
 				// If it was the update period that was changed
 				if(key.equals(SELECTED_GPS_PERIOD))
 				{
@@ -113,19 +115,24 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 
 	// Method to create alert to let user know GPS is disabled and give them
 	// the chance to turn it on before continuing with a link to the phone settings
-	private void buildAlertMessageNoGps() {
+	private void buildAlertMessageNoGps() 
+	{
 		// Initialize alert, set message and button options
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Your GPS seems to be disabled, do you want to enable it?"
 				+"\n"+"\n"+"This app will not function correctly without it!")
 				.setCancelable(false)
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					public void onClick(final DialogInterface dialog, final int id) {
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(final DialogInterface dialog, final int id) 
+					{
 						startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 					}
 				})
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					public void onClick(final DialogInterface dialog, final int id) {
+				.setNegativeButton("No", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(final DialogInterface dialog, final int id) 
+					{
 						dialog.cancel();
 					}
 				});
@@ -167,6 +174,8 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		client.SetGPSAccuracy(interval);
 	}
 
+	/** DEPRICATED IN COMPLIANCE WITH ANDROID 4.0 
+	 ** AND THE INHERENT LACK OF A SOFT-MENU BUTTON
 	// Called when the soft "menu" key is pressed
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) 
@@ -179,7 +188,8 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 
 	// Called when a button within the soft-menu is pressed
 	@Override
-	public boolean onOptionsItemSelected (MenuItem item) {
+	public boolean onOptionsItemSelected (MenuItem item) 
+	{
 		// If the settings button is pressed
 		if(item.getItemId() == R.id.settingsMenuButton)
 		{
@@ -189,6 +199,7 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 		}
 		return true;
 	}
+	 */
 
 	/*
 	 * (non-Javadoc)
@@ -233,6 +244,12 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 			MeadowsActivity.this.startActivity(myStatsIntent);
 			break;
 
+			// If the Settings button is pressed, start Settings activity
+		case R.id.settingsButton:
+			Intent mySettingsIntent = new Intent(MeadowsActivity.this, SettingsActivity.class);
+			MeadowsActivity.this.startActivity(mySettingsIntent);
+			break;
+
 			// Shouldn't ever be possible, but just in case
 		default:
 			break;
@@ -240,10 +257,13 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 	}
 
 	// Utility method to check and see if the location service is already running
-	private boolean isMyServiceRunning() {
+	private boolean isMyServiceRunning() 
+	{
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (ClientLocationService.class.getName().equals(service.service.getClassName())) {
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) 
+		{
+			if (ClientLocationService.class.getName().equals(service.service.getClassName())) 
+			{
 				return true;
 			}
 		}

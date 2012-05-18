@@ -55,7 +55,7 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-
+		
 		// Display loading message in case this takes a second or two
 		loadingFriends = ProgressDialog.show(this, "", "Loading friends, please wait...", true);
 
@@ -68,7 +68,7 @@ public class FriendActivity extends ListActivity implements Comparator<User>
 		// Get a new ListView and inflater to create the Friends layout
 		lv = getListView();
 		LayoutInflater inflater = getLayoutInflater();
-
+		
 		// Set up the Friends header and add it to the View
 		View header = inflater.inflate(R.layout.friendheader, (ViewGroup) findViewById(R.id.friendHeaderRoot));
 		lv.addHeaderView(header, null, false);

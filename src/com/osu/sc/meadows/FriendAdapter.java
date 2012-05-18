@@ -19,7 +19,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 @SuppressWarnings("rawtypes")
-public class FriendAdapter extends ArrayAdapter{
+public class FriendAdapter extends ArrayAdapter
+{
 	public final Activity activity;
 	public final List friends;
 
@@ -48,7 +49,7 @@ public class FriendAdapter extends ArrayAdapter{
 		{
 			// Get a new instance of the row layout view
 			LayoutInflater inflater = activity.getLayoutInflater();
-			rowView = inflater.inflate(R.layout.friend_list_item, null);
+			rowView = inflater.inflate(R.layout.friend_list_item, parent, false);
 
 			// Hold the view objects in an object, so they don't need to be re-fetched
 			fView = new FriendView();
@@ -67,7 +68,8 @@ public class FriendAdapter extends ArrayAdapter{
 		fVisible = new OnCheckedChangeListener()
 		{
 			@Override
-			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) 
+			{
 				// Disable togglebutton until callBack is received
 				buttonView.setClickable(false);
 
@@ -87,21 +89,30 @@ public class FriendAdapter extends ArrayAdapter{
 		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
 		// Set a listener for long clicks on friends so that friends can be removed
-		OnLongClickListener rowLongClick = new OnLongClickListener(){
+		OnLongClickListener rowLongClick = new OnLongClickListener()
+		{
 
 			@Override
-			public boolean onLongClick(View v) {
+			public boolean onLongClick(View v) 
+			{
 				// Initialize alert, confirm that the user wants to remove the friend they have selected
 				builder.setMessage("Remove " + user.GetFirstName() + " " + user.GetLastName() + " from friends?")
 				.setCancelable(false)
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					public void onClick(final DialogInterface dialog, final int id) {
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(final DialogInterface dialog, final int id) 
+					{
 						// If removal is confirmed, remove given user from friends
 						Client.GetInstance().RemoveFriend(user);
+						// Force an update of the displayed friends to ensure 
+						// selected friend is removed
+						Client.GetInstance().RequestUpdateFriends();
 					}
 				})
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					public void onClick(final DialogInterface dialog, final int id) {
+				.setNegativeButton("No", new DialogInterface.OnClickListener() 
+				{
+					public void onClick(final DialogInterface dialog, final int id) 
+					{
 						// If remove is declined, close dialog and do nothing else
 						dialog.cancel();
 					}
