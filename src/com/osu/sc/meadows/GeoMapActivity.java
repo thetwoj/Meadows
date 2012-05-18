@@ -9,11 +9,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Map;
-
 import server.Client;
 import server.MeetingPoint;
 import server.MeetingPointsUpdatedEvent;

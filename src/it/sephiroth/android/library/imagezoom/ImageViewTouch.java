@@ -5,12 +5,10 @@ import java.util.Calendar;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
-import android.view.View;
 import android.view.ViewConfiguration;
 
 public class ImageViewTouch extends ImageViewTouchBase

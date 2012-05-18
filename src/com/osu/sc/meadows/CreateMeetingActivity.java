@@ -1,5 +1,4 @@
 package com.osu.sc.meadows;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;

@@ -1,10 +1,7 @@
 package com.osu.sc.meadows;
 
 import java.text.DecimalFormat;
-import java.util.Dictionary;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -36,13 +33,13 @@ public class StatsActivity extends Activity
 
 	// utils to access the MyTracks content provider
 	private MyTracksProviderUtils myTracksProviderUtils;
-	
+
 	private TextView maxspeeddisp;
 	private TextView averagespeeddisp;
 	private TextView totaldistancedisp;
 	private TextView totaltimedisp;
 	private TextView movingtimedisp;
-	
+
 	private TextView maxspeedhist;
 	private TextView averagespeedhist;
 	private TextView totaldistancehist;
@@ -76,7 +73,7 @@ public class StatsActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.statslayout);
-		
+
 		// for the MyTracks content provider
 		myTracksProviderUtils = MyTracksProviderUtils.Factory.get(this);
 
@@ -86,14 +83,14 @@ public class StatsActivity extends Activity
 		totaldistancedisp = (TextView) findViewById(R.id.totaldistance);
 		totaltimedisp = (TextView) findViewById(R.id.totaltime);
 		movingtimedisp = (TextView) findViewById(R.id.movingtime);
-		
+
 
 		// for the MyTracks service
 		intent = new Intent();
 		ComponentName componentName = new ComponentName(
 				getString(R.string.mytracks_service_package), getString(R.string.mytracks_service_class));
 		intent.setComponent(componentName);
-		
+
 		//update the historical stats
 		updateHistorical();
 		final Button recordingButton = (Button) findViewById(R.id.recording_button);
@@ -108,25 +105,25 @@ public class StatsActivity extends Activity
 				{
 					throwAlert("Connection Error", "Failed to connect to Mytracks Correctly.");
 					return;
-				
+
 				}
 				if (recording == false) 
 				{
-						// Try to start a new track
-						try {
-							myTracksService.startNewTrack();
-							
-							// Change recording bool to indicate track is recording
-							recording = true;
-							
-							// Set text from "Start" to "Stop"
-							recordingButton.setText("Stop");
-						} 
-						catch (RemoteException e) 
-						{
-							Log.e(TAG, "RemoteException", e);
-						}
-						
+					// Try to start a new track
+					try {
+						myTracksService.startNewTrack();
+
+						// Change recording bool to indicate track is recording
+						recording = true;
+
+						// Set text from "Start" to "Stop"
+						recordingButton.setText("Stop");
+					} 
+					catch (RemoteException e) 
+					{
+						Log.e(TAG, "RemoteException", e);
+					}
+
 
 				} 
 				// If currently recording
@@ -142,17 +139,17 @@ public class StatsActivity extends Activity
 					// Get the statistics from recorded track.
 					Track track = myTracksProviderUtils.getLastTrack();
 					TripStatistics stats = track.getStatistics();
-					
+
 					updateHistorical();
-		
+
 					// Set fields to their respective statistics.
 					maxspeeddisp.setText(speedConvert(stats.getMaxSpeed()));
 					movingtimedisp.setText( timeConvert(stats.getMovingTime()));
 					totaltimedisp.setText( timeConvert(stats.getTotalTime()));
 					averagespeeddisp.setText( speedConvert(stats.getAverageMovingSpeed()));
 					totaldistancedisp.setText( distanceConvert(stats.getTotalDistance()));
-					
-					
+
+
 
 					startService(intent);
 					bindService(intent, serviceConnection, 0);
@@ -189,7 +186,7 @@ public class StatsActivity extends Activity
 		}
 		stopService(intent);
 	}
-	
+
 	// Throws alert with given title and message
 	protected void throwAlert(String title, String Message)
 	{
@@ -201,7 +198,7 @@ public class StatsActivity extends Activity
 				return;  
 			} });   
 	}
-	
+
 
 	//Populates the historical fields
 	protected void updateHistorical()
@@ -212,13 +209,13 @@ public class StatsActivity extends Activity
 		totaldistancehist = (TextView) findViewById(R.id.totaldistancehist);
 		totaltimehist = (TextView) findViewById(R.id.totaltimehist);
 		movingtimehist = (TextView) findViewById(R.id.movingtimehist);
-		
+
 		int count = 0;
 		double maxSpeed = 0, tmpMaxSpeed, avgSpeed, totalSpeed = 0, totalDistance = 0;
 		long totalTime = 0, movingTime = 0;
-		
-		
-		
+
+
+
 		for(Track track : tracks)
 		{
 			TripStatistics stats = track.getStatistics();
@@ -230,26 +227,26 @@ public class StatsActivity extends Activity
 			movingTime += stats.getMovingTime();
 			++count;
 		}
-		
+
 		avgSpeed = totalSpeed / count;
-		
+
 		maxspeedhist.setText(speedConvert(maxSpeed));
 		movingtimehist.setText( timeConvert(movingTime));
 		totaltimehist.setText( timeConvert(totalTime));
 		averagespeedhist.setText( speedConvert(avgSpeed));
 		totaldistancehist.setText( distanceConvert(totalDistance));
-	
+
 	}
 
 	//Converts the speed from m/s to km/hr
 	protected String speedConvert(double speed)
 	{
 		DecimalFormat df = new DecimalFormat ("####.###");
-		
+
 		speed *= 3.6;
 		return df.format(speed) + " km/hr";
 	}
-	
+
 	//Converts the time into a more reader friendly format
 	protected String timeConvert(long milliseconds)
 	{
@@ -261,10 +258,10 @@ public class StatsActivity extends Activity
 		minutes = x % 60;
 		x /= 60;
 		hours = x % 24;
-		
+
 		return String.format( df.format(hours) + ":" + df.format(minutes) + ":" + df.format(seconds));
 	}
-	
+
 	//If the distance is greater than 3000 meters, convert to kilometers. Cut off decimal place at 3 regardless.
 	protected String distanceConvert(double distance)
 	{

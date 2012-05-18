@@ -2,21 +2,13 @@ package com.osu.sc.mapframework;
 
 import java.util.Calendar;
 import server.MeetingPoint;
-import java.util.Map.Entry;
-
 import server.Client;
 import server.User;
 
 import com.osu.sc.meadows.GeoMapActivity;
-import com.osu.sc.meadows.R;
-
-import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Point;
