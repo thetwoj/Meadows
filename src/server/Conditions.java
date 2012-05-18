@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Conditions 
 {
 	ArrayList<Lift> _lifts = new ArrayList<Lift>(); 
-	ArrayList<Lot> _lots = new ArrayList<Lot>(); 
+	ArrayList<ParkingLot> _lots = new ArrayList<ParkingLot>(); 
 	int _temp = Integer.MAX_VALUE;
 	
 	String _liftId = "id=\"LiftsStatus_liftsList";
@@ -24,9 +24,9 @@ public class Conditions
 		catch(Exception e){}
 	}
 	
-	public ArrayList<Lift> GetLifts() { return _lifts; }
-	public ArrayList<Lot>  GetLots()  { return _lots; }
-	public int GetTemp()			  { return _temp; }
+	public ArrayList<Lift> 			GetLifts() 		{ return _lifts; }
+	public ArrayList<ParkingLot>  	GetParkingLots()	{ return _lots; }
+	public int 						GetTemp()		{ return _temp; }
 	
 	private void _ParseResult(String result)
 	{
@@ -49,7 +49,7 @@ public class Conditions
 		{
 			String name = GetNextSpanContent(nextLot, result);
 			String status = GetNextTdContent(nextLot, result);
-			_lots.add(new Lot(name, status));
+			_lots.add(new ParkingLot(name, status));
 			nextLot = GetNextIndex(nextLot, _trId, result);
 		}
 		
