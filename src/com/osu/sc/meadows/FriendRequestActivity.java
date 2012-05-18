@@ -44,7 +44,7 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 		super.onCreate(savedInstanceState);
 
 		// Display loading message in case this takes a second or two
-		loadingFriends = ProgressDialog.show(this, "", "Loading friends, please wait...", true);
+		loadingFriends = ProgressDialog.show(this, "", "Loading friend requests, please wait...", true);
 
 		// Get the client's friend requests
 		friendRequests = client.GetFriendRequests();
@@ -59,7 +59,7 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 		lv.setAdapter(new FriendRequestAdapter(this, friendRequests));
 
-		// Dismiss the friend loading message
+		// Dismiss the friend request loading message
 		loadingFriends.dismiss();
 
 		//Create the listeners.
@@ -118,15 +118,19 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 			final EditText input1 = (EditText) textEntryView.findViewById(R.id.addFriendEmail);
 
-			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() { 
-				public void onClick(DialogInterface dialog, int whichButton) { 
+			alert.setPositiveButton("Add", new DialogInterface.OnClickListener() 
+			{ 
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{ 
 					// If "Add" clicked, get the email from the input box and send request
 					String friendEmail = input1.getText().toString();
 					client.AddFriend(friendEmail);
 				}
 			});
-			alert.setNeutralButton("Cancel", new DialogInterface.OnClickListener() { 
-				public void onClick(DialogInterface dialog, int whichButton) { 
+			alert.setNeutralButton("Cancel", new DialogInterface.OnClickListener() 
+			{ 
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{ 
 					// "Cancel" pressed, let the dialog dismiss
 				}
 			});
@@ -149,7 +153,8 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 	// Method used to sort FriendRequests lists alphabetically
 	@Override
-	public int compare(User lhs, User rhs) {
+	public int compare(User lhs, User rhs) 
+	{
 		return lhs.GetFirstName().compareTo(rhs.GetFirstName());
 	}
 

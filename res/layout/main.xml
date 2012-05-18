@@ -36,32 +36,33 @@ displayed when the button is unclicked (default), clicked or focused.
 
     <FrameLayout
         android1:layout_width="fill_parent"
-        android1:layout_height="fill_parent"
-        android1:layout_weight="1.5" >
+        android1:layout_height="wrap_content" >
 
         <ImageView
             android1:layout_width="wrap_content"
             android1:layout_height="wrap_content"
             android1:layout_gravity="center"
-            android1:layout_weight="1"
-            android1:src="@drawable/meadowslogo" />
+            android1:gravity="top"
+            android1:paddingBottom="20dp"
+            android1:paddingTop="20dp"
+            android1:src="@drawable/osulogo" />
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
-        android:layout_weight="1" >
+        android:layout_weight="1.5" >
 
         <ImageButton
-            android:id="@+id/mapButton"
+            android:id="@+id/settingsButton"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/mapicon"
-            android:onClick="onClick" >
+            android:onClick="onClick"
+            android:src="@drawable/settingsicon" >
         </ImageButton>
 
         <ImageButton
@@ -71,8 +72,26 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/socialicon" 
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:src="@drawable/socialicon" >
+        </ImageButton>
+    </LinearLayout>
+
+    <LinearLayout
+        android1:id="@+id/linearLayout1"
+        android1:layout_width="fill_parent"
+        android1:layout_height="fill_parent"
+        android1:layout_weight="1.5" >
+
+        <ImageButton
+            android:id="@+id/mapButton"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:clickable="true"
+            android:onClick="onClick"
+            android:src="@drawable/mapicon" >
         </ImageButton>
     </LinearLayout>
 
@@ -80,7 +99,7 @@ displayed when the button is unclicked (default), clicked or focused.
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
-        android:layout_weight="1" >
+        android:layout_weight="1.5" >
 
         <ImageButton
             android:id="@+id/updatesButton"
@@ -89,8 +108,8 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/updatesicon" 
-            android:onClick="onClick">
+            android:onClick="onClick"
+            android:src="@drawable/conditionsicon" >
         </ImageButton>
 
         <ImageButton
@@ -100,8 +119,8 @@ displayed when the button is unclicked (default), clicked or focused.
             android:layout_weight="1"
             android:background="@null"
             android:clickable="true"
-            android:src="@drawable/statsicon"
-            android:onClick="onClick" >
+            android:onClick="onClick"
+            android:src="@drawable/statsicon" >
         </ImageButton>
     </LinearLayout>
 
