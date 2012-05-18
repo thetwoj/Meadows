@@ -30,6 +30,8 @@ import com.osu.sc.mapframework.GeoPoint;
 import com.osu.sc.mapframework.MapUtils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PointF;
 
@@ -55,6 +57,9 @@ public class GeoMapActivity extends Activity
 	
 	//The currently displayed map id.
 	private int currentMapFileId;
+	
+	//For if the user is not logged in on meeting point creation.
+	private AlertDialog alert;
 
 	//Meeting request code.
 	private static final int MEETING_REQUEST_CODE = 0;
@@ -136,6 +141,24 @@ public class GeoMapActivity extends Activity
 		//Load georeferenced points from the meadows data file.
 		this.currentMapFileId = R.raw.campus;
 		
+		// Initialize the alert box for error reporting later on
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(true);
+		builder.setIcon(R.drawable.icon);
+		builder.setTitle("Error");
+		builder.setInverseBackgroundForced(true);
+		builder.setNeutralButton("OK", new DialogInterface.OnClickListener() 
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which) 
+			{
+				// When "OK" is clicked, dismiss the alert
+				dialog.dismiss();
+			}
+		});
+		
+		alert = builder.create();
+		
 		//Create a new 2d tree to hold the geo points.
 		loadGeoreferencedPoints(this.currentMapFileId);
 		
@@ -203,6 +226,12 @@ public class GeoMapActivity extends Activity
 	//Initiate the create meeting activity.
 	public void startCreateMeeting(PointF imageLoc)
 	{
+		if(!Client.GetInstance().LoggedIn())
+		{
+			alert.setMessage("You must be logged in to create meeting points.");
+			alert.show();
+			return;
+		}
 		this.longPressLoc = imageLoc;
 		Intent createMeetingIntent = new Intent(this, CreateMeetingActivity.class);
 		startActivityForResult(createMeetingIntent, MEETING_REQUEST_CODE);
