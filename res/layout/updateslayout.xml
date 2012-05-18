@@ -9,90 +9,36 @@
     
    
     
-    <!-- Weather Layout -->
-    <LinearLayout
-        android1:layout_width="match_parent"
-        android1:layout_height="wrap_content"
-        android1:orientation="vertical" >
-        
-        <!--  Title -->
-		 <Button
-		    android1:id="@+id/TestButton"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:layout_weight="1"
-	    	android:clickable="true"
-	        android:onClick="Test" >
-	    </Button>
-        
-        <TextView
-        	android1:layout_width="match_parent"
-        	android1:layout_height="wrap_content"
-        	android1:gravity="center_horizontal"
-        	android1:text="Weather"
-        	android1:textSize="30sp"
-        	android1:textColor="@color/darkFont" >
-        </TextView>
-        
-        <!-- Weather Wrapper -->
-        <FrameLayout
-            android1:layout_width="match_parent"
-            android1:layout_height="wrap_content"
-            android1:orientation="horizontal"
-            android1:layout_margin="12dip">
-            
-            <!-- Weather -->
-            <TextView
-                android1:layout_width="75dip"
-                android1:layout_height="75dip"
-                android1:text="Current Weather"
-                android1:layout_gravity="left"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="#ffdddddd">                
-            </TextView>
-            
-            <!-- Wind -->
-            <TextView
-                android1:layout_width="75dip"
-                android1:layout_height="75dip"
-                android1:text="Current Wind"
-                android1:layout_gravity="center_horizontal"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="#ffdddddd">                
-            </TextView>
-            
-            <!-- Snow Depth -->
-            <TextView
-                android1:layout_width="75dip"
-                android1:layout_height="75dip"
-                android1:layout_gravity="right"
-                android1:background="#ffdddddd"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:text="Current Snow" />
-            
-        </FrameLayout>
-        
-    </LinearLayout>
-    <!-- End Weather Layout -->
+	 <Button
+	 	android1:id="@+id/TestButton"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_weight="1"
+		android:clickable="true"
+	    android:onClick="Test" >
+	</Button>
     
         
+        
+    <!--  Title -->
+    <TextView
+    	android1:layout_width="match_parent"
+    	android1:layout_height="wrap_content"
+    	android1:gravity="center_horizontal"
+    	android1:text="Parking"
+    	android1:textSize="30sp"
+    	android1:textColor="@color/darkFont" >
+    </TextView>
         
     <!-- Parking Layout -->
      <LinearLayout
         android1:id="@+id/ParkingLots"
         android1:layout_width="match_parent"
         android1:layout_height="wrap_content"
-        android1:orientation="vertical" >
-        
-        <!--  Title -->
-        <TextView
-        	android1:layout_width="match_parent"
-        	android1:layout_height="wrap_content"
-        	android1:gravity="center_horizontal"
-        	android1:text="Parking"
-        	android1:textSize="30sp"
-        	android1:textColor="@color/darkFont" >
-        </TextView>
+        android1:layout_margin="12dip"
+        android1:textSize="12sp"
+        android1:orientation="vertical" 
+        android1:textColor="@color/darkFont">
         
         <!-- Parking Lots Wrapper -->
         <LinearLayout
@@ -112,164 +58,31 @@
                 android1:textColor="@color/darkFont">     
             </TextView>
             
-           <!-- example -->
-            <TextView
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:text="Example Parking Lot"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/yellow"
-                android1:textColor="@color/darkFont">                
-            </TextView>
-            
-            <!-- example -->
-            <TextView
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:text="Example Parking Lot"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/green"
-                android1:textColor="@color/darkFont">                
-            </TextView>
-            
+           
         </LinearLayout>
         <!-- End Parking Lots Wrapper -->
             
     </LinearLayout>
     <!-- end parking layout -->
     
-    
+    <!--  Title -->
+   	<TextView
+	   	android1:layout_width="match_parent"
+	   	android1:layout_height="wrap_content"
+	   	android1:gravity="center_horizontal"
+	   	android1:text="Lift Availability"
+	   	android1:textSize="30sp"
+	   	android1:textColor="@color/darkFont" >
+   	</TextView>
     
     <!-- Lifts Layout -->
-     <LinearLayout
+    <LinearLayout
+        android1:id="@+id/Lifts"
+        android1:textSize="12sp"
         android1:layout_width="match_parent"
         android1:layout_height="wrap_content"
-        android1:orientation="vertical" >
-        
-        <!--  Title -->
-        <TextView
-        	android1:layout_width="match_parent"
-        	android1:layout_height="wrap_content"
-        	android1:gravity="center_horizontal"
-        	android1:text="Lift Availability"
-        	android1:textSize="30sp"
-        	android1:textColor="@color/darkFont" >
-        </TextView>
-        
-        <!-- Lifts Wrapper -->
-        <LinearLayout
-            android1:layout_width="match_parent"
-            android1:layout_height="wrap_content"
-            android1:orientation="vertical"
-            android1:layout_margin="12dip">
-            
-            <!-- example -->
-            <FrameLayout
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/green">   
-                <TextView
-                    android1:layout_width="wrap_content"
-                    android1:layout_marginLeft="10dip"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="left"
-                	android1:textColor="@color/darkFont"
-                	android1:text="Easy Rider"
-                />  
-               <TextView
-                    android1:layout_width="100dip"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="right"
-                    android1:gravity="center_horizontal"
-                	android1:textColor="@color/darkFont"
-                	android1:text="9am - 10pm"
-                />  
-            </FrameLayout>
-            
-           <!-- example -->
-            <FrameLayout
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/green">   
-                <TextView
-                    android1:layout_width="wrap_content"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="left"
-                	android1:textColor="@color/darkFont"
-                    android1:layout_marginLeft="10dip"
-                	android1:text="Buttercup"
-                />  
-               <TextView
-                    android1:layout_width="100dip"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="right"
-                    android1:gravity="center_horizontal"
-                	android1:textColor="@color/darkFont"
-                	android1:text="12pm - 5pm"
-                />  
-            </FrameLayout>
-            
-            <!-- example -->
-            <FrameLayout
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/red">   
-                <TextView
-                    android1:layout_width="wrap_content"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="left"
-                    android1:layout_marginLeft="10dip"
-                    
-                	android1:textColor="@color/darkFont"
-                	android1:text="Daisy"
-                />  
-               <TextView
-                    android1:layout_width="100dip"
-                    android1:layout_height="wrap_content"
-                    android1:gravity="center_horizontal"
-                    android1:layout_gravity="right"
-                	android1:textColor="@color/darkFont"
-                	android1:text="closed"
-                />  
-            </FrameLayout>
-            
-                
-            <!-- example -->
-            <FrameLayout
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/yellow">   
-                <TextView
-                    android1:layout_width="wrap_content"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="left"
-                    android1:layout_marginLeft="10dip"
-                	android1:textColor="@color/darkFont"
-                	android1:text="Mt. Hood Express"
-                />  
-               <TextView
-                    android1:layout_width="100dip"
-                    android1:layout_height="wrap_content"
-                    android1:layout_gravity="right"
-                    android1:gravity="center_horizontal"
-                	android1:textColor="@color/darkFont"
-                	android1:text="1pm - 8pm"
-                />  
-            </FrameLayout>
-            
-        </LinearLayout>
-        <!-- End Lifts Wrapper -->
-            
+        android1:layout_margin="12dip"
+        android1:orientation="vertical" >    
     </LinearLayout>
     <!-- end Lifts layout -->
 

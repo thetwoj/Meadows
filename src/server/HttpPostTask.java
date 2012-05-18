@@ -1,15 +1,11 @@
 package server;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -105,10 +101,7 @@ public class HttpPostTask extends AsyncTask<String, Boolean, String>
 				catch (Exception e) {}					
 				return result;
 			}
-			catch (SocketTimeoutException e){} 
-			catch (ClientProtocolException e) {}
-			catch (UnsupportedEncodingException e) {} 
-			catch (IOException e){} 
+			catch (Exception e){} 
 			
 			//If the connection could not be made, 
 			//wait a few seconds and try again
