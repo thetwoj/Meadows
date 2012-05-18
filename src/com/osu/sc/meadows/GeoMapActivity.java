@@ -9,11 +9,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Map;
-
 import server.Client;
 import server.MeetingPoint;
 import server.MeetingPointsUpdatedEvent;
@@ -416,8 +413,13 @@ public class GeoMapActivity extends Activity
 		Calendar cal = Calendar.getInstance();
 		String meetingDesc = data.getStringExtra("Description");
 		long meetingTime = data.getLongExtra("Time", -1);
-		if(meetingTime < cal.getTimeInMillis())
+		long currentTime = cal.getTimeInMillis();
+		if(meetingTime < currentTime)
+		{
+			alert.setMessage("Meeting point times must be in the future.");
+			alert.show();
 			return;
+		}
 				
 		Client.GetInstance().CreateMeetingPoint(meetingDesc, this.longPressLoc.x, this.longPressLoc.y, meetingTime);
 	}

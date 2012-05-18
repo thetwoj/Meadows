@@ -13,6 +13,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="ok">Ok</string>
+    <string name="create">Create</string>
 
     <string name="averagelabel">Avg. Speed:</string>
     <string name="distancelabel">Total Distance:</string>

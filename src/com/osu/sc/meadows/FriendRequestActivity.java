@@ -92,11 +92,19 @@ public class FriendRequestActivity extends ListActivity implements Comparator<Us
 
 	public void OnFriendRequestsUpdated(ArrayList<User> users)
 	{
+		// Save scrollbar location
+		int index = lv.getFirstVisiblePosition();
+		View v = lv.getChildAt(0);
+		int top = (v == null) ? 0 : v.getTop();
+
 		// When friend requests are updated pass new list to FriendRequestAdapter
 		// so the View will be updated and the new Requests will be visible
 		friendRequests = client.GetFriendRequests();
 		Collections.sort(friendRequests, this);
 		lv.setAdapter(new FriendRequestAdapter(this, friendRequests));
+
+		// Restore scrollbar location
+		lv.setSelectionFromTop(index, top);
 	}
 
 	public void OnClick(View v)
