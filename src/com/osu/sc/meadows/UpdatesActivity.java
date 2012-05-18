@@ -2,6 +2,7 @@ package com.osu.sc.meadows;
 
 import com.google.android.maps.MapView.LayoutParams;
 
+import server.Client;
 import server.Conditions;
 import server.ConditionsListener;
 import server.ConditionsUpdated;
@@ -11,7 +12,6 @@ import server.Lift;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,6 +39,8 @@ public class UpdatesActivity extends Activity
 	    		RefreshUi(conditions);
 	    	}
 	    });
+	    
+	    Client.GetInstance().RequestConditions();
 	}
 	
 	public void RefreshUi(Conditions conditions)
