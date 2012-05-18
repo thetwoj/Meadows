@@ -11,10 +11,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.provider.Settings;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 
 /*
@@ -82,16 +80,6 @@ public class MeadowsActivity extends Activity implements View.OnClickListener
 					// Restart service with new preferences
 					restartService(prefer);
 				}
-				// TODO FIX THIS SHIT
-				//				else if(key.equals(DISABLE_AUTOLOG))
-				//				{
-				//					SharedPreferences prefs = getSharedPreferences(SHARED_PREFERENCES_NAME, 0);
-				//					SharedPreferences.Editor editor = prefs.edit();
-				//					editor.putBoolean(MEADOWS_USER_AUTOLOGIN, false);
-				//					editor.commit();
-				//					 
-				//					Toast.makeText(getBaseContext(), "Auto-Login Disabled", Toast.LENGTH_LONG);
-				//				}
 			}
 		};
 

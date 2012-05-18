@@ -6,7 +6,7 @@
         android:title="General Settings" >
 
         <ListPreference
-            android:defaultValue="200"
+            android:defaultValue="2000"
             android:entries="@array/gpsPeriodLabels"
             android:entryValues="@array/gpsPeriodValues"
             android:key="meadows_location_update_interval"
