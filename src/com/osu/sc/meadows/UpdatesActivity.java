@@ -2,7 +2,6 @@ package com.osu.sc.meadows;
 
 import com.google.android.maps.MapView.LayoutParams;
 
-import server.Client;
 import server.Conditions;
 import server.ConditionsListener;
 import server.ConditionsUpdated;
@@ -10,13 +9,9 @@ import server.ServerEvents;
 import server.ParkingLot;
 import server.Lift;
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,19 +41,30 @@ public class UpdatesActivity extends Activity
 	    });
 	}
 	
-	public void Test(View view)
-	{	
-		Client client = Client.GetInstance();
-		client.RequestConditions();
-	}
-	
 	public void RefreshUi(Conditions conditions)
 	{
+		//gather layouts
 		LinearLayout parkingLots = (LinearLayout) findViewById(R.id.ParkingLots);
 		LinearLayout lifts		 = (LinearLayout) findViewById(R.id.Lifts);
+		LinearLayout temp		 = (LinearLayout) findViewById(R.id.Temp);
+		
+		//clear previous data
 		parkingLots.removeAllViews();
 		lifts.removeAllViews();
+		temp.removeAllViews();
 		
+		
+		//create temp
+		TextView tv = new TextView(this);
+		tv.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+		tv.setGravity(Gravity.CENTER);
+		tv.setTextSize(20);
+		tv.setText(conditions.GetTemp() + " °F");
+		tv.setTextColor(darkFont);
+		temp.addView(tv);
+		
+		
+		//create lots
 		for(ParkingLot lot : conditions.GetParkingLots())
 		{
 			//create wrapper and set settings
@@ -73,6 +79,8 @@ public class UpdatesActivity extends Activity
 			parkingLots.addView(wrapper);
 		}
 		
+		
+		//create lifts
 		for(Lift lift : conditions.GetLifts())
 		{
 			FrameLayout wrapper = new FrameLayout(this);
@@ -90,7 +98,7 @@ public class UpdatesActivity extends Activity
 		TextView tv = new TextView(this);
 		tv.setGravity(gravity);
 		tv.setText(value);
-		tv.setTextSize(14);
+		tv.setTextSize(15);
 		tv.setTextColor(darkFont);
 		return tv;
 	}

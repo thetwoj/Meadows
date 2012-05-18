@@ -7,70 +7,45 @@
     xmlns:android1="http://schemas.android.com/apk/res/android">
 
     
-   
-    
-	 <Button
-	 	android1:id="@+id/TestButton"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"
-	    android:layout_weight="1"
-		android:clickable="true"
-	    android:onClick="Test" >
-	</Button>
-    
-        
+    <LinearLayout
+        android1:id="@+id/Temp"
+        android1:layout_width="match_parent"
+        android1:layout_height="wrap_content"
+        android1:layout_margin="12dip"
+        android1:textSize="12sp"
+        android1:orientation="vertical" 
+        android1:textColor="@color/darkFont">        
+    </LinearLayout>
         
     <!--  Title -->
     <TextView
     	android1:layout_width="match_parent"
     	android1:layout_height="wrap_content"
     	android1:gravity="center_horizontal"
-    	android1:text="Parking"
+    	android1:text="Parking Lots"
     	android1:textSize="30sp"
+    	android1:layout_margin="0dip"
     	android1:textColor="@color/darkFont" >
-    </TextView>
+    </TextView>    
         
     <!-- Parking Layout -->
      <LinearLayout
         android1:id="@+id/ParkingLots"
         android1:layout_width="match_parent"
         android1:layout_height="wrap_content"
-        android1:layout_margin="12dip"
-        android1:textSize="12sp"
-        android1:orientation="vertical" 
-        android1:textColor="@color/darkFont">
-        
-        <!-- Parking Lots Wrapper -->
-        <LinearLayout
-            android1:layout_width="match_parent"
-            android1:layout_height="wrap_content"
-            android1:orientation="vertical"
-            android1:layout_margin="12dip">
-            
-            <!-- example -->
-            <TextView
-                android1:layout_width="fill_parent"
-                android1:layout_height="wrap_content"
-                android1:layout_marginBottom="2dip"
-                android1:text="Example Parking Lot"
-                android1:gravity="center_horizontal|center_vertical"
-                android1:background="@color/red"
-                android1:textColor="@color/darkFont">     
-            </TextView>
-            
-           
-        </LinearLayout>
-        <!-- End Parking Lots Wrapper -->
-            
+        android1:layout_margin="15dip"
+        android1:orientation="vertical" >            
     </LinearLayout>
     <!-- end parking layout -->
+    
+    
     
     <!--  Title -->
    	<TextView
 	   	android1:layout_width="match_parent"
 	   	android1:layout_height="wrap_content"
 	   	android1:gravity="center_horizontal"
-	   	android1:text="Lift Availability"
+	   	android1:text="Lifts"
 	   	android1:textSize="30sp"
 	   	android1:textColor="@color/darkFont" >
    	</TextView>
@@ -78,10 +53,9 @@
     <!-- Lifts Layout -->
     <LinearLayout
         android1:id="@+id/Lifts"
-        android1:textSize="12sp"
         android1:layout_width="match_parent"
         android1:layout_height="wrap_content"
-        android1:layout_margin="12dip"
+        android1:layout_margin="15dip"
         android1:orientation="vertical" >    
     </LinearLayout>
     <!-- end Lifts layout -->
