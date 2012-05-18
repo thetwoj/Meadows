@@ -28,7 +28,7 @@ public class MeetingPoint
 		SimpleDateFormat df1 = new SimpleDateFormat("h:mm aaa");
 		_timeString = df1.format(d);
 		
-		SimpleDateFormat df2 = new SimpleDateFormat("h:mm aaa M d, y");
+		SimpleDateFormat df2 = new SimpleDateFormat("h:mm aaa\nMMMM dd, yyyy");
 		_dateTimeString = df2.format(d);
 	}
 	

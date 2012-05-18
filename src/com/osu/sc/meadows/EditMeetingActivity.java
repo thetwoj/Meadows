@@ -37,6 +37,14 @@ public class EditMeetingActivity extends Activity
 	    tp.setCurrentHour(d.getHours());
 	    tp.setCurrentMinute(d.getMinutes());
 	    
+	    DatePicker dp = (DatePicker) findViewById(R.id.editDatePicker1);
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(d);
+	    int year = cal.get(Calendar.YEAR);
+	    int month = cal.get(Calendar.MONTH);
+	    int day = cal.get(Calendar.DAY_OF_MONTH);
+	    dp.init(year, month, day, null);
+	    
 	}
 	
 	public void acceptEditMeeting(View v)
