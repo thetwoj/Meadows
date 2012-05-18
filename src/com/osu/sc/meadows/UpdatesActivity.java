@@ -6,10 +6,13 @@ import server.ConditionsListener;
 import server.ConditionsUpdated;
 import server.Server;
 import server.ServerEvents;
+import server.ParkingLot;
+import server.Lift;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /*
@@ -31,7 +34,7 @@ public class UpdatesActivity extends Activity
 	    	public void EventFired(ConditionsUpdated event)
 	    	{
 	    		Conditions conditions = event.GetConditions();
-	    		TestFunc(conditions);
+	    		RefreshUi(conditions);
 	    	}
 	    });
 	}
@@ -42,10 +45,16 @@ public class UpdatesActivity extends Activity
 		client.RequestConditions();
 	}
 	
-	public void TestFunc(Conditions conditions)
+	public void RefreshUi(Conditions conditions)
 	{
-		TextView textBox = (TextView) findViewById(R.id.TextBox);
-		textBox.append("Blahblah");
+		LinearLayout parkingLots = (LinearLayout) findViewById(R.id.ParkingLots);
+		parkingLots.removeAllViews();
+		for(ParkingLot lot : conditions.GetParkingLots())
+		{
+			TextView tv = new TextView(this);
+			tv.setText(lot.GetName());
+			parkingLots.addView(tv);
+		}
 	}
 	
 }

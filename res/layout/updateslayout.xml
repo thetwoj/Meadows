@@ -24,12 +24,6 @@
 	    	android:clickable="true"
 	        android:onClick="Test" >
 	    </Button>
-	    
-		<TextView
-            android1:id="@+id/TextBox"
-        	android1:layout_width="match_parent"
-        	android1:layout_height="wrap_content" >
-        </TextView>
         
         <TextView
         	android1:layout_width="match_parent"
@@ -85,6 +79,7 @@
         
     <!-- Parking Layout -->
      <LinearLayout
+        android1:id="@+id/ParkingLots"
         android1:layout_width="match_parent"
         android1:layout_height="wrap_content"
         android1:orientation="vertical" >
