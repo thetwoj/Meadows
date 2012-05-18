@@ -1,6 +1,4 @@
 package com.osu.sc.meadows;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import server.Client;
 import server.MeetingPoint;
@@ -39,10 +37,7 @@ public class ViewMeetingActivity extends Activity
 	    tvdesc.setText(mPoint.GetDescription());
 	    
 	    TextView tvtime = (TextView) findViewById(R.id.viewMeetingTime);
-	    long time = mPoint.GetTime();
-	    Date d = new Date(time);
-	    SimpleDateFormat df = new SimpleDateFormat("h:mm aaa");
-	    tvtime.setText(df.format(d));
+	    tvtime.setText(mPoint.GetDateTimeString());
 	}
 	
 	public void acceptViewMeeting(View v)

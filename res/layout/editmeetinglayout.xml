@@ -8,7 +8,7 @@
         android:id="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:gravity="center_horizontal"
         android:text="@string/editmeeting"
         android:textColor="@color/darkFont"
@@ -22,7 +22,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/textView1"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:text="Meeting Description"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#000000" />
@@ -34,7 +34,7 @@
         android:layout_alignLeft="@+id/DescriptionTextAnchor"
         android:layout_below="@+id/DescriptionTextAnchor"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:inputType="text" />
 
     <TextView
@@ -42,8 +42,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/DescriptionTextAnchor"
-        android:layout_below="@+id/editMeetingDesc"
-        android:layout_marginTop="10dp"
+        android:layout_below="@+id/editDatePicker1"
+        android:layout_marginTop="5dp"
         android:text="Time"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#000000" />
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/DescriptionTextAnchor"
         android:layout_below="@+id/timeTitleEdit"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="5dp" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -101,5 +101,24 @@
             android:onClick="acceptEditMeeting"
             android:text="@string/ok" />
     </LinearLayout>
+
+    <DatePicker
+        android:id="@+id/editDatePicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editMeetingDesc"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/editDateTitle1" />
+
+    <TextView
+        android:id="@+id/editDateTitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editMeetingDesc"
+        android:layout_below="@+id/editMeetingDesc"
+        android:layout_marginTop="5dp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#000000"
+        android:text="Date" />
 
 </RelativeLayout>

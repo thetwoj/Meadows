@@ -416,8 +416,13 @@ public class GeoMapActivity extends Activity
 		Calendar cal = Calendar.getInstance();
 		String meetingDesc = data.getStringExtra("Description");
 		long meetingTime = data.getLongExtra("Time", -1);
-		if(meetingTime < cal.getTimeInMillis())
+		long currentTime = cal.getTimeInMillis();
+		if(meetingTime < currentTime)
+		{
+			alert.setMessage("Meeting point times must be in the future.");
+			alert.show();
 			return;
+		}
 				
 		Client.GetInstance().CreateMeetingPoint(meetingDesc, this.longPressLoc.x, this.longPressLoc.y, meetingTime);
 	}

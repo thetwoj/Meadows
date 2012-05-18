@@ -130,7 +130,12 @@ public class GeoImageViewTouch extends ImageViewTouch
 			if(mapLoc.x < 0 || mapLoc.y < 0 || mapLoc.x > getBitmapWidth() || mapLoc.y > getBitmapHeight())
 				continue;
 			
-			int color = getNameplateColor(time, friend.GetTimestamp());
+			long timestamp = friend.GetTimestamp();
+			long diff = time - timestamp;
+			if(diff > 3600000)
+				continue;
+			
+			int color = getNameplateColor(diff);
 			Point screen = imageToScreen(mapLoc);
 			
 			drawNameplateAt(canvas, paint, screen, friend.GetFirstName(), color);
@@ -156,7 +161,14 @@ public class GeoImageViewTouch extends ImageViewTouch
 		if(mapLoc.x < 0 || mapLoc.y < 0 || mapLoc.x > getBitmapWidth() || mapLoc.y > getBitmapHeight())
 			return;
 		
-		int color = getNameplateColor(Calendar.getInstance().getTimeInMillis(), client.GetTimestamp());
+		//Don't draw people who haven't updated in over an hour.
+		long curTime = Calendar.getInstance().getTimeInMillis();
+		long timeStamp = client.GetTimestamp();
+		long diff = curTime - timeStamp;
+		if(diff > 3600000)
+			return;
+		
+		int color = getNameplateColor(diff);
 		
 		Point screen = imageToScreen(mapLoc);
 		
@@ -167,11 +179,10 @@ public class GeoImageViewTouch extends ImageViewTouch
 		drawNameplateAt(canvas, paint, screen, name, color);
 	}
 	
-	protected int getNameplateColor(long now, long timestamp)
+	protected int getNameplateColor(long diff)
 	{
-		long diff = now - timestamp;
-		//Return green if the user was updated within a minute.
-		if(diff < 60000)
+		//Return green if the user was updated within two minutes.
+		if(diff < 120000)
 			return Color.GREEN;
 		//Return yellow if the user was updated within 10 minutes.
 		if(diff < 600000)
