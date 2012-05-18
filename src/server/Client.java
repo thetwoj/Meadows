@@ -154,8 +154,7 @@ public class Client
 	
 	public void RequestConditions()
 	{
-		if(LoggedIn())
-			Server.GetInstance().RequestConditions();
+		Server.GetInstance().RequestConditions();
 	}
 	
 	public void DenyFriendRequest(User user)
