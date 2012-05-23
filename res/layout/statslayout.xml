@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android1="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout2"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <TextView
+        android1:id="@+id/TextView09"
+        android1:layout_width="match_parent"
+        android1:layout_height="wrap_content"
+        android1:text="This Session"
+        android1:textAppearance="?android:attr/textAppearanceLarge"
+        android1:textColor="@color/darkFont" />
+
+    <LinearLayout
+        android1:id="@+id/linearLayout2"
+        android1:layout_width="fill_parent"
+        android1:layout_height="wrap_content"
+        android1:layout_weight="0.68" >
+
+        <LinearLayout
+            android1:layout_width="160dp"
+            android1:layout_height="match_parent"
+            android1:orientation="vertical" >
+
+            <TextView
+                android1:id="@+id/maxspeedlabel"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="Max Speed:" />
+
+            <TextView
+                android1:id="@+id/totaltimelabel"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/totaltlabel" />
+
+            <TextView
+                android1:id="@+id/movingtimelabel"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/movingtlabel" />
+
+            <TextView
+                android1:id="@+id/totaldistancelabel"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/distancelabel" />
+
+            <TextView
+                android1:id="@+id/averagespeedlabel"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/averagelabel" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android1:id="@+id/linearLayout4"
+            android1:layout_width="fill_parent"
+            android1:layout_height="fill_parent"
+            android1:layout_weight="1"
+            android1:orientation="vertical" >
+
+            <TextView
+                android1:id="@+id/maxspeed"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/totaltime"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/movingtime"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/totaldistance"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/averagespeed"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android1:id="@+id/textView1"
+        android1:layout_width="match_parent"
+        android1:layout_height="wrap_content"
+        android1:text="Historical"
+        android1:textAppearance="?android:attr/textAppearanceLarge"
+        android1:textColor="@color/darkFont" />
+
+    <LinearLayout
+        android1:id="@+id/LinearLayout02"
+        android1:layout_width="fill_parent"
+        android1:layout_height="wrap_content"
+        android1:layout_weight="3" >
+
+        <LinearLayout
+            android1:layout_width="160dp"
+            android1:layout_height="match_parent"
+            android1:orientation="vertical" >
+
+            <TextView
+                android1:id="@+id/TextView10"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="Max Speed:" />
+
+            <TextView
+                android1:id="@+id/TextView05"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/totaltlabel" />
+
+            <TextView
+                android1:id="@+id/TextView07"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/movingtlabel" />
+
+            <TextView
+                android1:id="@+id/TextView04"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/distancelabel" />
+
+            <TextView
+                android1:id="@+id/TextView08"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@string/averagelabel" />
+        </LinearLayout>
+
+        <LinearLayout
+            android1:id="@+id/LinearLayout01"
+            android1:layout_width="fill_parent"
+            android1:layout_height="fill_parent"
+            android1:layout_weight="1"
+            android1:orientation="vertical" >
+
+            <TextView
+                android1:id="@+id/maxspeedhist"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/totaltimehist"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/movingtimehist"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/totaldistancehist"
+                android1:layout_width="fill_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+            <TextView
+                android1:id="@+id/averagespeedhist"
+                android1:layout_width="match_parent"
+                android1:layout_height="wrap_content"
+                android1:text="@null" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/statsbuttons"
+        android:layout_width="fill_parent"
+        android:layout_height="138dp"
+        android1:layout_weight="0.22" >
+
+        <Button
+            android1:id="@+id/recording_button"
+            android1:layout_width="fill_parent"
+            android1:layout_height="149dp"
+            android1:text="Start" />
+
+    </LinearLayout>
+
+</LinearLayout>

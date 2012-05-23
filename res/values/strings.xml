@@ -1,5 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="hello">Hello World, Meadows_CapstoneActivity!</string>
-    <string name="app_name">Meadows_Capstone</string>
+    <string name="app_name">OSU Meadows</string>
+
+    <color name="white">#FFFFFF</color>
+    <color name="yellow">#77DDDD77</color>
+    <color name="red">#77DD7777</color>
+    <color name="green">#7777DD77</color>
+    <color name="darkFont">#ff555555</color>
+    
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="ok">Ok</string>
+    <string name="create">Create</string>
+
+    <string name="averagelabel">Avg. Speed:</string>
+    <string name="distancelabel">Total Distance:</string>
+    <string name="totaltlabel">Total Time:</string>
+    <string name="movingtlabel">Moving Time:</string>
+    <string name="createmeeting">Create Meeting Point</string>
+    <string name="editmeeting">Edit Meeting Point</string>
+    <string name="viewmeeting">View Meeting Point</string>
+
+    <string-array name="periodLabels">
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>45 seconds</item>
+        <item>60 seconds</item>
+    </string-array>
+    <string-array name="periodValues">
+        <item>5000</item>
+        <item>10000</item>
+        <item>15000</item>
+        <item>30000</item>
+        <item>45000</item>
+        <item>60000</item>
+    </string-array>
+    <string-array name="gpsPeriodLabels">
+        <item>Fastest</item>
+        <item>1 second</item>
+        <item>2 seconds</item>
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>15 seconds</item>
+    </string-array>
+    <string-array name="gpsPeriodValues">
+        <item>500</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>5000</item>
+        <item>10000</item>
+        <item>15000</item>
+    </string-array>
+     <string-array name="accuracyLabels">
+        <item>5 meters</item>
+        <item>10 meters</item>
+        <item>20 meters</item>
+        <item>50 meters</item>
+    </string-array>
+    <string-array name="accuracyValues">
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>50</item>
+    </string-array>
+
 </resources>
