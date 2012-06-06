@@ -45,7 +45,7 @@ displayed when the button is unclicked (default), clicked or focused.
             android1:gravity="top"
             android1:paddingBottom="20dp"
             android1:paddingTop="20dp"
-            android1:src="@drawable/osulogo" />
+            android1:src="@drawable/meadowslogo" />
     </FrameLayout>
 
     <LinearLayout

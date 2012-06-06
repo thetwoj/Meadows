@@ -136,7 +136,7 @@ public class GeoMapActivity extends Activity
 		this.geoImageView.setGeoMapActivity(this);
 		
 		//Load georeferenced points from the meadows data file.
-		this.currentMapFileId = R.raw.campus;
+		this.currentMapFileId = R.raw.meadows;
 		
 		// Initialize the alert box for error reporting later on
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
