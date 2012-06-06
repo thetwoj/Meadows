@@ -111,7 +111,8 @@ public class ClientLocationService extends Service
 				client.RequestUpdateFriends();
 				client.RequestUpdateMeetingPoints();
 				client.RequestUpdateBlockedUsers();
-				client.RequestConditions();
+				if(client.LoggedIn())
+					client.RequestConditions();
 			}
 		};
 

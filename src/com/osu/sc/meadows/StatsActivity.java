@@ -103,7 +103,9 @@ public class StatsActivity extends Activity
 				// If myTracks is connected successfully
 				if(myTracksService == null)
 				{
-					throwAlert("Connection Error", "Failed to connect to Mytracks Correctly.");
+					// Throw connection error
+					throwAlert("Connection Error", "Google MyTracks App must be installed and have sharing " +
+							"with third party apps set to true!");
 					return;
 
 				}
@@ -138,30 +140,41 @@ public class StatsActivity extends Activity
 
 					// Get the statistics from recorded track.
 					Track track = myTracksProviderUtils.getLastTrack();
-					TripStatistics stats = track.getStatistics();
+					// If the track is null then permissions aren't correct
+					if(track == null)
+					{
+						// Alert user of the permissions error
+						// Throw connection error
+						throwAlert("Permissions Error", "Google MyTracks App must be installed and have sharing " +
+								"with third party apps set to true!");
+						return;
+					}
+					// If not null, go ahead and parse the data retrieved
+					else
+					{
 
-					updateHistorical();
+						TripStatistics stats = track.getStatistics();
 
-					// Set fields to their respective statistics.
-					maxspeeddisp.setText(speedConvert(stats.getMaxSpeed()));
-					movingtimedisp.setText( timeConvert(stats.getMovingTime()));
-					totaltimedisp.setText( timeConvert(stats.getTotalTime()));
-					averagespeeddisp.setText( speedConvert(stats.getAverageMovingSpeed()));
-					totaldistancedisp.setText( distanceConvert(stats.getTotalDistance()));
+						updateHistorical();
+
+						// Set fields to their respective statistics.
+						maxspeeddisp.setText(speedConvert(stats.getMaxSpeed()));
+						movingtimedisp.setText( timeConvert(stats.getMovingTime()));
+						totaltimedisp.setText( timeConvert(stats.getTotalTime()));
+						averagespeeddisp.setText( speedConvert(stats.getAverageMovingSpeed()));
+						totaldistancedisp.setText( distanceConvert(stats.getTotalDistance()));
 
 
 
-					startService(intent);
-					bindService(intent, serviceConnection, 0);
+						startService(intent);
+						bindService(intent, serviceConnection, 0);
 
-					recordingButton.setText("Start");
-					recording = false;
+						recordingButton.setText("Start");
+						recording = false;
+					}
 				}
 			}
 		});
-
-		// Alert dialog to explain that MyTracks app must be installed for statistics to work
-		throwAlert("MyTracks Warning", "You must have the Google MyTracks app installed for this page to function correctly!"); 
 	}
 
 	@Override
@@ -188,15 +201,17 @@ public class StatsActivity extends Activity
 	}
 
 	// Throws alert with given title and message
-	protected void throwAlert(String title, String Message)
+	protected void throwAlert(String title, String message)
 	{
-		AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-		alertDialog.setTitle("MyTracks Warning");
-		alertDialog.setMessage("You must have the Google MyTracks app installed for this page to function correctly!");
+		final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+		alertDialog.setTitle(title);
+		alertDialog.setMessage(message);
 		alertDialog.setButton("OK", new DialogInterface.OnClickListener() {  
-			public void onClick(DialogInterface dialog, int which) {  
+			public void onClick(DialogInterface dialog, int which) {
+				alertDialog.dismiss();
 				return;  
 			} });   
+		alertDialog.show();
 	}
 
 
