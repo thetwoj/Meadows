@@ -4,6 +4,7 @@ Mt. Hood Meadows Ski App
 
 GitHub repo: https://github.com/thetwoj/Meadows.git
 Google Play link: https://play.google.com/store/apps/details?id=com.osu.sc.meadows
+Google MyTracks project hub: http://code.google.com/p/mytracks/
 
 This application and all code contained within is considered open source by its developers. Clone away!
 
