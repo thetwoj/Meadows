@@ -16,10 +16,11 @@ Requires: Android 2.3 or higher
 This is meant to be an explanation of how one can setup this application's database on a server. The serving computer must be running mysql, appache, and php.
 
 1) On the machine, create a new database using “mysqladmin create databaseName”.
-2) Put the Meadows folder in whatever directory is available online.  Make sure that a web browser can connect to the folder, and take note of the URL.
-3) Open up “Meadows/DatabaseFunctions.php”. From lines 9 to 13, edit the global variables db_server, db_username, db_password, and db_database to reflect the values of the new mysql database. Save, and close your IDE.
-4) Open up the application's HttpPostTask.java file located at “MeadowsActivity/src/server/HttpPostTask .java”. Edit the global variable “baseUrl” to point to the URL of the Meadows folder noted in step 2. Save the file.
-5) Push the updated code to the world quickly! Users will not connect to the new server until they get the update to the application.
+2) Execute all of the statements within Code/Scripts/createTables.sql in order to create the necessary tables in the new database
+3) Put the Meadows folder in whatever directory is available online.  Make sure that a web browser can connect to the folder, and take note of the URL.
+4) Open up “Meadows/DatabaseFunctions.php”. From lines 9 to 13, edit the global variables db_server, db_username, db_password, and db_database to reflect the values of the new mysql database. Save, and close your IDE.
+5) Open up the application's HttpPostTask.java file located at “MeadowsActivity/src/server/HttpPostTask .java”. Edit the global variable “baseUrl” to point to the URL of the Meadows folder noted in step 3. Save the file.
+6) Push the updated code to the world quickly! Users will not connect to the new server until they get the update to the application.
 
 After these steps, the application will connect to the server, executing the copied php scripts and interacting with the duplicated SQL database.
 
